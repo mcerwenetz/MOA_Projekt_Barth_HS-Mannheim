@@ -24,7 +24,7 @@ Die Kontaktdaten werden beim Betreten und Verlassen automatisch beim Gastgeber e
 
 ### Eingesetzte Technologien
 
-Die Datenbank der aktiven Nutzer pro Raum liegt in der App des Gastgebers. Als Verbindungsprotokoll zwischen Nutzern und Gastgeber wird MQTT oder BLE eingesetzt. Räume werden per NFC pder QR-Code betreten.
+Die Datenbank der aktiven Nutzer pro Raum liegt in der App des Gastgebers. Als Verbindungsprotokoll zwischen Nutzern und Gastgeber wird MQTT oder BLE eingesetzt. Räume werden per NFC pder QR-Code betreten. (Optional) Der Beschleunigungssensor wird für einen Austausch der Benutzerdaten untereinander verwendet.
 
 ### Use-Case-Diagramm
 
