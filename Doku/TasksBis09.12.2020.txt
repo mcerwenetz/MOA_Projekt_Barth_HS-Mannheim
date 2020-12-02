@@ -1,0 +1,13 @@
+Task1 (Marius): NFC angucken
+-Speicher auslesen können
+
+Task 2 (Mike/Raphael): Datenbank
+-Modell erstellen
+-Grundlegende Funktionen
+-(Datenbank exportieren)
+
+Task 3 (Mike/Raphael): QR Code
+-Einscannen
+-Erstellen
+-Exportieren als PDF
+https://www.youtube.com/watch?v=VsCPdhE3UI0
