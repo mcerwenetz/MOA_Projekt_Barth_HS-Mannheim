@@ -7,6 +7,6 @@
     android:layout_height="wrap_content"
     android:textSize="30sp"
     android:id="@+id/tv"
-    android:text="hier könnte was stehen"
+    android:text="nfc"
     />
 </LinearLayout>
