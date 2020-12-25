@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CreateRoomDemo</string>
+    <string name="key_pref_vorname">pref_key_vorname</string>
+    <string name="key_pref_name">pref_key_name</string>
+    <string name="key_pref_extra">pref_key_extra</string>
+    <string name="key_pref_email">pref_key_email</string>
+    <string name="key_pref_phone">pref_key_phone</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Name">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPersonName"
+            android:key="@string/key_pref_vorname"
+            android:title="Vorname" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPersonName"
+            android:key="@string/key_pref_name"
+            android:title="Name" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="@string/key_pref_extra"
+            android:title="Zusatzinfo" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Kontaktdaten">
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textEmailAddress"
+            android:key="@string/key_pref_email"
+            android:title="E-Mail" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="phone"
+            android:key="@string/key_pref_phone"
+            android:title="Phone" />
+    </PreferenceCategory>
+</PreferenceScreen>
