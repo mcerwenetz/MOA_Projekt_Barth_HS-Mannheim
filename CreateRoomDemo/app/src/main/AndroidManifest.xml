@@ -8,6 +8,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CreateRoomDemo" />
+        android:theme="@style/Theme.CreateRoomDemo">
+
+        <activity android:name=".RoomListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CreateNewRoomActivity" />
+    </application>
 
 </manifest>

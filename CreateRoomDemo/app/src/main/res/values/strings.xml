@@ -5,4 +5,17 @@
     <string name="key_pref_extra">pref_key_extra</string>
     <string name="key_pref_email">pref_key_email</string>
     <string name="key_pref_phone">pref_key_phone</string>
+    <string name="raumname">Raumname</string>
+    <string name="raumextra">Sonstiges (optional)</string>
+    <string name="raum_name">Name</string>
+    <string name="raum_titel">Titel</string>
+    <string name="raum_extra_optional">Extra (optional)</string>
+    <string name="raum_ort"><![CDATA[Postleitzahl & Ort]]></string>
+    <string name="raum_adresse">Adresse</string>
+    <string name="start">Start:</string>
+    <string name="datum">Datum</string>
+    <string name="uhrzeit">Uhrzeit</string>
+    <string name="ende">Ende:</string>
+    <string name="room_create_room">Create Room</string>
+
 </resources>

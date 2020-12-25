@@ -12,17 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.room.Room;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.room.RoomItem;
 import de.pbma.moa.createroomdemo.room.RoomRepository;
 
-public class MainActivity extends AppCompatActivity {
-    final static String TAG = MainActivity.class.getCanonicalName();
+public class RoomListActivity extends AppCompatActivity {
+    final static String TAG = RoomListActivity.class.getCanonicalName();
 
     private ArrayList<RoomItem> roomList;
     private ListView lv;
@@ -33,9 +31,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
-
+        roomList = new ArrayList<>();
         setContentView(R.layout.roomlist_page);
-
+        adapter = new RoomListAdapter(this, roomList);
+        lv = findViewById(R.id.lv_highscore);
+        lv.setAdapter(adapter);
+        roomRepo = new RoomRepository(this);
+        roomRepo.getDbAll().observe(this, observer);
     }
     //Menu
     @Override
@@ -49,9 +51,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.create_newRoom:
                 Log.v(TAG,"onOptionsItemSelected() create new Room");
-                //TODO create Class for new Room
-//               Intent intent = new Intent(this, );
-//               startActivity(intent);
+               Intent intent = new Intent(this,CreateNewRoomActivity.class );
+               startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
         public void onChanged(List<RoomItem> changedTodos) {
-            lv.clear();
-            lv.addAll(changedTodos);
+            roomList.clear();
+            roomList.addAll(changedTodos);
             adapter.notifyDataSetChanged();
         }
     };

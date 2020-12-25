@@ -41,9 +41,8 @@ public class RoomItem {
     public long endTime;
 
 
-    public static RoomItem createRoom(long id, String roomName, String host,String eMail, String phone, String place,String address, String extra, long startTime, long endTime) {
+    public static RoomItem createRoom(String roomName, String host,String eMail, String phone, String place,String address, String extra, long startTime, long endTime) {
         RoomItem room = new RoomItem();
-        room.id = id;
         room.roomName = roomName;
         room.host = host;
         room.eMail = eMail;
