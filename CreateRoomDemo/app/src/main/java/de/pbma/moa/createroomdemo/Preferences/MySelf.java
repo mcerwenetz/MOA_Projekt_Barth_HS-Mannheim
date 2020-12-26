@@ -10,46 +10,53 @@ import de.pbma.moa.createroomdemo.R;
 
 public class MySelf {
     final static String TAG = MySelf.class.getCanonicalName();
+    private Resources resources;
     private Context context;
     private SharedPreferences preferences;
-    Resources resources;
+    private String keyName, keyExtra, keyEmail, keyPhone, keyFirstName;
 
-    final String keyFirstName = resources.getString(R.string.key_pref_vorname);
-    final String keyName = resources.getString(R.string.key_pref_name);
-    final String keyExtra = resources.getString(R.string.key_pref_extra);
-    final String keyEmail = resources.getString(R.string.key_pref_email);
-    final String keyPhone = resources.getString(R.string.key_pref_phone);
 
     public MySelf(Context context) {
-        Log.v(TAG,"create MySelf");
+        Log.v(TAG, "create MySelf");
         this.context = context;
         resources = context.getResources();
+        keyName = resources.getString(R.string.key_pref_name);
+        keyExtra = resources.getString(R.string.key_pref_extra);
+        keyEmail = resources.getString(R.string.key_pref_email);
+        keyPhone = resources.getString(R.string.key_pref_phone);
+        keyFirstName = resources.getString(R.string.key_pref_vorname);
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
 //        preferences.registerOnSharedPreferenceChangeListener(ospcl);
     }
 
-    public String getFirstName(){
-        return preferences.getString(keyFirstName,null);
+    public String getFirstName() {
+        return preferences.getString(keyFirstName, null);
     }
-    public String getName(){
-        return preferences.getString(keyName,null);
+
+    public String getName() {
+        return preferences.getString(keyName, null);
     }
-    public String getExtra(){
-        return preferences.getString(keyExtra,null);
+
+    public String getExtra() {
+        return preferences.getString(keyExtra, null);
     }
-    public String getEmail(){
-        return preferences.getString(keyEmail,null);
+
+    public String getEmail() {
+        return preferences.getString(keyEmail, null);
     }
-    public String getPhone(){
-        return preferences.getString(keyPhone,null);
+
+    public String getPhone() {
+        return preferences.getString(keyPhone, null);
     }
-    public boolean isValide(){
-        if(preferences.getString(keyFirstName,null).equals(""))
+
+    public boolean isValide() {
+        Log.v(TAG,"Check myself");
+        if (preferences.getString(keyFirstName, null).equals(""))
             return false;
-        if(preferences.getString(keyName,null).equals(""))
+        if (preferences.getString(keyName, null).equals(""))
             return false;
-        if(preferences.getString(keyEmail,null).equals("") && preferences.getString(keyPhone,null).equals(""))
+        if (preferences.getString(keyEmail, null).equals("") && preferences.getString(keyPhone, null).equals(""))
             return false;
         return true;
     }
@@ -68,7 +75,6 @@ public class MySelf {
 //            }
 //        }
 //    };
-
 
 
 }
