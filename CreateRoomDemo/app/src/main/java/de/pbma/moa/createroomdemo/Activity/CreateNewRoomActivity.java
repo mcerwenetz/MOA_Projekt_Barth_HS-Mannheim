@@ -70,7 +70,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         minute_start = calendar.get(Calendar.MINUTE);
 
 
-        setContentView(R.layout.create_room_page);
+        setContentView(R.layout.page_create_room);
 
         btnCreate = findViewById(R.id.btn_raum_create);
         btnEndDate = findViewById(R.id.btn_raum_end_date);

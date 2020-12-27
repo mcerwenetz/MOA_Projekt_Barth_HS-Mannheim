@@ -2,9 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/create_newRoom"
-        android:icon="@android:drawable/ic_input_add"
-        android:iconTint="@color/gray70"
-        android:title="Create Room"
+        android:id="@+id/export_participant_list"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="Export List"
         app:showAsAction="always" />
 </menu>

@@ -34,7 +34,7 @@ public class RoomListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
         roomList = new ArrayList<>();
-        setContentView(R.layout.roomlist_page);
+        setContentView(R.layout.page_roomlist);
         adapter = new RoomListAdapter(this, roomList);
         lv = findViewById(R.id.lv_highscore);
         lv.setAdapter(adapter);

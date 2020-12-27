@@ -10,17 +10,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
+import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
 
-public class RoomListAdapter extends ArrayAdapter<RoomItem> {
+public class ParticipantListAdapter extends ArrayAdapter<ParticipantItem> {
     private final Context context;
-    private final List<RoomItem> values;
+    private final List<ParticipantItem> values;
 
-    public RoomListAdapter(@NonNull Context context, @NonNull List<RoomItem> objects) {
+    public ParticipantListAdapter(@NonNull Context context, @NonNull List<ParticipantItem> objects) {
         super(context, -1, objects);
         this.context = context;
         this.values = objects;
@@ -32,20 +30,17 @@ public class RoomListAdapter extends ArrayAdapter<RoomItem> {
         View entityView = convertView;
         TextView view1 = null;
         if (entityView != null)
-            view1 = entityView.findViewById(R.id.tv_roomname);
+            view1 = entityView.findViewById(R.id.tv_participant_name);
         if (entityView == null || view1 == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            entityView = layoutInflater.inflate(R.layout.list_item_room, parent, false);
-            view1 = entityView.findViewById(R.id.tv_roomname);
+            entityView = layoutInflater.inflate(R.layout.list_item_participant, parent, false);
+            view1 = entityView.findViewById(R.id.tv_participant_name);
         }
-        TextView view2 = entityView.findViewById(R.id.tv_roomhost);
-        TextView view3 = entityView.findViewById(R.id.tv_roomstarttime);
-        RoomItem item = values.get(position);
-        view1.setText(item.roomName);
-        view2.setText(item.host);
+        TextView view2 = entityView.findViewById(R.id.tv_participant_kontakt);
+        ParticipantItem item = values.get(position);
+        view1.setText(item.name + "\n" + item.extra);
+        view2.setText(item.eMail + "\n" + item.phone);
 
-        DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
-        view3.setText(df.format(item.startTime));
         entityView.setTag(item.id);
         return entityView;
     }

@@ -13,12 +13,16 @@ import java.util.List;
 public abstract class RoomDao {
     @Insert
     abstract long insert(RoomItem item);
+
     @Update
     abstract void update(RoomItem item);
+
     @Delete
     abstract void delete(RoomItem item);
-    @Query("DELETE FROM dbRoom")
-    abstract  void deleteAll();
+
+    @Query("DELETE FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
+    abstract void deleteAllOlderTwoWeeks(long timeNow,long timeSpanOfTwoWeeks );
+
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
 
