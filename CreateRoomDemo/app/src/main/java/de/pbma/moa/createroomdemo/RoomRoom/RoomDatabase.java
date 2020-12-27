@@ -1,27 +1,26 @@
-package de.pbma.moa.createroomdemo.room;
+package de.pbma.moa.createroomdemo.RoomRoom;
 
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
-import androidx.room.RoomDatabase;
 
 @Database(entities = {RoomItem.class}, version = 1, exportSchema = false)
-public abstract class DatabaseRoom extends RoomDatabase {
-    private static DatabaseRoom INSTANCE = null;
+public abstract class RoomDatabase extends androidx.room.RoomDatabase {
+    private static RoomDatabase INSTANCE = null;
 
-    private static DatabaseRoom createInstance(Context context) {
-        return Room.databaseBuilder(context, DatabaseRoom.class, "dbRoom")
+    private static RoomDatabase createInstance(Context context) {
+        return Room.databaseBuilder(context, RoomDatabase.class, "dbRoom")
                 .enableMultiInstanceInvalidation() //je Prozess eine Instanz,Synchronisation erforderlich und aktiviert
                 .fallbackToDestructiveMigration() //DB löschen wenn sich Versionändert (böse) TODO entfernen ?
                 .build();
     }
 
-    public static synchronized DatabaseRoom getInstance(Context context) {
+    public static synchronized RoomDatabase getInstance(Context context) {
         if (INSTANCE == null)
             INSTANCE = createInstance(context);
         return INSTANCE;
     }
 
-    public abstract DaoRoom dao();
+    public abstract RoomDao dao();
 }

@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.room;
+package de.pbma.moa.createroomdemo.RoomRoom;
 
 
 import androidx.room.ColumnInfo;
@@ -69,6 +69,10 @@ public class RoomItem {
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 '}';
+    }
+
+    public String getUri(){
+        return this.roomName + "/" + this.eMail + "/" + this.id;
     }
 
     @Override

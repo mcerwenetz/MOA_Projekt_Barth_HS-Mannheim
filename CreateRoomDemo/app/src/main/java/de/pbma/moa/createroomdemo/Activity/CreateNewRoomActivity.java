@@ -1,32 +1,38 @@
-package de.pbma.moa.createroomdemo;
+package de.pbma.moa.createroomdemo.Activity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
+import androidx.core.content.FileProvider;
 
 import com.google.zxing.WriterException;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.net.URLConnection;
 import java.util.Calendar;
 
-import de.pbma.moa.createroomdemo.room.RoomItem;
-import de.pbma.moa.createroomdemo.room.RoomRepository;
+import de.pbma.moa.createroomdemo.BuildConfig;
+import de.pbma.moa.createroomdemo.PdfClass;
+import de.pbma.moa.createroomdemo.QrCodeManger;
+import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
 public class CreateNewRoomActivity extends AppCompatActivity {
     final static String TAG = CreateNewRoomActivity.class.getCanonicalName();
@@ -82,6 +88,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         btnEndTime.setOnClickListener(this::setBtnEndTimeClicked);
         btnEndDate.setOnClickListener(this::setBtnEndDateClicked);
         btnCreate.setOnClickListener(this::setBtnCreateClicked);
+
     }
 
     @Override
@@ -175,34 +182,47 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         Log.v(TAG, "setBtnCreateClicked");
         if (etTitel.getText().toString().equals("")) {
             Log.v(TAG, "Titel empty");
+            Toast.makeText(this, "Titel fehlt", Toast.LENGTH_LONG).show();
             return;
         }
         if (etOrt.getText().toString().equals("")) {
             Log.v(TAG, "Ort empty");
+            Toast.makeText(this, "Ort fehlt", Toast.LENGTH_LONG).show();
             return;
         }
         if (etAdresse.getText().toString().equals("")) {
             Log.v(TAG, "Address empty");
+            Toast.makeText(this, "Adresse fehlt", Toast.LENGTH_LONG).show();
             return;
         }
-        if (!(startDate && startTime && endDate && endTime)) {
+        if (!(startDate && startTime)) {
             Log.v(TAG, "Start and End Time not set");
+            Toast.makeText(this, "Startzeitpunkt fehlt", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (!(endDate && endTime)) {
+            Log.v(TAG, "Start and End Time not set");
+            Toast.makeText(this, "Endzeitpunkt fehlt", Toast.LENGTH_LONG).show();
             return;
         }
 
+        long now = Calendar.getInstance().getTime().getTime();
         calendar.set(year_start, month_start, day_start, hour_start, minute_start);
         long start = calendar.getTime().getTime();
         calendar.set(year_end, month_end, day_end, hour_end, minute_end);
         long end = calendar.getTime().getTime();
-        if (start >= end) {
-            Log.v(TAG, "endtime is earlier then starttime");
-            return;
-        }
-        long now = Calendar.getInstance().getTime().getTime();
+
         if (now >= start) {
             Log.v(TAG, "start time is in the past");
+            Toast.makeText(this, "Startzeitpunkt liegt in der Vergangenheit", Toast.LENGTH_LONG).show();
             return;
         }
+        if (start >= end) {
+            Log.v(TAG, "endtime is earlier then starttime");
+            Toast.makeText(this, "Endzeitpunkt liegt vor Startzeitpunkt", Toast.LENGTH_LONG).show();
+            return;
+        }
+
 //        MySelf me = new MySelf(this);
 //        if (!me.isValide()) {
 //            Log.v(TAG, "prefs not valide");
@@ -225,36 +245,54 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 start,
                 end);
 
-        //repo.addEntry(item);
-        //TODO activity showing room infos and pop current activity from stack
-//        Intent intent = new Intent(this,);
+        repo.addEntry(item);
+        //TODO activity showing room infos and pop current activity from top of stack
+//        Intent intent = new Intent(this, );
+//        intent.putExtra("RoomID", item.id);
 //        startActivity(intent);
-        test(item);
     }
 
-    //TODO function muss später teilweise in RaumDetailsActivity (nur zu test zwechen hier)
+
+    //TODO function test und sharePDF  muss später in RaumDetailsActivity (hier nur testzweck und beispiel hafte verwendung)
     void test(RoomItem item) {
-//        RoomItem item = RoomItem.createRoom(
-//                "TestRaum",
-//                "Raphael Barth",
-//                "barthra@web.de",
-//                "+49 176 42619753",
-//                "73630 Remshalden",
-//                "Fronäckerstr.40",
-//                "Das ist ein Testraum",
-//                Calendar.getInstance().getTime().getTime() + 0,
-//                Calendar.getInstance().getTime().getTime() + 60000);
+        //Generate QR-code as bitmap
         QrCodeManger qrCodeManager = new QrCodeManger(this);
         Bitmap qrCode = null;
         try {
-            qrCode = qrCodeManager.createQrCode(item.roomName + "/" + item.eMail + "/" + item.id);//TODO function zum erstellen der QR URI siehe auch PDF Creator
+            qrCode = qrCodeManager.createQrCode(item.getUri());
         } catch (WriterException e) {
             e.printStackTrace();
         }
+
+        //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(this);
         File file = pdf.createPdfRoomInfos(item, qrCode);
-       // pdf.showPDF(file);
 
+        // pdf teilen
+        if (sharePDF(file, this))
+            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+
+
+    }
+
+    public boolean sharePDF(File file, Context context) {
+        Log.v(TAG, "showPDF(" + file.getName() + ")");
+        if (!file.exists())
+            return false;
+        try {
+            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+            Intent intent = ShareCompat.IntentBuilder.from((Activity) context)
+                    .setType(URLConnection.guessContentTypeFromName(file.getName()))
+                    .setStream(uri)
+                    .setChooserTitle("Choose bar")
+                    .createChooserIntent()
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            return false;
+        }
+        return true;
     }
 
 

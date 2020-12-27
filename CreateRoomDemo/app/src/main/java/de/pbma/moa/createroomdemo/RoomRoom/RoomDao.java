@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.room;
+package de.pbma.moa.createroomdemo.RoomRoom;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -10,7 +10,7 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public abstract class DaoRoom {
+public abstract class RoomDao {
     @Insert
     abstract long insert(RoomItem item);
     @Update

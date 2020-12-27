@@ -12,13 +12,17 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.core.app.ShareCompat;
+import androidx.core.content.FileProvider;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import de.pbma.moa.createroomdemo.room.RoomItem;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 
 public class PdfClass {
     final static String TAG = PdfClass.class.getCanonicalName();
@@ -53,7 +57,7 @@ public class PdfClass {
         canvas.drawText("Gastgeber", leftborder, 8 * y_spacing, paint);
         canvas.drawText("E-Mail", leftborder, 9 * y_spacing, paint);
         canvas.drawText("Telephon", leftborder, 10 * y_spacing, paint);
-        canvas.drawText("NFC-Tag", leftborder, 11 * y_spacing, paint);
+        canvas.drawText("NFC-Uri", leftborder, 11 * y_spacing, paint);
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         paint.setColor(Color.GRAY);
         canvas.drawText(item.roomName, infosleftborder, 2 * y_spacing, paint);
@@ -64,8 +68,8 @@ public class PdfClass {
         canvas.drawText(item.address, infosleftborder, 7 * y_spacing, paint);
         canvas.drawText(item.host, infosleftborder, 8 * y_spacing, paint);
         canvas.drawText(item.eMail, infosleftborder, 9 * y_spacing, paint);
-        canvas.drawText(item.eMail, infosleftborder, 10 * y_spacing, paint);
-        canvas.drawText(item.roomName + "/" + item.eMail + "/" + item.id, infosleftborder, 11 * y_spacing, paint);  //TODO durch function ersetzen wie in CreateNEwRoom
+        canvas.drawText(item.phone, infosleftborder, 10 * y_spacing, paint);
+        canvas.drawText(item.getUri(), infosleftborder, 11 * y_spacing, paint);
 
         Log.v(TAG, "createPdfRoomInfos() draw Bitmap");
         paint.setColor(Color.BLACK);
@@ -77,20 +81,6 @@ public class PdfClass {
         return file;
     }
 
-
-    //TODO vielleicht umschreiben (savepdfauch) sodas des file garned mehr local gespeichert werden muss
-    //TODO funktionirt nicht immer geht nur wenn pdf viewer oder etc installiert ist ansonsten error  -> exeption
-    public void showPDF(File file) {
-        Log.v(TAG, "showPDF(" + file.getName() + ")");
-        Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-        if (file.exists()) {
-            intentShareFile.setType("application/pdf");
-            intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file.getAbsolutePath()));
-//            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Sharing File...");
-//            intentShareFile.putExtra(Intent.EXTRA_TEXT, "Sharing File...");
-            ((Activity) context).startActivity(Intent.createChooser(intentShareFile, "Share File"));
-        }
-    }
 
 
     public boolean deletePDF(File file) {

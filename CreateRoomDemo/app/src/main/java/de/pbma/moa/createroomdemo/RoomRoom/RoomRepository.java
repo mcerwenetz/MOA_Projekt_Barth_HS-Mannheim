@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.room;
+package de.pbma.moa.createroomdemo.RoomRoom;
 
 import android.content.Context;
 
@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 public class RoomRepository {
-    private DaoRoom dao;
+    private RoomDao dao;
     private LiveData<List<RoomItem>> liveHighsocore;
     private Context context;
     public RoomRepository(Context context){
         this.context = context;
-        DatabaseRoom databaseRoom = DatabaseRoom.getInstance(context);
-        dao = databaseRoom.dao();
+        RoomDatabase roomDatabase = RoomDatabase.getInstance(context);
+        dao = roomDatabase.dao();
         liveHighsocore = dao.getAll();
     }
     public void clearDb(){

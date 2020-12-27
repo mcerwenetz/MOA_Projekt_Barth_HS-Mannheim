@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo;
+package de.pbma.moa.createroomdemo.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,8 +16,10 @@ import androidx.lifecycle.Observer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.pbma.moa.createroomdemo.room.RoomItem;
-import de.pbma.moa.createroomdemo.room.RoomRepository;
+import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.RoomListAdapter;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
 public class RoomListActivity extends AppCompatActivity {
     final static String TAG = RoomListActivity.class.getCanonicalName();
