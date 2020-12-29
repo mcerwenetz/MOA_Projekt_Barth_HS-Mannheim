@@ -16,6 +16,15 @@
     <string name="datum">Datum</string>
     <string name="uhrzeit">Uhrzeit</string>
     <string name="ende">Ende:</string>
-    <string name="room_create_room">Create Room</string>
+    <string name="room_create_room">Create and Continue</string>
+    <string name="room_continue_room">Continue </string>
+
+    <string name="participant_room_open">Raum öffnen/schließen</string>
+    <string name="participant_timeout_change">Timeout ändern</string>
+    <string name="participant">Teilnehmer</string>
+    
+    <string name="participant_menu_share">Teilen</string>
+    <string name="participant_menu_qr">QR</string>
+    <string name="participant_menu_uri">URI</string>
 
 </resources>

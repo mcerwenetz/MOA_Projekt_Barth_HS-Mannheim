@@ -40,6 +40,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
     final static String BTNST = "btnStartTime";
     final static String BTNED = "btnEndDate";
     final static String BTNET = "btnEndTime";
+
     Button btnStartTime, btnStartDate, btnEndTime, btnEndDate, btnCreate;
     EditText etTitel, etExtra, etOrt, etAdresse;
     DatePickerDialog datePickerDialog;
@@ -48,6 +49,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
     int minute_start, hour_start, day_start, month_start, year_start;
     int minute_end, hour_end, day_end, month_end, year_end;
     boolean startTime, startDate, endTime, endDate = false;
+    long dataid;
     RoomRepository repo;
 
 
@@ -88,7 +90,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         btnEndTime.setOnClickListener(this::setBtnEndTimeClicked);
         btnEndDate.setOnClickListener(this::setBtnEndDateClicked);
         btnCreate.setOnClickListener(this::setBtnCreateClicked);
-
     }
 
     @Override
@@ -245,55 +246,58 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 start,
                 end);
 
-        repo.addEntry(item);
-        //TODO activity showing room infos and pop current activity from top of stack
-//        Intent intent = new Intent(this, );
-//        intent.putExtra("RoomID", item.id);
-//        startActivity(intent);
+
+        repo.addEntry(item,(newItem)-> {
+            CreateNewRoomActivity.this.runOnUiThread(()->{
+                Intent intent = new Intent(CreateNewRoomActivity.this, ParticipantViewActivity.class);
+                intent.putExtra(ParticipantViewActivity.ID, newItem.id);
+                startActivity(intent);
+            });
+        });
     }
 
 
-    //TODO function test und sharePDF  muss später in RaumDetailsActivity (hier nur testzweck und beispiel hafte verwendung)
-    void test(RoomItem item) {
-        //Generate QR-code as bitmap
-        QrCodeManger qrCodeManager = new QrCodeManger(this);
-        Bitmap qrCode = null;
-        try {
-            qrCode = qrCodeManager.createQrCode(item.getUri());
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-
-        //generate PDF with qrCode an room infos -> saved in external file system
-        PdfClass pdf = new PdfClass(this);
-        File file = pdf.createPdfRoomInfos(item, qrCode);
-
-        // pdf teilen
-        if (sharePDF(file, this))
-            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
-
-
-    }
-
-    public boolean sharePDF(File file, Context context) {
-        Log.v(TAG, "showPDF(" + file.getName() + ")");
-        if (!file.exists())
-            return false;
-        try {
-            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
-            Intent intent = ShareCompat.IntentBuilder.from((Activity) context)
-                    .setType(URLConnection.guessContentTypeFromName(file.getName()))
-                    .setStream(uri)
-                    .setChooserTitle("Choose bar")
-                    .createChooserIntent()
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            return false;
-        }
-        return true;
-    }
+//    //TODO function test und sharePDF  muss später in RaumDetailsActivity (hier nur testzweck und beispiel hafte verwendung)
+//    void test(RoomItem item) {
+//        //Generate QR-code as bitmap
+//        QrCodeManger qrCodeManager = new QrCodeManger(this);
+//        Bitmap qrCode = null;
+//        try {
+//            qrCode = qrCodeManager.createQrCode(item.getUri());
+//        } catch (WriterException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //generate PDF with qrCode an room infos -> saved in external file system
+//        PdfClass pdf = new PdfClass(this);
+//        File file = pdf.createPdfRoomInfos(item, qrCode);
+//
+//        // pdf teilen
+//        if (sharePDF(file, this))
+//            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+//
+//
+//    }
+//
+//    public boolean sharePDF(File file, Context context) {
+//        Log.v(TAG, "showPDF(" + file.getName() + ")");
+//        if (!file.exists())
+//            return false;
+//        try {
+//            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+//            Intent intent = ShareCompat.IntentBuilder.from((Activity) context)
+//                    .setType(URLConnection.guessContentTypeFromName(file.getName()))
+//                    .setStream(uri)
+//                    .setChooserTitle("Choose bar")
+//                    .createChooserIntent()
+//                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            context.startActivity(intent);
+//        } catch (Exception e) {
+//            Log.e(TAG, e.getMessage());
+//            return false;
+//        }
+//        return true;
+//    }
 
 
 }

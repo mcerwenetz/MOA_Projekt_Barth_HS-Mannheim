@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.CreateNewRoomActivity" />
+        <activity android:name=".Activity.ParticipantViewActivity"/>
     </application>
 
 </manifest>

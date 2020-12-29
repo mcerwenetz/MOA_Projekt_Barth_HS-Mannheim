@@ -10,7 +10,8 @@
     <color name="gray30">#FF4D4D4D</color>
     <color name="gray50">#FF7F7F7F</color>
     <color name="gray70">#FFB3B3B3</color>
-
+    <color name="dark_blue">#273746</color>
     <color name="red">#FFFF0000</color>
+    <color name="organe">#f39c12</color>
 
 </resources>

@@ -46,7 +46,7 @@ public class RoomListAdapter extends ArrayAdapter<RoomItem> {
 
         DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
         view3.setText(df.format(item.startTime));
-        entityView.setTag(item.id);
+        entityView.setTag(Long.valueOf(item.id));
         return entityView;
     }
 }

@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -18,12 +20,12 @@ import java.util.List;
 
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomListAdapter;
+import de.pbma.moa.createroomdemo.RoomRoom.RoomDatabase;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
 public class RoomListActivity extends AppCompatActivity {
     final static String TAG = RoomListActivity.class.getCanonicalName();
-
     private ArrayList<RoomItem> roomList;
     private ListView lv;
     private RoomRepository roomRepo;
@@ -40,6 +42,7 @@ public class RoomListActivity extends AppCompatActivity {
         lv.setAdapter(adapter);
         roomRepo = new RoomRepository(this);
         roomRepo.getDbAll().observe(this, observer);
+        lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
     }
     //Menu
     @Override
@@ -68,4 +71,17 @@ public class RoomListActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     };
+
+
+    private AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Long roomid = (Long) view.getTag();
+            Intent intent = new Intent(RoomListActivity.this,
+                    ParticipantViewActivity.class);
+            intent.putExtra(ParticipantViewActivity.ID, roomid);
+            startActivity(intent);
+        }
+    };
+
 }

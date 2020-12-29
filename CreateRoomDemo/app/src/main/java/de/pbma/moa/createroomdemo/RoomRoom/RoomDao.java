@@ -20,6 +20,12 @@ public abstract class RoomDao {
     @Delete
     abstract void delete(RoomItem item);
 
+    @Query("SELECT * FROM  dbRoom WHERE id=:roomid")
+    abstract  LiveData<RoomItem> getById (long roomid);
+
+    @Query("SELECT * FROM  dbRoom WHERE id=:roomid")
+    abstract  RoomItem getItemByIdNow (long roomid);
+
     @Query("DELETE FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
     abstract void deleteAllOlderTwoWeeks(long timeNow,long timeSpanOfTwoWeeks );
 
