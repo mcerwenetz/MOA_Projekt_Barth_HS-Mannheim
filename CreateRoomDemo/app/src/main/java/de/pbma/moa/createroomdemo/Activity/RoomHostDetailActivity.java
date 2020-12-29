@@ -1,7 +1,5 @@
 package de.pbma.moa.createroomdemo.Activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -22,39 +20,28 @@ import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.room.Room;
-import androidx.room.Update;
 
 import com.google.zxing.WriterException;
 
 import java.io.File;
 import java.net.URLConnection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantRepository;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomDao;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
-public class ParticipantViewActivity extends AppCompatActivity {
-    final static String TAG = ParticipantViewActivity.class.getCanonicalName();
+public class RoomHostDetailActivity extends AppCompatActivity {
+    final static String TAG = RoomHostDetailActivity.class.getCanonicalName();
     final static String ID = "RoomID";
-
+    long roomid;
     private TextView tvtimeout, tvstatus, tvroomname;
     private Button btnopen, btntimeout, btnpartic;
-
-    private RoomItem item;
+    private RoomItem item; //TODO muss irgendwann initialisiert werden !!!!!
     private RoomRepository repo;
     private LiveData<RoomItem> liveData;
-    long roomid;
-
-
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,20 +49,20 @@ public class ParticipantViewActivity extends AppCompatActivity {
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_participant_dataview);
 
-        tvroomname  = findViewById(R.id.tv_view_partic_roomname);
-        tvstatus    = findViewById(R.id.tv_view_partic_statustext);
-        tvtimeout   = findViewById(R.id.tv_view_partic_timeouttext);
+        tvroomname = findViewById(R.id.tv_view_partic_roomname);
+        tvstatus = findViewById(R.id.tv_view_partic_statustext);
+        tvtimeout = findViewById(R.id.tv_view_partic_timeouttext);
 
-        btnopen     = findViewById(R.id.btn_view_partic_open);
-        btntimeout  = findViewById(R.id.btn_view_partic_timechange);
-        btnpartic   = findViewById(R.id.btn_view_partic_particlist);
+        btnopen = findViewById(R.id.btn_view_partic_open);
+        btntimeout = findViewById(R.id.btn_view_partic_timechange);
+        btnpartic = findViewById(R.id.btn_view_partic_particlist);
 
         //Holt die Daten aus der Bank
-        try{
-            repo        = new RoomRepository(this);
-            roomid      = getIntent().getExtras().getLong(ID, -1);
-            if(roomid != -1){
-                liveData    = repo.getID(roomid);
+        try {
+            repo = new RoomRepository(this);
+            roomid = getIntent().getExtras().getLong(ID, -1);
+            if (roomid != -1) {
+                liveData = repo.getID(roomid);
                 liveData.observe(this, new Observer<RoomItem>() {
                     @Override
                     public void onChanged(RoomItem roomItem) {
@@ -84,28 +71,29 @@ public class ParticipantViewActivity extends AppCompatActivity {
                 });
 
             }
-        }catch (Exception e){
-            Log.v(TAG,"Das ist nicht gut gegangen");
-        };
+        } catch (Exception e) {
+            Log.v(TAG, "Das ist nicht gut gegangen");
+        }
+        ;
     }
 
-    private void updateRoom(RoomItem item){
-        if(item != null){
+    private void updateRoom(RoomItem item) {
+        if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
             tvstatus.setText(String.valueOf("offen"));
             tvtimeout.setText(String.valueOf(item.endTime));
         }
     }
 
-    private void setBtnopen(View view){
+    private void setBtnopen(View view) {
 
     }
 
-    private void setBtntimeout(View view){
+    private void setBtntimeout(View view) {
 
     }
 
-    private void setBtnpartic(View view){
+    private void setBtnpartic(View view) {
 
     }
 
@@ -120,9 +108,9 @@ public class ParticipantViewActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuitem) {
         //TODO Hier müssen noch die einzelnen Funktionen ergaenzt werden
-        switch(menuitem.getItemId()){
+        switch (menuitem.getItemId()) {
             case R.id.menu_partic_share:
-                test(this.item);
+                shareRoom(this.item);
                 return true;
             case R.id.menu_partic_qr:
                 return true;
@@ -133,43 +121,44 @@ public class ParticipantViewActivity extends AppCompatActivity {
         }
     }
 
-    //TODO function test und sharePDF  muss später in RaumDetailsActivity (hier nur testzweck und beispiel hafte verwendung)
-    void test(RoomItem item) {
+
+    private Bitmap getQR(String msg) {
         //Generate QR-code as bitmap
-        QrCodeManger qrCodeManager = new QrCodeManger(this);
         Bitmap qrCode = null;
+        QrCodeManger qrCodeManager = new QrCodeManger(this);
         try {
-            qrCode = qrCodeManager.createQrCode(item.getUri());
+            qrCode = qrCodeManager.createQrCode(msg);
         } catch (WriterException e) {
             e.printStackTrace();
         }
-
-        //generate PDF with qrCode an room infos -> saved in external file system
-        PdfClass pdf = new PdfClass(this);
-        File file = pdf.createPdfRoomInfos(item, qrCode);
-
-        // pdf teilen
-        if (sharePDF(file, this))
-            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+        return qrCode;
     }
 
-    public boolean sharePDF(File file, Context context) {
+    private void shareRoom(RoomItem item) {
+
+        //generate PDF with qrCode an room infos -> saved in external file system
+        PdfClass pdf = new PdfClass(RoomHostDetailActivity.this);
+        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri()));
+
         Log.v(TAG, "showPDF(" + file.getName() + ")");
-        if (!file.exists())
-            return false;
+        if (!file.exists()) {
+            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+            return;
+        }
+        //start share Intent
         try {
-            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
-            Intent intent = ShareCompat.IntentBuilder.from((Activity) context)
+            Uri uri = FileProvider.getUriForFile(RoomHostDetailActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
+            Intent intent = ShareCompat.IntentBuilder.from(RoomHostDetailActivity.this)
                     .setType(URLConnection.guessContentTypeFromName(file.getName()))
                     .setStream(uri)
                     .setChooserTitle("Choose bar")
                     .createChooserIntent()
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            context.startActivity(intent);
+            this.startActivity(intent);
         } catch (Exception e) {
+            Toast.makeText(RoomHostDetailActivity.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
             Log.e(TAG, e.getMessage());
-            return false;
         }
-        return true;
     }
+
 }

@@ -19,14 +19,22 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-        <activity android:name=".Activity.RoomListActivity">
+
+        <activity android:name=".Activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.CreateNewRoomActivity" />
-        <activity android:name=".Activity.ParticipantViewActivity"/>
+
+        <activity android:name=".Preferences.PreferenceActivity" />
+        <activity android:name=".Activity.RoomListActivity" />
+        <activity android:name=".Activity.ParticipantHostActivity" />
+        <activity android:name=".Activity.RoomHostDetailActivity" />
+
+        <activity
+            android:name=".Activity.CreateNewRoomActivity"> <!--android:noHistory="true"> -->
+        </activity>
     </application>
 
 </manifest>

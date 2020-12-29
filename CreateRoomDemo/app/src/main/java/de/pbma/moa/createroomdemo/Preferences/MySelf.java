@@ -27,54 +27,39 @@ public class MySelf {
         keyFirstName = resources.getString(R.string.key_pref_vorname);
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
-//        preferences.registerOnSharedPreferenceChangeListener(ospcl);
     }
 
     public String getFirstName() {
-        return preferences.getString(keyFirstName, null);
+        return preferences.getString(keyFirstName, "");
     }
 
     public String getName() {
-        return preferences.getString(keyName, null);
+        return preferences.getString(keyName, "");
     }
 
     public String getExtra() {
-        return preferences.getString(keyExtra, null);
+        return preferences.getString(keyExtra, "");
     }
 
     public String getEmail() {
-        return preferences.getString(keyEmail, null);
+        return preferences.getString(keyEmail, "");
     }
 
     public String getPhone() {
-        return preferences.getString(keyPhone, null);
+        return preferences.getString(keyPhone, "");
     }
 
     public boolean isValide() {
         Log.v(TAG,"Check myself");
-        if (preferences.getString(keyFirstName, null).equals(""))
+        if (preferences.getString(keyFirstName, "").equals(""))
             return false;
-        if (preferences.getString(keyName, null).equals(""))
+        if (preferences.getString(keyName, "").equals(""))
             return false;
-        if (preferences.getString(keyEmail, null).equals("") && preferences.getString(keyPhone, null).equals(""))
+        if (preferences.getString(keyEmail, "").equals("") && preferences.getString(keyPhone, "").equals(""))
             return false;
         return true;
     }
-//    SharedPreferences.OnSharedPreferenceChangeListener ospcl = new SharedPreferences.OnSharedPreferenceChangeListener() {
-//        @Override
-//        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-//            if(key.equals(keyFirstName)){
-//            }
-//            if(key.equals(keyName)){
-//            }
-//            if(key.equals(keyExtra)){
-//            }
-//            if(key.equals(keyEmail)){
-//            }
-//            if(key.equals(keyPhone)){
-//            }
-//        }
-//    };
+
 
 
 }

@@ -20,7 +20,6 @@ import java.util.List;
 
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomListAdapter;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomDatabase;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
@@ -78,8 +77,8 @@ public class RoomListActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Long roomid = (Long) view.getTag();
             Intent intent = new Intent(RoomListActivity.this,
-                    ParticipantViewActivity.class);
-            intent.putExtra(ParticipantViewActivity.ID, roomid);
+                    RoomHostDetailActivity.class);
+            intent.putExtra(RoomHostDetailActivity.ID, roomid);
             startActivity(intent);
         }
     };

@@ -11,6 +11,7 @@ public class RoomRepository {
     private final RoomDao dao; //final hinzugefuegt
     private LiveData<List<RoomItem>> roomList;
     private Context context;
+
     public static interface AfterInsert{
         public void inserted(RoomItem item);
     }

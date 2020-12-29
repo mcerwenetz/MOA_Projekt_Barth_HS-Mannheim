@@ -30,13 +30,20 @@ public class ParticipantItem {
     @ColumnInfo(name = "roomId") //Id of room Participant is in
     public long roomId;
 
-    public static ParticipantItem createParticipant(String name, String extra, String email, String phone, long roomId) {
+    @ColumnInfo(name = "enterTime")
+    public long enterTime;
+
+    @ColumnInfo(name = "exitTime")
+    public long exitTime;
+
+    public static ParticipantItem createParticipant(String name, String extra, String email, String phone, long roomId, long enterTime) {
         ParticipantItem participant = new ParticipantItem();
         participant.name = name;
         participant.extra = extra;
         participant.eMail = email;
         participant.phone = phone;
         participant.roomId = roomId;
+        participant.enterTime = enterTime;
         return participant;
     }
 
@@ -48,7 +55,9 @@ public class ParticipantItem {
                 ", extra='" + extra + '\'' +
                 ", eMail='" + eMail + '\'' +
                 ", phone='" + phone + '\'' +
-                ", roomId=" + roomId +
+                ", roomId=" + roomId + '\'' +
+                ", enterTime=" + enterTime + '\'' +
+                ", exitTime=" + exitTime +
                 '}';
     }
 
@@ -59,6 +68,8 @@ public class ParticipantItem {
         ParticipantItem that = (ParticipantItem) o;
         return id == that.id &&
                 roomId == that.roomId &&
+                enterTime == that.enterTime &&
+                exitTime == that.exitTime &&
                 name.equals(that.name) &&
                 Objects.equals(extra, that.extra) &&
                 Objects.equals(eMail, that.eMail) &&
@@ -67,6 +78,6 @@ public class ParticipantItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, extra, eMail, phone, roomId);
+        return Objects.hash(id, name, extra, eMail, phone, roomId, enterTime, exitTime);
     }
 }

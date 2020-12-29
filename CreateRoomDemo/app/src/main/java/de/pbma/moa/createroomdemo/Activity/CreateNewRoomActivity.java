@@ -1,12 +1,8 @@
 package de.pbma.moa.createroomdemo.Activity;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,18 +14,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ShareCompat;
-import androidx.core.content.FileProvider;
 
-import com.google.zxing.WriterException;
-
-import java.io.File;
-import java.net.URLConnection;
 import java.util.Calendar;
 
-import de.pbma.moa.createroomdemo.BuildConfig;
-import de.pbma.moa.createroomdemo.PdfClass;
-import de.pbma.moa.createroomdemo.QrCodeManger;
+import de.pbma.moa.createroomdemo.Preferences.MySelf;
+import de.pbma.moa.createroomdemo.Preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
@@ -48,7 +37,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
     Calendar calendar;
     int minute_start, hour_start, day_start, month_start, year_start;
     int minute_end, hour_end, day_end, month_end, year_end;
-    boolean startTime, startDate, endTime, endDate = false;
     long dataid;
     RoomRepository repo;
 
@@ -66,10 +54,10 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         month_start = calendar.get(Calendar.MONTH);
         day_end = calendar.get(Calendar.DAY_OF_MONTH);
         day_start = calendar.get(Calendar.DAY_OF_MONTH);
-        hour_end = calendar.get(Calendar.HOUR_OF_DAY);
+        hour_end = calendar.get(Calendar.HOUR_OF_DAY)+1;
         hour_start = calendar.get(Calendar.HOUR_OF_DAY);
-        minute_end = calendar.get(Calendar.MINUTE);
-        minute_start = calendar.get(Calendar.MINUTE);
+        minute_end = calendar.get(Calendar.MINUTE)+5;
+        minute_start = calendar.get(Calendar.MINUTE)+5;
 
 
         setContentView(R.layout.page_create_room);
@@ -79,6 +67,12 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         btnEndTime = findViewById(R.id.btn_raum_end_time);
         btnStartDate = findViewById(R.id.btn_raum_start_date);
         btnStartTime = findViewById(R.id.btn_raum_start_time);
+
+        btnEndDate.setText(String.format("%02d.%02d.%02d", day_end, (month_end + 1), year_end));
+        btnStartDate.setText(String.format("%02d.%02d.%02d", day_start, (month_start + 1), year_start));
+        btnEndTime.setText(String.format("%02d:%02d", hour_end, minute_end));
+        btnStartTime.setText(String.format("%02d:%02d", hour_start, minute_start));
+
 
         etAdresse = findViewById(R.id.et_raum_address);
         etExtra = findViewById(R.id.et_raum_extra);
@@ -123,7 +117,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 btnStartTime.setText(String.format("%02d:%02d", hourOfDay, minute));
                 hour_start = hourOfDay;
                 minute_start = minute;
-                startTime = true;
             }
         }, hour_start, minute_start, true);
         timePickerDialog.show();
@@ -139,7 +132,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 btnEndTime.setText(String.format("%02d:%02d", hourOfDay, minute));
                 hour_end = hourOfDay;
                 minute_end = minute;
-                endTime = true;
             }
         }, hour_end, minute_end, true);
         timePickerDialog.show();
@@ -155,7 +147,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 year_start = year;
                 day_start = dayOfMonth;
                 month_start = monthOfYear;
-                startDate = true;
             }
         }, year_start, month_start, day_start);
         datePickerDialog.show();
@@ -172,7 +163,6 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 year_end = year;
                 day_end = dayOfMonth;
                 month_end = monthOfYear;
-                endDate = true;
             }
         }, year_end, month_end, day_end);
         datePickerDialog.show();
@@ -196,16 +186,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
             Toast.makeText(this, "Adresse fehlt", Toast.LENGTH_LONG).show();
             return;
         }
-        if (!(startDate && startTime)) {
-            Log.v(TAG, "Start and End Time not set");
-            Toast.makeText(this, "Startzeitpunkt fehlt", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (!(endDate && endTime)) {
-            Log.v(TAG, "Start and End Time not set");
-            Toast.makeText(this, "Endzeitpunkt fehlt", Toast.LENGTH_LONG).show();
-            return;
-        }
+
 
         long now = Calendar.getInstance().getTime().getTime();
         calendar.set(year_start, month_start, day_start, hour_start, minute_start);
@@ -213,7 +194,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         calendar.set(year_end, month_end, day_end, hour_end, minute_end);
         long end = calendar.getTime().getTime();
 
-        if (now >= start) {
+        if (now > start) {
             Log.v(TAG, "start time is in the past");
             Toast.makeText(this, "Startzeitpunkt liegt in der Vergangenheit", Toast.LENGTH_LONG).show();
             return;
@@ -224,22 +205,21 @@ public class CreateNewRoomActivity extends AppCompatActivity {
             return;
         }
 
-//        MySelf me = new MySelf(this);
-//        if (!me.isValide()) {
-//            Log.v(TAG, "prefs not valide");
-//            //TODO preferences öffen um  seine daten zu bearbeiten
-//            return;
-//        }
+        MySelf me = new MySelf(CreateNewRoomActivity.this);
+        if (!me.isValide()) {
+            Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
+            Log.v(TAG, "prefs not valide");
+            Intent intent = new Intent(CreateNewRoomActivity.this, PreferenceActivity.class );
+            startActivity(intent);
+            return;
+        }
         Log.v(TAG, "createRoomItem");
 
         RoomItem item = RoomItem.createRoom(
                 etTitel.getText().toString(),
-//                me.getFirstName() + me.getName(),
-                "Raphael Barth",
-//                me.getEmail(),
-                "barthra@web.de",
-//                me.getPhone(),
-                "+49 176 42619753",
+                me.getFirstName() +" "+ me.getName(),
+                me.getEmail(),
+                me.getPhone(),
                 etOrt.getText().toString(),
                 etAdresse.getText().toString(),
                 etExtra.getText().toString(),
@@ -249,9 +229,10 @@ public class CreateNewRoomActivity extends AppCompatActivity {
 
         repo.addEntry(item,(newItem)-> {
             CreateNewRoomActivity.this.runOnUiThread(()->{
-                Intent intent = new Intent(CreateNewRoomActivity.this, ParticipantViewActivity.class);
-                intent.putExtra(ParticipantViewActivity.ID, newItem.id);
+                Intent intent = new Intent(CreateNewRoomActivity.this, RoomHostDetailActivity.class);
+                intent.putExtra(RoomHostDetailActivity.ID, newItem.id);
                 startActivity(intent);
+                finish();
             });
         });
     }
