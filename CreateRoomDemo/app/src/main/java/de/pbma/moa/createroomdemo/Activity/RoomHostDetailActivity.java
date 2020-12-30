@@ -130,12 +130,12 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
 
-    private Bitmap getQR(String msg) {
+    private Bitmap getQR(String msg,int hight,int width) {
         //Generate QR-code as bitmap
         Bitmap qrCode = null;
         QrCodeManger qrCodeManager = new QrCodeManger(this);
         try {
-            qrCode = qrCodeManager.createQrCode(msg);
+            qrCode = qrCodeManager.createQrCode(msg,width,hight);
         } catch (WriterException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
 
         //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(RoomHostDetailActivity.this);
-        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri()));
+        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri(),(int)(PdfClass.A4_WIDTH/2),(int)(PdfClass.A4_HEIGHT/2)));
 
         Log.v(TAG, "showPDF(" + file.getName() + ")");
         if (!file.exists()) {

@@ -52,9 +52,9 @@ public class QrCodeManger {
 //        }
 //    }
 
-    public Bitmap createQrCode(String message) throws WriterException {
+    public Bitmap createQrCode(String message,int width,int hight) throws WriterException {
         Log.v(TAG, "createQrCode()");
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-        return barcodeEncoder.encodeBitmap(message, BarcodeFormat.QR_CODE, 600, 600);
+        return barcodeEncoder.encodeBitmap(message, BarcodeFormat.QR_CODE, width, hight);
     }
 }

@@ -22,8 +22,8 @@ import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 
 public class PdfClass {
     final static String TAG = PdfClass.class.getCanonicalName();
-    final static int A4_HEIGHT = 846;//11.75in * 72
-    final static int A4_WIDTH = 594; //8.25in * 72
+    public final static int A4_HEIGHT = 846;//11.75in * 72
+    public final static int A4_WIDTH = 594; //8.25in * 72
     private Context context;
 
     public PdfClass(Context context) {
