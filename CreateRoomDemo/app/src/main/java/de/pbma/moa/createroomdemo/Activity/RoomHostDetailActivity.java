@@ -30,6 +30,11 @@ import com.google.zxing.WriterException;
 
 import java.io.File;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
@@ -47,17 +52,17 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private RoomItem item;
     private RoomRepository repo;
     private LiveData<RoomItem> liveData;
+    private AtomicBoolean timeOutUpdaterThreadAlreadyRunning;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        timeOutUpdaterThreadAlreadyRunning = new AtomicBoolean(false);
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_room_host_detail_activity);
-
         tvroomname = findViewById(R.id.tv_view_partic_roomname);
         tvstatus = findViewById(R.id.tv_view_partic_statustext);
         tvtimeout = findViewById(R.id.tv_view_partic_timeouttext);
-
         btnopen = findViewById(R.id.btn_view_partic_open);
         btntimeout = findViewById(R.id.btn_view_partic_timechange);
         btnpartic = findViewById(R.id.btn_view_partic_particlist);
@@ -74,17 +79,50 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
                     RoomHostDetailActivity.this.item = roomItem;
+                    startTimeOutRefresherThread();
                 }
             });
+        }
+    }
+//Todo: Thread wird (warhscheinlich) nie beendet. Das ist nicht effizient.
+    private void startTimeOutRefresherThread(){
+        if(!timeOutUpdaterThreadAlreadyRunning.get()) {
+            Thread t = new Thread() {
+                final long endTime = item.endTime;
+
+                @Override
+                public void run() {
+                    super.run();
+                    while (true) {
+                        RoomHostDetailActivity.this.runOnUiThread(() -> tvtimeout.setText(formatTimeOut(endTime)));
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+            t.start();
+            timeOutUpdaterThreadAlreadyRunning.set(true);
         }
     }
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
-            tvstatus.setText(String.valueOf("offen"));
-            tvtimeout.setText(String.valueOf(item.endTime));
+            tvstatus.setText("offen");
+            String timeOutAsString = formatTimeOut(item.endTime);
+            tvtimeout.setText(timeOutAsString);
         }
+    }
+// Todo: check ob timeout abgelaufen. Besser als Service wahrscheinlich.
+    private String formatTimeOut(long endtime){
+        long now = Calendar.getInstance().getTimeInMillis();
+        long timeOut = endtime - now;
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(timeOut);
     }
 
     //TODO muessen noch gesetzt werden
