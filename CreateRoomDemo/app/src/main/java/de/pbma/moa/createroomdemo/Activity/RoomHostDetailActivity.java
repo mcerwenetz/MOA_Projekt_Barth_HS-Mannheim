@@ -84,7 +84,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
             });
         }
     }
-
+//Todo: Thread wird (warhscheinlich) nie beendet. Das ist nicht effizient.
     private void startTimeOutRefresherThread(){
         if(!timeOutUpdaterThreadAlreadyRunning.get()) {
             Thread t = new Thread() {
@@ -116,7 +116,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
             tvtimeout.setText(timeOutAsString);
         }
     }
-
+// Todo: check ob timeout abgelaufen. Besser als Service wahrscheinlich.
     private String formatTimeOut(long endtime){
         long now = Calendar.getInstance().getTimeInMillis();
         long timeOut = endtime - now;
