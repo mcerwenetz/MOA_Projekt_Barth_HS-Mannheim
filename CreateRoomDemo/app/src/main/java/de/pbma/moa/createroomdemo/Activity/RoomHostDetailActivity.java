@@ -32,6 +32,8 @@ import java.io.File;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
@@ -86,7 +88,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private void startTimeOutRefresherThread(){
         if(!timeOutUpdaterThreadAlreadyRunning.get()) {
             Thread t = new Thread() {
-                long endTime = item.endTime;
+                final long endTime = item.endTime;
 
                 @Override
                 public void run() {
@@ -109,19 +111,20 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
-            tvstatus.setText(String.valueOf("offen"));
+            tvstatus.setText("offen");
             String timeOutAsString = formatTimeOut(item.endTime);
             tvtimeout.setText(timeOutAsString);
         }
     }
 
     private String formatTimeOut(long endtime){
+        long now = Calendar.getInstance().getTimeInMillis();
+        long timeOut = endtime - now;
         Calendar timeOutIn = Calendar.getInstance();
-        timeOutIn.setTimeInMillis(endtime);
-        timeOutIn.add(Calendar.MILLISECOND, (int) ((-1)*(Calendar.getInstance().getTimeInMillis())));
-        SimpleDateFormat formatter = new SimpleDateFormat("kk:mm:ss");
-        String timeOutAsString = formatter.format(timeOutIn.getTime());
-        return  timeOutAsString;
+        timeOutIn.setTimeInMillis(timeOut);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.UK);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(timeOutIn.getTime());
     }
 
     //TODO muessen noch gesetzt werden
