@@ -120,11 +120,9 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private String formatTimeOut(long endtime){
         long now = Calendar.getInstance().getTimeInMillis();
         long timeOut = endtime - now;
-        Calendar timeOutIn = Calendar.getInstance();
-        timeOutIn.setTimeInMillis(timeOut);
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.UK);
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return formatter.format(timeOutIn.getTime());
+        return formatter.format(timeOut);
     }
 
     //TODO muessen noch gesetzt werden
