@@ -28,9 +28,7 @@ public class ParticipantRepository {
     }
 
     public void addEntry(ParticipantItem item) {
-        new Thread(() -> {
-            dao.insert(item);
-        }).start();
+         dao.insert(item);
     }
 
 }

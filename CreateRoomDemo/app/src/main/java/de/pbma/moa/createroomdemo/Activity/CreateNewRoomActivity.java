@@ -226,7 +226,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
                 start,
                 end);
 
-
+        //TODO wenn wir lustig sind wird noch en observer
         repo.addEntry(item,(newItem)-> {
             CreateNewRoomActivity.this.runOnUiThread(()->{
                 Intent intent = new Intent(CreateNewRoomActivity.this, RoomHostDetailActivity.class);
@@ -236,49 +236,5 @@ public class CreateNewRoomActivity extends AppCompatActivity {
             });
         });
     }
-
-
-//    //TODO function test und sharePDF  muss später in RaumDetailsActivity (hier nur testzweck und beispiel hafte verwendung)
-//    void test(RoomItem item) {
-//        //Generate QR-code as bitmap
-//        QrCodeManger qrCodeManager = new QrCodeManger(this);
-//        Bitmap qrCode = null;
-//        try {
-//            qrCode = qrCodeManager.createQrCode(item.getUri());
-//        } catch (WriterException e) {
-//            e.printStackTrace();
-//        }
-//
-//        //generate PDF with qrCode an room infos -> saved in external file system
-//        PdfClass pdf = new PdfClass(this);
-//        File file = pdf.createPdfRoomInfos(item, qrCode);
-//
-//        // pdf teilen
-//        if (sharePDF(file, this))
-//            Toast.makeText(this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
-//
-//
-//    }
-//
-//    public boolean sharePDF(File file, Context context) {
-//        Log.v(TAG, "showPDF(" + file.getName() + ")");
-//        if (!file.exists())
-//            return false;
-//        try {
-//            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
-//            Intent intent = ShareCompat.IntentBuilder.from((Activity) context)
-//                    .setType(URLConnection.guessContentTypeFromName(file.getName()))
-//                    .setStream(uri)
-//                    .setChooserTitle("Choose bar")
-//                    .createChooserIntent()
-//                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            context.startActivity(intent);
-//        } catch (Exception e) {
-//            Log.e(TAG, e.getMessage());
-//            return false;
-//        }
-//        return true;
-//    }
-
 
 }

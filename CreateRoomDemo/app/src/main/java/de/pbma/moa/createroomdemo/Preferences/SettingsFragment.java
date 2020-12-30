@@ -56,11 +56,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(keyPhone)) {
             if (!android.util.Patterns.PHONE.matcher(sharedPreferences.getString(key, "")).matches())
-                sharedPreferences.edit().putString(key, "").commit();
+                sharedPreferences.edit().putString(key, "").apply();
         }
         if (key.equals(keyEmail)) {
             if (!Patterns.EMAIL_ADDRESS.matcher(sharedPreferences.getString(key, "")).matches())
-                sharedPreferences.edit().putString(key, "").commit();
+                sharedPreferences.edit().putString(key, "").apply();
         }
         Preference preference = findPreference(key);
         preference.setSummary(sharedPreferences.getString(key, ""));

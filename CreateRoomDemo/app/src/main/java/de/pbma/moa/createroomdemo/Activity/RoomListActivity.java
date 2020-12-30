@@ -37,7 +37,7 @@ public class RoomListActivity extends AppCompatActivity {
         roomList = new ArrayList<>();
         setContentView(R.layout.page_roomlist);
         adapter = new RoomListAdapter(this, roomList);
-        lv = findViewById(R.id.lv_highscore);
+        lv = findViewById(R.id.lv_host_room);
         lv.setAdapter(adapter);
         roomRepo = new RoomRepository(this);
         roomRepo.getDbAll().observe(this, observer);

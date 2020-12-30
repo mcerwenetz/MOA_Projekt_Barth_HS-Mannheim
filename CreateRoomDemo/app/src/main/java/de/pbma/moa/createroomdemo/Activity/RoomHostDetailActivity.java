@@ -47,7 +47,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
-        setContentView(R.layout.page_participant_dataview);
+        setContentView(R.layout.page_room_host_detail_activity);
 
         tvroomname = findViewById(R.id.tv_view_partic_roomname);
         tvstatus = findViewById(R.id.tv_view_partic_statustext);
@@ -57,24 +57,21 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         btntimeout = findViewById(R.id.btn_view_partic_timechange);
         btnpartic = findViewById(R.id.btn_view_partic_particlist);
 
-        //Holt die Daten aus der Bank
-        try {
-            repo = new RoomRepository(this);
-            roomid = getIntent().getExtras().getLong(ID, -1);
-            if (roomid != -1) {
-                liveData = repo.getID(roomid);
-                liveData.observe(this, new Observer<RoomItem>() {
-                    @Override
-                    public void onChanged(RoomItem roomItem) {
-                        updateRoom(roomItem);
-                    }
-                });
+        btnpartic.setOnClickListener(this::setBtnpartic);
 
-            }
-        } catch (Exception e) {
-            Log.v(TAG, "Das ist nicht gut gegangen");
+        //Holt die Daten aus der Bank
+        repo = new RoomRepository(this);
+        roomid = getIntent().getExtras().getLong(ID, -1);
+        if (roomid != -1) {
+            liveData = repo.getID(roomid);
+            liveData.observe(this, new Observer<RoomItem>() {
+                @Override
+                public void onChanged(RoomItem roomItem) {
+                    updateRoom(roomItem);
+                    RoomHostDetailActivity.this.item = roomItem;
+                }
+            });
         }
-        ;
     }
 
     private void updateRoom(RoomItem item) {
@@ -94,14 +91,16 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
     private void setBtnpartic(View view) {
-
+        Intent intent = new Intent(RoomHostDetailActivity.this,ParticipantHostActivity.class);
+        intent.putExtra(ParticipantHostActivity.INTENT_ROOM_ID,item.id);
+        startActivity(intent);
     }
 
     //Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.participant_dataview_menu, menu);
+        inflater.inflate(R.menu.room_host_detail_activity_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -2,26 +2,22 @@ package de.pbma.moa.createroomdemo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
-
-import androidx.core.app.ShareCompat;
-import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
+import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 
 public class PdfClass {
@@ -81,7 +77,78 @@ public class PdfClass {
         return file;
     }
 
+    public File createPdfParticipantInfos(ArrayList<ParticipantItem> list, RoomItem item) {
+        final int margin = 50;
+        final int infosLeftBorder = 150;
+        final int y_spacing = 20;
+        int pageNumber = 1;
+        float currentY = margin;
 
+
+        Log.v(TAG, "createPdfParticipantInfos()");
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, pageNumber++).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
+        Log.v(TAG, "createPdfParticipantInfos() draw Text");
+        paint.setColor(Color.BLACK);
+        canvas.drawText("Titel", margin, currentY, paint);
+        canvas.drawText("Start", margin, currentY + y_spacing, paint);
+        canvas.drawText("Ende", margin, currentY + 2 * y_spacing, paint);
+        canvas.drawText("Extras", margin, currentY + 3 * y_spacing, paint);
+        canvas.drawText("Ort", margin, currentY + 4 * y_spacing, paint);
+        canvas.drawText("Adresse", margin, currentY + 5 * y_spacing, paint);
+        canvas.drawText("Gastgeber", margin, currentY + 6 * y_spacing, paint);
+        canvas.drawText("E-Mail", margin, currentY + 7 * y_spacing, paint);
+        canvas.drawText("Telephon", margin, currentY + 8 * y_spacing, paint);
+
+        paint.setColor(Color.GRAY);
+        canvas.drawText(item.roomName, infosLeftBorder, currentY, paint);
+        canvas.drawText(df.format(item.startTime), infosLeftBorder, currentY + y_spacing, paint);
+        canvas.drawText(df.format(item.endTime), infosLeftBorder, currentY + 2 * y_spacing, paint);
+        canvas.drawText(item.extra, infosLeftBorder, currentY + 3 * y_spacing, paint);
+        canvas.drawText(item.place, infosLeftBorder, currentY + 4 * y_spacing, paint);
+        canvas.drawText(item.address, infosLeftBorder, currentY + 5 * y_spacing, paint);
+        canvas.drawText(item.host, infosLeftBorder, currentY + 6 * y_spacing, paint);
+        canvas.drawText(item.eMail, infosLeftBorder, currentY + 7 * y_spacing, paint);
+        canvas.drawText(item.phone, infosLeftBorder, currentY + 8 * y_spacing, paint);
+
+        currentY += 10 * y_spacing;
+
+        final float zeilenAbstand = (float) ((paint.descent() - paint.ascent()) * 1.25);
+        final float widthTime = paint.measureText("dd.MM.yyyy HH:mm");
+        final float x_exitTime = A4_WIDTH - margin - widthTime;
+        final float x_enterTime = A4_WIDTH - margin - 2 * widthTime;
+        final float x_kontaktDaten = (A4_WIDTH - 2 * margin - 2 * widthTime) / 2 + margin;
+
+        for (ParticipantItem ele : list) {
+            canvas.drawText(ele.name, margin, currentY, paint);
+            canvas.drawText(ele.extra, margin, (currentY + zeilenAbstand), paint);
+
+            canvas.drawText(ele.eMail, x_kontaktDaten, currentY, paint);
+            canvas.drawText(ele.phone, x_kontaktDaten, (currentY + zeilenAbstand), paint);
+
+            canvas.drawText(df.format(ele.enterTime), x_enterTime, currentY, paint);
+            canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
+
+            canvas.drawLine(margin, (float) (currentY + 1.25 * zeilenAbstand), A4_WIDTH - margin, (float) (currentY + 1.5 * zeilenAbstand), paint);
+            currentY += 2 * zeilenAbstand;
+            if (currentY >= A4_HEIGHT - margin - zeilenAbstand) {
+                document.finishPage(page);
+                pageInfo = new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, pageNumber++).create();
+                page = document.startPage(pageInfo);
+                canvas = page.getCanvas();
+                currentY = margin;
+            }
+        }
+        document.finishPage(page);
+        File file = savePDF(document, "Participants_Room"+item.id + ".pdf");
+        document.close();
+        return file;
+    }
 
     public boolean deletePDF(File file) {
         return file.delete();
