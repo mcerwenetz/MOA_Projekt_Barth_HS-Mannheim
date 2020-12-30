@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:id="@+id/qr_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QR-Code"
+        android:textStyle="bold"
+
+        android:gravity="center"
+        android:textSize="24sp"/>
+
+    <ImageView
+        android:id="@+id/qr_code_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/tv_qr_show_uri"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Uri"
+        android:textSize="12sp" />
+
+</LinearLayout>

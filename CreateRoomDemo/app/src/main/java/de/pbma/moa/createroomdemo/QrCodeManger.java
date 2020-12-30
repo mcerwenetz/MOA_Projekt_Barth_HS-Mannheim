@@ -55,6 +55,6 @@ public class QrCodeManger {
     public Bitmap createQrCode(String message) throws WriterException {
         Log.v(TAG, "createQrCode()");
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-        return barcodeEncoder.encodeBitmap(message, BarcodeFormat.QR_CODE, 400, 400);
+        return barcodeEncoder.encodeBitmap(message, BarcodeFormat.QR_CODE, 600, 600);
     }
 }

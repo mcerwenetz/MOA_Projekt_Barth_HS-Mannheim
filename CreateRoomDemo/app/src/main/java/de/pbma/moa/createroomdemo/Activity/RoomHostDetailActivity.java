@@ -1,15 +1,20 @@
 package de.pbma.moa.createroomdemo.Activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +44,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     long roomid;
     private TextView tvtimeout, tvstatus, tvroomname;
     private Button btnopen, btntimeout, btnpartic;
-    private RoomItem item; //TODO muss irgendwann initialisiert werden !!!!!
+    private RoomItem item;
     private RoomRepository repo;
     private LiveData<RoomItem> liveData;
 
@@ -82,6 +87,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         }
     }
 
+    //TODO muessen noch gesetzt werden
     private void setBtnopen(View view) {
 
     }
@@ -112,8 +118,11 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 shareRoom(this.item);
                 return true;
             case R.id.menu_partic_qr:
+                Drawable draw = new BitmapDrawable(getQR(this.item.getUri()));
+                callAlertDialog_QR(draw);
                 return true;
             case R.id.menu_partic_uri:
+                callAlertDialog_URI();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuitem);
@@ -158,6 +167,30 @@ public class RoomHostDetailActivity extends AppCompatActivity {
             Toast.makeText(RoomHostDetailActivity.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
             Log.e(TAG, e.getMessage());
         }
+    }
+
+    public void callAlertDialog_QR(Drawable draw){
+        LayoutInflater qrDialogInflater = LayoutInflater.from(this);
+        View view = qrDialogInflater.inflate(R.layout.qr_pop_up, null);
+
+        TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
+        ImageView ivQr   = view.findViewById(R.id.qr_code_show);
+        ivQr.setImageDrawable(draw);
+        tvQrUri.setText("URI: "+item.getUri());
+
+        AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
+        alertDialogQR.show();
+    }
+
+    public void callAlertDialog_URI(){
+        LayoutInflater uriDialogInflater = LayoutInflater.from(this);
+        View view = uriDialogInflater.inflate(R.layout.uri_pop_up, null);
+
+        TextView tvUri = view.findViewById(R.id.tv_show_uri);
+        tvUri.setText("URI: "+item.getUri());
+
+        AlertDialog alertDialogUri = new AlertDialog.Builder(this).setView(view).create();
+        alertDialogUri.show();
     }
 
 }
