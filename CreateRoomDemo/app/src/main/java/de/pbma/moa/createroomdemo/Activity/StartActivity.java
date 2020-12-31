@@ -8,11 +8,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import de.pbma.moa.createroomdemo.Preferences.MySelf;
 import de.pbma.moa.createroomdemo.Preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
 
@@ -44,10 +46,16 @@ public class StartActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_start_pref:
                 Log.v(TAG, "onOptionsItemSelected() Settings");
-                Intent intent = new Intent(StartActivity.this, PreferenceActivity.class);
+                intent = new Intent(StartActivity.this, PreferenceActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_start_history:
+                Log.v(TAG, "onOptionsItemSelected() History");
+                intent = new Intent(StartActivity.this, /*TODO*/ .class);
                 startActivity(intent);
                 return true;
         }
@@ -62,8 +70,17 @@ public class StartActivity extends AppCompatActivity {
 
     private void iAmParticipant(View view) {
         Log.v(TAG, "iAmParticipant() clicked");
-//        Intent intent = new Intent(StartActivity.this, .class );
-//        startActivity(intent);
+        MySelf me = new MySelf(StartActivity.this);
+        if(!me.isValide()){
+            Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
+            Log.v(TAG, "prefs not valide");
+            Intent intent = new Intent(StartActivity.this, PreferenceActivity.class );
+            startActivity(intent);
+            return;
+        }
+        Log.v(TAG, "iAmHost() clicked");
+        Intent intent = new Intent(StartActivity.this, EnterViaQrNfcActivity.class);
+        startActivity(intent);
     }
 
 }

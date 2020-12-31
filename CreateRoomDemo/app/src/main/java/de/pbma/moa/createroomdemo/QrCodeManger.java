@@ -21,7 +21,7 @@ public class QrCodeManger {
 
     }
 
-    public void callScanner(View view) {
+    public void callScanner() {
         Log.v(TAG, "callScanner()");
         try {
             IntentIntegrator scanIntegrator = new IntentIntegrator((Activity)context);
