@@ -28,10 +28,16 @@ import androidx.lifecycle.Observer;
 
 import com.google.zxing.WriterException;
 
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+
 import java.io.File;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -118,11 +124,17 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 // Todo: check ob timeout abgelaufen. Besser als Service wahrscheinlich.
     private String formatTimeOut(long endtime){
-        long now = Calendar.getInstance().getTimeInMillis();
-        long timeOut = endtime - now;
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return formatter.format(timeOut);
+        DateTime now = new DateTime();
+        DateTime endTimeDateTime = new DateTime(endtime);
+        Period period = new Period(now, endTimeDateTime);
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendDays().appendSuffix("d ")
+                .appendHours().appendSuffix("h ")
+                .appendMinutes().appendSuffix("m ")
+                .appendSeconds().appendSuffix("s ")
+                .printZeroNever()
+                .toFormatter();
+        return formatter.print(period);
     }
 
     //TODO muessen noch gesetzt werden
