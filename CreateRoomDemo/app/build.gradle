@@ -38,5 +38,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     annotationProcessor 'androidx.room:room-compiler:2.2.5'
     implementation 'com.journeyapps:zxing-android-embedded:4.1.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'joda-time:joda-time:2.10.9'
+
 }
