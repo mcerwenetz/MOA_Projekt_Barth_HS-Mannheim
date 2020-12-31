@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,11 +36,6 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.io.File;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
@@ -168,7 +164,9 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 shareRoom(this.item);
                 return true;
             case R.id.menu_partic_qr:
-                Drawable draw = new BitmapDrawable(getQR(this.item.getUri()));
+                Display display = getWindowManager().getDefaultDisplay();
+                int breite = display.getWidth();
+                Drawable draw = new BitmapDrawable(getQR(this.item.getUri(), ((int) breite/2),((int) breite/2)));
                 callAlertDialog_QR(draw);
                 return true;
             case R.id.menu_partic_uri:
