@@ -41,6 +41,13 @@ public class RoomRepository {
         }).start();
     }
 
+//    public void closeRoomById(long roomid, long endtime){
+//        new Thread(()->{
+//           dao.closeRoomById(roomid);
+//           dao.updateTimeout(endtime);
+//        });
+//    }
+
     public LiveData<RoomItem> getID(long searchid){
         return  dao.getById(searchid);
     }

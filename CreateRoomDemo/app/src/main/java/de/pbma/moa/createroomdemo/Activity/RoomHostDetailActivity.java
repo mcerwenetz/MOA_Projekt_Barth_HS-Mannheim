@@ -29,6 +29,8 @@ import androidx.lifecycle.Observer;
 
 import com.google.zxing.WriterException;
 
+import org.joda.time.DateTime;
+
 import java.io.File;
 import java.net.URLConnection;
 
@@ -56,17 +58,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_room_host_detail_activity);
-        tvroomname = findViewById(R.id.tv_view_partic_roomname);
-        tvstatus = findViewById(R.id.tv_view_partic_statustext);
-        tvtimeout = findViewById(R.id.tv_view_partic_timeouttext);
-        btnopen = findViewById(R.id.btn_view_partic_open);
-        btntimeout = findViewById(R.id.btn_view_partic_timechange);
-        btnpartic = findViewById(R.id.btn_view_partic_particlist);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout);
-
-        btnpartic.setOnClickListener(this::setBtnpartic);
-        //Todo: Raum schließen: Aktuelles Datum für Ende eintragen und Raum in der Datenbank
-        //schließen (später mit mqtt versenden)
+        bindUI();
 
         //Holt die Daten aus der Bank
         repo = new RoomRepository(this);
@@ -78,30 +70,52 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
                     RoomHostDetailActivity.this.item = roomItem;
-                    timeoutRefresherThread.restart(item.endTime);
+                    if (item.open) {
+                        timeoutRefresherThread.restart(item.endTime);
+                    }
                 }
             });
         }
+    }
+
+    private void bindUI() {
+        tvroomname = findViewById(R.id.tv_view_partic_roomname);
+        tvstatus = findViewById(R.id.tv_view_partic_statustext);
+        tvtimeout = findViewById(R.id.tv_view_partic_timeouttext);
+        btnopen = findViewById(R.id.btn_view_partic_open);
+        btntimeout = findViewById(R.id.btn_view_partic_timechange);
+        btnpartic = findViewById(R.id.btn_view_partic_particlist);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout);
+        btnpartic.setOnClickListener(this::setBtnpartic);
+        btnopen.setOnClickListener(this::onCloseRoom);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         timeoutRefresherThread.stop();
-
     }
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
-            tvstatus.setText("offen");
+            if(item.open){
+                tvstatus.setText("offen");
+            }else{
+                tvstatus.setText("geschlossen");
+            }
         }
     }
     // Todo: Service: TimeoutChecker
 
     //Todo: Methoden muessen noch implementiert werden
-    private void setBtnopen(View view) {
-
+    private void onCloseRoom(View view) {
+        long now = DateTime.now().getMillis();
+//        repo.closeRoomById(item.id, now);
+        timeoutRefresherThread.stop();
+        item.endTime=now;
+        item.open=false;
+        tvtimeout.setText("00:00:00");
     }
 
     private void setBtntimeout(View view) {
