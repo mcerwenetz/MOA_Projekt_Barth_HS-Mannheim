@@ -29,14 +29,8 @@ import androidx.lifecycle.Observer;
 
 import com.google.zxing.WriterException;
 
-import org.joda.time.DateTime;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-
 import java.io.File;
 import java.net.URLConnection;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
@@ -54,11 +48,11 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private RoomItem item;
     private RoomRepository repo;
     private LiveData<RoomItem> liveData;
-    private AtomicBoolean timeOutUpdaterThreadAlreadyRunning;
+    private TimeoutRefresherThread timeoutRefresherThread;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        timeOutUpdaterThreadAlreadyRunning = new AtomicBoolean(false);
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_room_host_detail_activity);
@@ -68,8 +62,11 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         btnopen = findViewById(R.id.btn_view_partic_open);
         btntimeout = findViewById(R.id.btn_view_partic_timechange);
         btnpartic = findViewById(R.id.btn_view_partic_particlist);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout);
 
         btnpartic.setOnClickListener(this::setBtnpartic);
+        //Todo: Raum schließen: Aktuelles Datum für Ende eintragen und Raum in der Datenbank
+        //schließen (später mit mqtt versenden)
 
         //Holt die Daten aus der Bank
         repo = new RoomRepository(this);
@@ -81,59 +78,28 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
                     RoomHostDetailActivity.this.item = roomItem;
-                    startTimeOutRefresherThread();
+                    timeoutRefresherThread.restart(item.endTime);
                 }
             });
         }
     }
-//Todo: Thread wird (warhscheinlich) nie beendet. Das ist nicht effizient.
-    private void startTimeOutRefresherThread(){
-        if(!timeOutUpdaterThreadAlreadyRunning.get()) {
-            Thread t = new Thread() {
-                final long endTime = item.endTime;
 
-                @Override
-                public void run() {
-                    super.run();
-                    while (true) {
-                        RoomHostDetailActivity.this.runOnUiThread(() -> tvtimeout.setText(formatTimeOut(endTime)));
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            };
-            t.start();
-            timeOutUpdaterThreadAlreadyRunning.set(true);
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        timeoutRefresherThread.stop();
+
     }
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
             tvstatus.setText("offen");
-            String timeOutAsString = formatTimeOut(item.endTime);
-            tvtimeout.setText(timeOutAsString);
         }
     }
-// Todo: check ob timeout abgelaufen. Besser als Service wahrscheinlich.
-    private String formatTimeOut(long endtime){
-        DateTime now = new DateTime();
-        DateTime endTimeDateTime = new DateTime(endtime);
-        Period period = new Period(now, endTimeDateTime);
-        PeriodFormatter formatter = new PeriodFormatterBuilder()
-                .appendDays().appendSuffix("d ")
-                .appendHours().appendSuffix("h ")
-                .appendMinutes().appendSuffix("m ")
-                .appendSeconds().appendSuffix("s ")
-                .printZeroNever()
-                .toFormatter();
-        return formatter.print(period);
-    }
+    // Todo: Service: TimeoutChecker
 
-    //TODO muessen noch gesetzt werden
+    //Todo: Methoden muessen noch implementiert werden
     private void setBtnopen(View view) {
 
     }
@@ -143,8 +109,8 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
     private void setBtnpartic(View view) {
-        Intent intent = new Intent(RoomHostDetailActivity.this,ParticipantHostActivity.class);
-        intent.putExtra(ParticipantHostActivity.INTENT_ROOM_ID,item.id);
+        Intent intent = new Intent(RoomHostDetailActivity.this, ParticipantHostActivity.class);
+        intent.putExtra(ParticipantHostActivity.INTENT_ROOM_ID, item.id);
         startActivity(intent);
     }
 
@@ -166,7 +132,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
             case R.id.menu_partic_qr:
                 Display display = getWindowManager().getDefaultDisplay();
                 int breite = display.getWidth();
-                Drawable draw = new BitmapDrawable(getQR(this.item.getUri(), ((int) breite/2),((int) breite/2)));
+                Drawable draw = new BitmapDrawable(getQR(this.item.getUri(), (breite / 2), (breite / 2)));
                 callAlertDialog_QR(draw);
                 return true;
             case R.id.menu_partic_uri:
@@ -178,12 +144,12 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
 
-    private Bitmap getQR(String msg,int hight,int width) {
+    private Bitmap getQR(String msg, int hight, int width) {
         //Generate QR-code as bitmap
         Bitmap qrCode = null;
         QrCodeManger qrCodeManager = new QrCodeManger(this);
         try {
-            qrCode = qrCodeManager.createQrCode(msg,width,hight);
+            qrCode = qrCodeManager.createQrCode(msg, width, hight);
         } catch (WriterException e) {
             e.printStackTrace();
         }
@@ -194,7 +160,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
 
         //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(RoomHostDetailActivity.this);
-        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri(),(int)(PdfClass.A4_WIDTH/2),(int)(PdfClass.A4_HEIGHT/2)));
+        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri(), PdfClass.A4_WIDTH / 2, PdfClass.A4_HEIGHT / 2));
 
         Log.v(TAG, "showPDF(" + file.getName() + ")");
         if (!file.exists()) {
@@ -217,25 +183,25 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         }
     }
 
-    public void callAlertDialog_QR(Drawable draw){
+    public void callAlertDialog_QR(Drawable draw) {
         LayoutInflater qrDialogInflater = LayoutInflater.from(this);
         View view = qrDialogInflater.inflate(R.layout.qr_pop_up, null);
 
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
-        ImageView ivQr   = view.findViewById(R.id.qr_code_show);
+        ImageView ivQr = view.findViewById(R.id.qr_code_show);
         ivQr.setImageDrawable(draw);
-        tvQrUri.setText("URI: "+item.getUri());
+        tvQrUri.setText("URI: " + item.getUri());
 
         AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
         alertDialogQR.show();
     }
 
-    public void callAlertDialog_URI(){
+    public void callAlertDialog_URI() {
         LayoutInflater uriDialogInflater = LayoutInflater.from(this);
         View view = uriDialogInflater.inflate(R.layout.uri_pop_up, null);
 
         TextView tvUri = view.findViewById(R.id.tv_show_uri);
-        tvUri.setText("URI: "+item.getUri());
+        tvUri.setText("URI: " + item.getUri());
 
         AlertDialog alertDialogUri = new AlertDialog.Builder(this).setView(view).create();
         alertDialogUri.show();
