@@ -22,6 +22,8 @@ public class StartActivity extends AppCompatActivity {
     final static String TAG = StartActivity.class.getCanonicalName();
     private Button btnHost, btnParticipant;
 
+    //Todo: Service für TimeOutRunoutCapture
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "OnCreate");
@@ -53,11 +55,11 @@ public class StartActivity extends AppCompatActivity {
                 intent = new Intent(StartActivity.this, PreferenceActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.menu_start_history:
-                Log.v(TAG, "onOptionsItemSelected() History");
-                intent = new Intent(StartActivity.this, /*TODO*/ .class);
-                startActivity(intent);
-                return true;
+//            case R.id.menu_start_history:
+//                Log.v(TAG, "onOptionsItemSelected() History");
+//                intent = new Intent(StartActivity.this, /*TODO*/ .class);
+//                startActivity(intent);
+//                return true;
         }
         return super.onOptionsItemSelected(item);
     }

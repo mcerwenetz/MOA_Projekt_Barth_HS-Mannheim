@@ -44,7 +44,7 @@ public class EnterViaQrNfcActivity extends AppCompatActivity {
         } else {
             Log.v(TAG, "Scan failed");
         }
-        enterRoom();
+//        enterRoom();
     }
 
     private void btnQrClicked(View v) {
@@ -57,9 +57,9 @@ public class EnterViaQrNfcActivity extends AppCompatActivity {
 
     }
 
-    private void enterRoom(){
-        //und was hier halt dann mit MQTT noch so rein muss
-        Intent intent = new Intent(EnterViaQrNfcActivity.this,/*TODO*/.this);
-        startActivity(intent);
-    }
+//    private void enterRoom(){
+//        //und was hier halt dann mit MQTT noch so rein muss
+//        Intent intent = new Intent(EnterViaQrNfcActivity.this,/*TODO*/.this);
+//        startActivity(intent);
+//    }
 }
