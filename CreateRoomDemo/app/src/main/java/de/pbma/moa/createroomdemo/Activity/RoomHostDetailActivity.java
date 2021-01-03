@@ -112,7 +112,6 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
     // Todo: Service: TimeoutChecker
 
-    //Todo: Methoden muessen noch implementiert werden
     private void onCloseRoom(View view) {
         long now = DateTime.now().getMillis();
         timeoutRefresherThread.stop();
