@@ -1,6 +1,7 @@
 package de.pbma.moa.createroomdemo.Activity;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -71,7 +73,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                     updateRoom(roomItem);
                     RoomHostDetailActivity.this.item = roomItem;
                     if (item.open) {
-                        timeoutRefresherThread.restart(item.endTime);
+                        timeoutRefresherThread.endtimeChanged(item.endTime);
                     }
                 }
             });
@@ -85,9 +87,11 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         btnopen = findViewById(R.id.btn_view_partic_open);
         btntimeout = findViewById(R.id.btn_view_partic_timechange);
         btnpartic = findViewById(R.id.btn_view_partic_particlist);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout);
-        btnpartic.setOnClickListener(this::setBtnpartic);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout,
+                DateTime.now().getMillis());
+        btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
+        btntimeout.setOnClickListener(this::onChangeTimeout);
     }
 
     @Override
@@ -108,21 +112,33 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
     // Todo: Service: TimeoutChecker
 
-    //Todo: Methoden muessen noch implementiert werden
     private void onCloseRoom(View view) {
         long now = DateTime.now().getMillis();
         timeoutRefresherThread.stop();
         item.endTime = now;
         item.open = false;
-        repo.closeRoom(item);
+        repo.update(item);
         tvtimeout.setText("00:00:00");
     }
 
-    private void setBtntimeout(View view) {
-
+    private void onChangeTimeout(View view) {
+        int hour = 0, minute = 0;
+        TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                DateTime now = new DateTime();
+                DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
+                        now.dayOfMonth().get(), i, i1, 0);
+                item.endTime = timeout.getMillis();
+                repo.update(item);
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
+                minute, true);
+        timePickerDialog.show();
     }
 
-    private void setBtnpartic(View view) {
+    private void onViewParticipants(View view) {
         Intent intent = new Intent(RoomHostDetailActivity.this, ParticipantHostActivity.class);
         intent.putExtra(ParticipantHostActivity.INTENT_ROOM_ID, item.id);
         startActivity(intent);

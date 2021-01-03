@@ -9,32 +9,33 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TimeoutRefresherThread {
-
     private final Activity activity;
     private final TextView tvtimeout;
-    private long endTime;
-    private final Thread refreshThread;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
+    private AtomicLong endTime;
+    private Thread refreshThread;
 
-    public TimeoutRefresherThread(Activity activity, TextView tv) {
-        this.activity = activity;
+    public TimeoutRefresherThread(Activity activity, TextView tv, long endtime) {
+        endTime = new AtomicLong(endtime);
         this.tvtimeout = tv;
-        refreshThread = new Thread(()->{
+        this.activity = activity;
+        refreshThread = new Thread(() -> {
             while (keepRefreshing.get()) {
-                    this.activity.runOnUiThread(() -> tvtimeout.setText(formatTimeout(endTime)));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                        TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(endTime.get())));
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+            }
         });
-
     }
 
-    public void stop(){
+    public void stop() {
         keepRefreshing.set(false);
         try {
             refreshThread.join();
@@ -43,21 +44,15 @@ public class TimeoutRefresherThread {
         }
     }
 
-    public void restart(long endTime){
-        if(refreshThread.isAlive()){
-            keepRefreshing.set(false);
-            try {
-                refreshThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void endtimeChanged(long endTime) {
+        if (!refreshThread.isAlive()) {
+            keepRefreshing.set(true);
+            this.refreshThread.start();
         }
-        this.endTime = endTime;
-        keepRefreshing.set(true);
-        refreshThread.start();
+        this.endTime.set(endTime);
     }
 
-    private String formatTimeout(long endTime){
+    private String formatTimeout(long endTime) {
         DateTime now = new DateTime();
         DateTime endTimeDateTime = new DateTime(endTime);
         Period period = new Period(now, endTimeDateTime);

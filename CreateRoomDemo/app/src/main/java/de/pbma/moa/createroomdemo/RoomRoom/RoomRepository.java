@@ -36,7 +36,7 @@ public class RoomRepository {
         }).start();
     }
 
-    public void closeRoom(RoomItem item) {
+    public void update(RoomItem item) {
         new Thread(() -> {
             dao.update(item);
         }).start();
