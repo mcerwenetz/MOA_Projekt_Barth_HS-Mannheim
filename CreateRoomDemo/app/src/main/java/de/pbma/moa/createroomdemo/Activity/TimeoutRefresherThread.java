@@ -14,14 +14,25 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
-    private long endTime;
-    private RefresherThread refreshThread;
+    private AtomicLong endTime;
+    private Thread refreshThread;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
 
-    public TimeoutRefresherThread(Activity activity, TextView tv) {
+    public TimeoutRefresherThread(Activity activity, TextView tv, long endtime) {
+        endTime=new AtomicLong(endtime);
         this.tvtimeout = tv;
         this.activity = activity;
-        refreshThread = new RefresherThread(activity,tv);
+        refreshThread = new Thread(()->{
+            while (keepRefreshing.get()) {
+                TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                        TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(endTime.get())));
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void stop(){
@@ -33,20 +44,12 @@ public class TimeoutRefresherThread {
         }
     }
 
-    public void restart(long endTime){
-        if(refreshThread.isAlive()){
-            keepRefreshing.set(false);
-            try {
-                refreshThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void endtimeChanged(long endTime){
+        if(!refreshThread.isAlive()){
+            keepRefreshing.set(true);
+            this.refreshThread.start();
         }
-        refreshThread=null;
-        refreshThread = new RefresherThread(activity,tvtimeout);
-        this.endTime = endTime;
-        keepRefreshing.set(true);
-        refreshThread.start();
+        this.endTime.set(endTime);
     }
 
     private String formatTimeout(long endTime){
@@ -61,29 +64,5 @@ public class TimeoutRefresherThread {
                 .printZeroNever()
                 .toFormatter();
         return formatter.print(period);
-    }
-
-    private class RefresherThread extends Thread{
-        private final Activity activity;
-        private final TextView tvtimeout;
-
-
-        RefresherThread(Activity activity, TextView tvtimeout){
-            this.activity=activity;
-            this.tvtimeout=tvtimeout;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            while (keepRefreshing.get()) {
-                this.activity.runOnUiThread(() -> tvtimeout.setText(formatTimeout(endTime)));
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }
