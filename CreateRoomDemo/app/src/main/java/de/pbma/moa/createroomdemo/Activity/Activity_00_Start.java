@@ -18,8 +18,8 @@ import de.pbma.moa.createroomdemo.Preferences.MySelf;
 import de.pbma.moa.createroomdemo.Preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
 
-public class StartActivity extends AppCompatActivity {
-    final static String TAG = StartActivity.class.getCanonicalName();
+public class Activity_00_Start extends AppCompatActivity {
+    final static String TAG = Activity_00_Start.class.getCanonicalName();
     private Button btnHost, btnParticipant;
 
     //Todo: Service für TimeOutRunoutCapture
@@ -28,13 +28,13 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "OnCreate");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.page_start);
+        setContentView(R.layout.page_00_start);
 
         btnHost = findViewById(R.id.btn_start_host);
         btnParticipant = findViewById(R.id.btn_start_participant);
 
-        btnHost.setOnClickListener(StartActivity.this::iAmHost);
-        btnParticipant.setOnClickListener(StartActivity.this::iAmParticipant);
+        btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
+        btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
     }
 
 
@@ -52,12 +52,12 @@ public class StartActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_start_pref:
                 Log.v(TAG, "onOptionsItemSelected() Settings");
-                intent = new Intent(StartActivity.this, PreferenceActivity.class);
+                intent = new Intent(Activity_00_Start.this, PreferenceActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.menu_start_history:
                 Log.v(TAG, "onOptionsItemSelected() History");
-                intent = new Intent(StartActivity.this, RoomVisitedListActivity.class);
+                intent = new Intent(Activity_00_Start.this, Activity_10_RoomListVisited.class);
                 startActivity(intent);
                 return true;
         }
@@ -66,22 +66,22 @@ public class StartActivity extends AppCompatActivity {
 
     private void iAmHost(View view) {
         Log.v(TAG, "iAmHost() clicked");
-        Intent intent = new Intent(StartActivity.this, RoomListActivity.class);
+        Intent intent = new Intent(Activity_00_Start.this, Activity_20_RoomListHost.class);
         startActivity(intent);
     }
 
     private void iAmParticipant(View view) {
         Log.v(TAG, "iAmParticipant() clicked");
-        MySelf me = new MySelf(StartActivity.this);
+        MySelf me = new MySelf(Activity_00_Start.this);
         if(!me.isValide()){
             Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
             Log.v(TAG, "prefs not valide");
-            Intent intent = new Intent(StartActivity.this, PreferenceActivity.class );
+            Intent intent = new Intent(Activity_00_Start.this, PreferenceActivity.class );
             startActivity(intent);
             return;
         }
         Log.v(TAG, "iAmHost() clicked");
-        Intent intent = new Intent(StartActivity.this, EnterViaQrNfcActivity.class);
+        Intent intent = new Intent(Activity_00_Start.this, Activity_11_EnterViaQrNfc.class);
         startActivity(intent);
     }
 

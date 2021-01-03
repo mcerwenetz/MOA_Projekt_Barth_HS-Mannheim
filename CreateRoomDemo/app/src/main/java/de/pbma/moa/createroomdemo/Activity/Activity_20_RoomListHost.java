@@ -19,24 +19,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomListAdapter;
+import de.pbma.moa.createroomdemo.ListAdapter_20_HostRoom;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
-public class RoomListActivity extends AppCompatActivity {
-    final static String TAG = RoomListActivity.class.getCanonicalName();
+public class Activity_20_RoomListHost extends AppCompatActivity {
+    final static String TAG = Activity_20_RoomListHost.class.getCanonicalName();
     private ArrayList<RoomItem> roomList;
     private ListView lv;
     private RoomRepository roomRepo;
-    private RoomListAdapter adapter;
+    private ListAdapter_20_HostRoom adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
         roomList = new ArrayList<>();
-        setContentView(R.layout.page_roomlist);
-        adapter = new RoomListAdapter(this, roomList);
+        setContentView(R.layout.page_20_roomlist);
+        adapter = new ListAdapter_20_HostRoom(this, roomList);
         lv = findViewById(R.id.lv_host_room);
         lv.setAdapter(adapter);
         roomRepo = new RoomRepository(this);
@@ -55,7 +55,7 @@ public class RoomListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.create_newRoom:
                 Log.v(TAG,"onOptionsItemSelected() create new Room");
-               Intent intent = new Intent(this,CreateNewRoomActivity.class );
+               Intent intent = new Intent(this, Activity_21_CreateNewRoom.class );
                startActivity(intent);
                 return true;
         }
@@ -76,9 +76,9 @@ public class RoomListActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Long roomid = (Long) view.getTag();
-            Intent intent = new Intent(RoomListActivity.this,
-                    RoomHostDetailActivity.class);
-            intent.putExtra(RoomHostDetailActivity.ID, roomid);
+            Intent intent = new Intent(Activity_20_RoomListHost.this,
+                    Activity_22_RoomHostDetail.class);
+            intent.putExtra(Activity_22_RoomHostDetail.ID, roomid);
             startActivity(intent);
         }
     };

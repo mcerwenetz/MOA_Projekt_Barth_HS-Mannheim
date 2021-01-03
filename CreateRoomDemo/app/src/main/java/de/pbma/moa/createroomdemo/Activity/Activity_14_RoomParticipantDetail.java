@@ -18,8 +18,8 @@ import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
-public class RoomParticipantDetailActivity extends AppCompatActivity {
-    final static String TAG = RoomParticipantDetailActivity.class.getCanonicalName();
+public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
+    final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();
     final static String ID = "RoomID";
 
     private Button btnLeave, btnPartic;
@@ -36,7 +36,7 @@ public class RoomParticipantDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG,"OnCreated RoomParticipantDetailActivity");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.page_room_participant_detail_activity);
+        setContentView(R.layout.page_14_room_participant_detail_activity);
         bindUI();
 
         //Holt die Daten aus der Bank
@@ -48,7 +48,7 @@ public class RoomParticipantDetailActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
-                    RoomParticipantDetailActivity.this.itemPartic = roomItem;
+                    Activity_14_RoomParticipantDetail.this.itemPartic = roomItem;
                     if (itemPartic.open) {
                         timeoutRefresherThread.endtimeChanged(itemPartic.endTime);
                     }
@@ -97,7 +97,7 @@ public class RoomParticipantDetailActivity extends AppCompatActivity {
     }
 
     private void onClickBtnPartic(View view){
-        Intent intent = new Intent(RoomParticipantDetailActivity.this, ParticipantParticipantActivity.class);
+        Intent intent = new Intent(Activity_14_RoomParticipantDetail.this, Activity_15_ParticipantViewParticipant.class);
 //        intent.putExtra(ParticipantParticipantActivity.INTENT_ROOM_ID, item.id);
         startActivity(intent);
     }

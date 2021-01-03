@@ -23,8 +23,8 @@ import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
-public class CreateNewRoomActivity extends AppCompatActivity {
-    final static String TAG = CreateNewRoomActivity.class.getCanonicalName();
+public class Activity_21_CreateNewRoom extends AppCompatActivity {
+    final static String TAG = Activity_21_CreateNewRoom.class.getCanonicalName();
     final static String BTNSD = "btnStartDate";
     final static String BTNST = "btnStartTime";
     final static String BTNED = "btnEndDate";
@@ -60,7 +60,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
         minute_start = calendar.get(Calendar.MINUTE)+5;
 
 
-        setContentView(R.layout.page_create_room);
+        setContentView(R.layout.page_21_create_room);
 
         btnCreate = findViewById(R.id.btn_raum_create);
         btnEndDate = findViewById(R.id.btn_raum_end_date);
@@ -205,11 +205,11 @@ public class CreateNewRoomActivity extends AppCompatActivity {
             return;
         }
 
-        MySelf me = new MySelf(CreateNewRoomActivity.this);
+        MySelf me = new MySelf(Activity_21_CreateNewRoom.this);
         if (!me.isValide()) {
             Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
             Log.v(TAG, "prefs not valide");
-            Intent intent = new Intent(CreateNewRoomActivity.this, PreferenceActivity.class );
+            Intent intent = new Intent(Activity_21_CreateNewRoom.this, PreferenceActivity.class );
             startActivity(intent);
             return;
         }
@@ -229,9 +229,9 @@ public class CreateNewRoomActivity extends AppCompatActivity {
 
         //TODO wenn wir lustig sind wird noch en observer
         repo.addEntry(item,(newItem)-> {
-            CreateNewRoomActivity.this.runOnUiThread(()->{
-                Intent intent = new Intent(CreateNewRoomActivity.this, RoomHostDetailActivity.class);
-                intent.putExtra(RoomHostDetailActivity.ID, newItem.id);
+            Activity_21_CreateNewRoom.this.runOnUiThread(()->{
+                Intent intent = new Intent(Activity_21_CreateNewRoom.this, Activity_22_RoomHostDetail.class);
+                intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
                 startActivity(intent);
                 finish();
             });

@@ -15,8 +15,8 @@ import com.google.zxing.integration.android.IntentResult;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 
-public class EnterViaQrNfcActivity extends AppCompatActivity {
-    final static String TAG = EnterViaQrNfcActivity.class.getCanonicalName();
+public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
+    final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
     private Button btnNfc, btnQr;
     private String uri;
 
@@ -25,7 +25,7 @@ public class EnterViaQrNfcActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
 
-        setContentView(R.layout.page_qr_nfc);
+        setContentView(R.layout.page_11_qr_nfc);
         btnNfc = findViewById(R.id.btn_nfc);
         btnQr = findViewById(R.id.btn_qr);
 

@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
-import de.pbma.moa.createroomdemo.ParticipantViewHostListAdapter;
+import de.pbma.moa.createroomdemo.ListAdapter_23_HostParticipant;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
@@ -32,8 +32,8 @@ import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantRepository;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
-public class ParticipantHostActivity extends AppCompatActivity {
-    final static String TAG = ParticipantHostActivity.class.getCanonicalName();
+public class Activity_23_HostViewParticipant extends AppCompatActivity {
+    final static String TAG = Activity_23_HostViewParticipant.class.getCanonicalName();
     final static String INTENT_ROOM_ID = "roomId";
     private Long roomId = (long) 0;
     private RoomItem roomItem = null;
@@ -42,8 +42,7 @@ public class ParticipantHostActivity extends AppCompatActivity {
     private RoomRepository roomRepository;
 
     private ListView lv;
-
-    private ParticipantViewHostListAdapter adapter;
+    private ListAdapter_23_HostParticipant adapter;
 
     Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
         @Override
@@ -60,25 +59,25 @@ public class ParticipantHostActivity extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
         participantItemArrayList = new ArrayList<>();
         test(); //TODO zeigt zum testen einfach teilnehmer an
-        setContentView(R.layout.page_participants_list_host_view);
+        setContentView(R.layout.page_23_participants_list_host_view);
 
-        adapter = new ParticipantViewHostListAdapter(this, participantItemArrayList);
+        adapter = new ListAdapter_23_HostParticipant(this, participantItemArrayList);
         lv = findViewById(R.id.lv_participant);
         lv.setAdapter(adapter);
 
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            roomId = bundle.getLong(ParticipantHostActivity.INTENT_ROOM_ID);
+            roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
 
         //participantRepository = new ParticipantRepository(this);
        // participantRepository.getParticipantsOfRoom(roomId).observe(this, observer);
-        roomRepository = new RoomRepository(ParticipantHostActivity.this);
-        roomRepository.getID(roomId).observe(ParticipantHostActivity.this, new Observer<RoomItem>() {
+        roomRepository = new RoomRepository(Activity_23_HostViewParticipant.this);
+        roomRepository.getID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
-                ParticipantHostActivity.this.roomItem = roomItem;
+                Activity_23_HostViewParticipant.this.roomItem = roomItem;
             }
         });
     }
@@ -103,7 +102,7 @@ public class ParticipantHostActivity extends AppCompatActivity {
     private void shareParticipants() {
 
         //generate PDF with qrCode an room infos -> saved in external file system
-        PdfClass pdf = new PdfClass(ParticipantHostActivity.this);
+        PdfClass pdf = new PdfClass(Activity_23_HostViewParticipant.this);
         if(roomItem==null)
             return;
         File file = pdf.createPdfParticipantInfos(this.participantItemArrayList,this.roomItem);
@@ -115,8 +114,8 @@ public class ParticipantHostActivity extends AppCompatActivity {
         }
         //start share Intent
         try {
-            Uri uri = FileProvider.getUriForFile(ParticipantHostActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
-            Intent intent = ShareCompat.IntentBuilder.from(ParticipantHostActivity.this)
+            Uri uri = FileProvider.getUriForFile(Activity_23_HostViewParticipant.this, BuildConfig.APPLICATION_ID + ".provider", file);
+            Intent intent = ShareCompat.IntentBuilder.from(Activity_23_HostViewParticipant.this)
                     .setType(URLConnection.guessContentTypeFromName(file.getName()))
                     .setStream(uri)
                     .setChooserTitle("Choose bar")
@@ -124,7 +123,7 @@ public class ParticipantHostActivity extends AppCompatActivity {
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             this.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(ParticipantHostActivity.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(Activity_23_HostViewParticipant.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
             Log.e(TAG, e.getMessage());
         }
     }

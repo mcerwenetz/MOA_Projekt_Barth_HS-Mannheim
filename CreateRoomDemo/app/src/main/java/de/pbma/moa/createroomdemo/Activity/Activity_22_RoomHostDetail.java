@@ -46,8 +46,8 @@ import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 //Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
 //und der Status des raus dargestellt.
 
-public class RoomHostDetailActivity extends AppCompatActivity {
-    final static String TAG = RoomHostDetailActivity.class.getCanonicalName();
+public class Activity_22_RoomHostDetail extends AppCompatActivity {
+    final static String TAG = Activity_22_RoomHostDetail.class.getCanonicalName();
     final static String ID = "RoomID";
     long roomid;
     private TextView tvtimeout, tvstatus, tvroomname;
@@ -62,7 +62,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
-        setContentView(R.layout.page_room_host_detail_activity);
+        setContentView(R.layout.page_22_room_host_detail_activity);
         bindUI();
 
         //Holt die Daten aus der Bank
@@ -74,7 +74,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
-                    RoomHostDetailActivity.this.item = roomItem;
+                    Activity_22_RoomHostDetail.this.item = roomItem;
                     if (item.open) {
                         timeoutRefresherThread.endtimeChanged(item.endTime);
                     }
@@ -142,8 +142,8 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
     private void onViewParticipants(View view) {
-        Intent intent = new Intent(RoomHostDetailActivity.this, ParticipantHostActivity.class);
-        intent.putExtra(ParticipantHostActivity.INTENT_ROOM_ID, item.id);
+        Intent intent = new Intent(Activity_22_RoomHostDetail.this, Activity_23_HostViewParticipant.class);
+        intent.putExtra(Activity_23_HostViewParticipant.INTENT_ROOM_ID, item.id);
         startActivity(intent);
     }
 
@@ -192,7 +192,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private void shareRoom(RoomItem item) {
 
         //generate PDF with qrCode an room infos -> saved in external file system
-        PdfClass pdf = new PdfClass(RoomHostDetailActivity.this);
+        PdfClass pdf = new PdfClass(Activity_22_RoomHostDetail.this);
         File file = pdf.createPdfRoomInfos(item, getQR(item.getUri(), PdfClass.A4_WIDTH / 2, PdfClass.A4_HEIGHT / 2));
 
         Log.v(TAG, "showPDF(" + file.getName() + ")");
@@ -202,8 +202,8 @@ public class RoomHostDetailActivity extends AppCompatActivity {
         }
         //start share Intent
         try {
-            Uri uri = FileProvider.getUriForFile(RoomHostDetailActivity.this, BuildConfig.APPLICATION_ID + ".provider", file);
-            Intent intent = ShareCompat.IntentBuilder.from(RoomHostDetailActivity.this)
+            Uri uri = FileProvider.getUriForFile(Activity_22_RoomHostDetail.this, BuildConfig.APPLICATION_ID + ".provider", file);
+            Intent intent = ShareCompat.IntentBuilder.from(Activity_22_RoomHostDetail.this)
                     .setType(URLConnection.guessContentTypeFromName(file.getName()))
                     .setStream(uri)
                     .setChooserTitle("Choose bar")
@@ -211,14 +211,14 @@ public class RoomHostDetailActivity extends AppCompatActivity {
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             this.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(RoomHostDetailActivity.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
+            Toast.makeText(Activity_22_RoomHostDetail.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
             Log.e(TAG, e.getMessage());
         }
     }
 
     public void callAlertDialog_QR(Drawable draw) {
         LayoutInflater qrDialogInflater = LayoutInflater.from(this);
-        View view = qrDialogInflater.inflate(R.layout.qr_pop_up, null);
+        View view = qrDialogInflater.inflate(R.layout.pop_up_qr, null);
 
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
@@ -231,7 +231,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
 
     public void callAlertDialog_URI() {
         LayoutInflater uriDialogInflater = LayoutInflater.from(this);
-        View view = uriDialogInflater.inflate(R.layout.uri_pop_up, null);
+        View view = uriDialogInflater.inflate(R.layout.pop_up_uri, null);
 
         TextView tvUri = view.findViewById(R.id.tv_show_uri);
         tvUri.setText("URI: " + item.getUri());
