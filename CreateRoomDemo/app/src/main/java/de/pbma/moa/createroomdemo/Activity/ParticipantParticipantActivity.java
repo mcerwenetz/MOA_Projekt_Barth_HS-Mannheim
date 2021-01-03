@@ -2,6 +2,7 @@ package de.pbma.moa.createroomdemo.Activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.pbma.moa.createroomdemo.ParticipantViewHostListAdapter;
 import de.pbma.moa.createroomdemo.ParticipantViewParticipantListAdapter;
+import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
 import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantRepository;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
@@ -30,6 +33,8 @@ public class ParticipantParticipantActivity extends AppCompatActivity {
     private ParticipantRepository participantRepository;
     private RoomRepository roomRepository;
 
+    ListView lv;
+
     private ParticipantViewParticipantListAdapter adapter;
 
     Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
@@ -45,6 +50,10 @@ public class ParticipantParticipantActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate ParticipantParticipantActivity");
+
+        adapter = new ParticipantViewParticipantListAdapter(this, participantItemArrayList);
+        lv = findViewById(R.id.lv_participant_roomlist);
+        lv.setAdapter(adapter);
 
         //Holen der ID aus der Datenbank
         Bundle bundle = getIntent().getExtras();
