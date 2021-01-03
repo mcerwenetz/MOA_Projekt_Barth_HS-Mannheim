@@ -14,15 +14,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
+    private final AtomicBoolean keepRefreshing = new AtomicBoolean();
     private AtomicLong endTime;
     private Thread refreshThread;
-    private final AtomicBoolean keepRefreshing = new AtomicBoolean();
 
     public TimeoutRefresherThread(Activity activity, TextView tv, long endtime) {
-        endTime=new AtomicLong(endtime);
+        endTime = new AtomicLong(endtime);
         this.tvtimeout = tv;
         this.activity = activity;
-        refreshThread = new Thread(()->{
+        refreshThread = new Thread(() -> {
             while (keepRefreshing.get()) {
                 TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                         TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(endTime.get())));
@@ -35,7 +35,7 @@ public class TimeoutRefresherThread {
         });
     }
 
-    public void stop(){
+    public void stop() {
         keepRefreshing.set(false);
         try {
             refreshThread.join();
@@ -44,15 +44,15 @@ public class TimeoutRefresherThread {
         }
     }
 
-    public void endtimeChanged(long endTime){
-        if(!refreshThread.isAlive()){
+    public void endtimeChanged(long endTime) {
+        if (!refreshThread.isAlive()) {
             keepRefreshing.set(true);
             this.refreshThread.start();
         }
         this.endTime.set(endTime);
     }
 
-    private String formatTimeout(long endTime){
+    private String formatTimeout(long endTime) {
         DateTime now = new DateTime();
         DateTime endTimeDateTime = new DateTime(endTime);
         Period period = new Period(now, endTimeDateTime);
