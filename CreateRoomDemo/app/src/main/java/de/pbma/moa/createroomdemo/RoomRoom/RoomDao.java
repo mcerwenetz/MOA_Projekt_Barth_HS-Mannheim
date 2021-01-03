@@ -11,6 +11,7 @@ import java.util.List;
 
 @Dao
 public abstract class RoomDao {
+
     @Insert
     abstract long insert(RoomItem item);
 
@@ -31,5 +32,12 @@ public abstract class RoomDao {
 
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
+
+//    @Query("UPDATE dbRoom SET open=0 WHERE id=:roomid")
+//    abstract void closeRoomById(long roomid);
+//
+//    @Query("UPDATE dbRoom SET endTime=:endtime")
+//    abstract void updateTimeout(long endtime);
+
 
 }

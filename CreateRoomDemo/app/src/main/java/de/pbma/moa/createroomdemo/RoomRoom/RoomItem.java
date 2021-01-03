@@ -16,6 +16,9 @@ public class RoomItem {
     @ColumnInfo(name = "roomName")
     public String roomName;
 
+    @ColumnInfo(name = "open")
+    public boolean open;
+
     @ColumnInfo(name = "host") // Vorname+Nachname+Extra
     public String host;
 
@@ -41,9 +44,12 @@ public class RoomItem {
     public long endTime;
 
 
-    public static RoomItem createRoom(String roomName, String host,String eMail, String phone, String place,String address, String extra, long startTime, long endTime) {
+    public static RoomItem createRoom(String roomName,boolean open ,String host,String eMail,
+                                      String phone, String place,String address, String extra,
+                                      long startTime, long endTime) {
         RoomItem room = new RoomItem();
         room.roomName = roomName;
+        room.open =open;
         room.host = host;
         room.eMail = eMail;
         room.phone = phone;
@@ -60,6 +66,7 @@ public class RoomItem {
         return "RoomItem{" +
                 "id=" + id +
                 ", roomName='" + roomName + '\'' +
+                ", open=" + open +
                 ", host='" + host + '\'' +
                 ", eMail='" + eMail + '\'' +
                 ", phone='" + phone + '\'' +
@@ -81,20 +88,21 @@ public class RoomItem {
         if (o == null || getClass() != o.getClass()) return false;
         RoomItem roomItem = (RoomItem) o;
         return id == roomItem.id &&
+                open == roomItem.open &&
                 startTime == roomItem.startTime &&
                 endTime == roomItem.endTime &&
-                roomName.equals(roomItem.roomName) &&
-                host.equals(roomItem.host) &&
+                Objects.equals(roomName, roomItem.roomName) &&
+                Objects.equals(host, roomItem.host) &&
                 Objects.equals(eMail, roomItem.eMail) &&
                 Objects.equals(phone, roomItem.phone) &&
-                place.equals(roomItem.place) &&
-                address.equals(roomItem.address) &&
+                Objects.equals(place, roomItem.place) &&
+                Objects.equals(address, roomItem.address) &&
                 Objects.equals(extra, roomItem.extra);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roomName, host, eMail, phone, place, address, extra, startTime, endTime);
+        return Objects.hash(id, roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
     }
 }
 

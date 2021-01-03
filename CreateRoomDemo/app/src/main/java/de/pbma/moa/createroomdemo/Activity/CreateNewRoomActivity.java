@@ -217,6 +217,7 @@ public class CreateNewRoomActivity extends AppCompatActivity {
 
         RoomItem item = RoomItem.createRoom(
                 etTitel.getText().toString(),
+                true,
                 me.getFirstName() +" "+ me.getName(),
                 me.getEmail(),
                 me.getPhone(),
