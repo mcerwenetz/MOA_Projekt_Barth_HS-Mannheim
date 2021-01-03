@@ -43,6 +43,9 @@ import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
+//Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
+//und der Status des raus dargestellt.
+
 public class RoomHostDetailActivity extends AppCompatActivity {
     final static String TAG = RoomHostDetailActivity.class.getCanonicalName();
     final static String ID = "RoomID";
@@ -81,12 +84,12 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     }
 
     private void bindUI() {
-        tvroomname = findViewById(R.id.tv_view_partic_roomname);
-        tvstatus = findViewById(R.id.tv_view_partic_statustext);
-        tvtimeout = findViewById(R.id.tv_view_partic_timeouttext);
-        btnopen = findViewById(R.id.btn_view_partic_open);
-        btntimeout = findViewById(R.id.btn_view_partic_timechange);
-        btnpartic = findViewById(R.id.btn_view_partic_particlist);
+        tvroomname = findViewById(R.id.tv_view_host_roomname);
+        tvstatus = findViewById(R.id.tv_view_host_statustext);
+        tvtimeout = findViewById(R.id.tv_view_host_timeouttext);
+        btnopen = findViewById(R.id.btn_view_host_close);
+        btntimeout = findViewById(R.id.btn_view_host_timechange);
+        btnpartic = findViewById(R.id.btn_view_host_particlist);
         timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout,
                 DateTime.now().getMillis());
         btnpartic.setOnClickListener(this::onViewParticipants);
@@ -102,7 +105,7 @@ public class RoomHostDetailActivity extends AppCompatActivity {
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
-            tvroomname.setText(String.valueOf(roomid));
+            tvroomname.setText(item.roomName);
             if (item.open) {
                 tvstatus.setText("offen");
             } else {

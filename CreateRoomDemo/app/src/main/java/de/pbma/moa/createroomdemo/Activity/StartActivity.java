@@ -55,11 +55,11 @@ public class StartActivity extends AppCompatActivity {
                 intent = new Intent(StartActivity.this, PreferenceActivity.class);
                 startActivity(intent);
                 return true;
-//            case R.id.menu_start_history:
-//                Log.v(TAG, "onOptionsItemSelected() History");
-//                intent = new Intent(StartActivity.this, /*TODO*/ .class);
-//                startActivity(intent);
-//                return true;
+            case R.id.menu_start_history:
+                Log.v(TAG, "onOptionsItemSelected() History");
+                intent = new Intent(StartActivity.this, RoomVisitedListActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

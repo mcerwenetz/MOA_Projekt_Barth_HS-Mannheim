@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
-import de.pbma.moa.createroomdemo.ParticipantListAdapter;
+import de.pbma.moa.createroomdemo.ParticipantViewHostListAdapter;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
@@ -43,7 +43,7 @@ public class ParticipantHostActivity extends AppCompatActivity {
 
     private ListView lv;
 
-    private ParticipantListAdapter adapter;
+    private ParticipantViewHostListAdapter adapter;
 
     Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
         @Override
@@ -60,9 +60,9 @@ public class ParticipantHostActivity extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
         participantItemArrayList = new ArrayList<>();
         test(); //TODO zeigt zum testen einfach teilnehmer an
-        setContentView(R.layout.page_participants_list);
+        setContentView(R.layout.page_participants_list_host_view);
 
-        adapter = new ParticipantListAdapter(this, participantItemArrayList);
+        adapter = new ParticipantViewHostListAdapter(this, participantItemArrayList);
         lv = findViewById(R.id.lv_participant);
         lv.setAdapter(adapter);
 

@@ -55,7 +55,9 @@ public class MySelf {
             return false;
         if (preferences.getString(keyName, "").equals(""))
             return false;
-        if (preferences.getString(keyEmail, "").equals("") && preferences.getString(keyPhone, "").equals(""))
+        if (preferences.getString(keyEmail, "").equals(""))
+            return false;
+        if(preferences.getString(keyPhone, "").equals(""))
             return false;
         return true;
     }
