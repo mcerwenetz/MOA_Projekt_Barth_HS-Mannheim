@@ -9,29 +9,19 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TimeoutRefresherThread {
-
     private final Activity activity;
     private final TextView tvtimeout;
     private long endTime;
-    private final Thread refreshThread;
+    private RefresherThread refreshThread;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
 
     public TimeoutRefresherThread(Activity activity, TextView tv) {
-        this.activity = activity;
         this.tvtimeout = tv;
-        refreshThread = new Thread(()->{
-            while (keepRefreshing.get()) {
-                    this.activity.runOnUiThread(() -> tvtimeout.setText(formatTimeout(endTime)));
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-        });
-
+        this.activity = activity;
+        refreshThread = new RefresherThread(activity,tv);
     }
 
     public void stop(){
@@ -52,6 +42,8 @@ public class TimeoutRefresherThread {
                 e.printStackTrace();
             }
         }
+        refreshThread=null;
+        refreshThread = new RefresherThread(activity,tvtimeout);
         this.endTime = endTime;
         keepRefreshing.set(true);
         refreshThread.start();
@@ -69,5 +61,29 @@ public class TimeoutRefresherThread {
                 .printZeroNever()
                 .toFormatter();
         return formatter.print(period);
+    }
+
+    private class RefresherThread extends Thread{
+        private final Activity activity;
+        private final TextView tvtimeout;
+
+
+        RefresherThread(Activity activity, TextView tvtimeout){
+            this.activity=activity;
+            this.tvtimeout=tvtimeout;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            while (keepRefreshing.get()) {
+                this.activity.runOnUiThread(() -> tvtimeout.setText(formatTimeout(endTime)));
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
