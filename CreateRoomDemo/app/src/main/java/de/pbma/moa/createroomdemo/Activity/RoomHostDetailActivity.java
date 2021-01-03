@@ -99,9 +99,9 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(String.valueOf(roomid));
-            if(item.open){
+            if (item.open) {
                 tvstatus.setText("offen");
-            }else{
+            } else {
                 tvstatus.setText("geschlossen");
             }
         }
@@ -111,10 +111,10 @@ public class RoomHostDetailActivity extends AppCompatActivity {
     //Todo: Methoden muessen noch implementiert werden
     private void onCloseRoom(View view) {
         long now = DateTime.now().getMillis();
-//        repo.closeRoomById(item.id, now);
         timeoutRefresherThread.stop();
-        item.endTime=now;
-        item.open=false;
+        item.endTime = now;
+        item.open = false;
+        repo.closeRoom(item);
         tvtimeout.setText("00:00:00");
     }
 

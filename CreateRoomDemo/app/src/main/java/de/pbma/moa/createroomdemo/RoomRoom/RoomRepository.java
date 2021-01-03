@@ -5,16 +5,11 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class RoomRepository {
     private final RoomDao dao; //final hinzugefuegt
     private LiveData<List<RoomItem>> roomList;
     private Context context;
-
-    public static interface AfterInsert{
-        public void inserted(RoomItem item);
-    }
 
     public RoomRepository(Context context) {
         this.context = context;
@@ -35,25 +30,28 @@ public class RoomRepository {
         new Thread(() -> {
             long id = dao.insert(item);
             RoomItem newItem = dao.getItemByIdNow(id);
-            if(afterInsert != null){
+            if (afterInsert != null) {
                 afterInsert.inserted(newItem);
             }
         }).start();
     }
 
-//    public void closeRoomById(long roomid, long endtime){
-//        new Thread(()->{
-//           dao.closeRoomById(roomid);
-//           dao.updateTimeout(endtime);
-//        });
-//    }
+    public void closeRoom(RoomItem item) {
+        new Thread(() -> {
+            dao.update(item);
+        }).start();
+    }
 
-    public LiveData<RoomItem> getID(long searchid){
-        return  dao.getById(searchid);
+    public LiveData<RoomItem> getID(long searchid) {
+        return dao.getById(searchid);
     }
 
     public LiveData<List<RoomItem>> getDbAll() {
         return roomList;
+    }
+
+    public static interface AfterInsert {
+        public void inserted(RoomItem item);
     }
 }
 
