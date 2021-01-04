@@ -17,7 +17,7 @@
             android:textSize="10sp" />
     </LinearLayout>
     <ListView
-        android:id="@+id/lv_participant_roomlist"
+        android:id="@+id/lv_15_participants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

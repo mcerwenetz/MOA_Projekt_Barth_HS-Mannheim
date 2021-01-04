@@ -18,8 +18,9 @@ import androidx.lifecycle.Observer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.ListAdapter_20_HostRoom;
+import de.pbma.moa.createroomdemo.Preferences.MySelf;
+import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 
@@ -29,39 +30,6 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
     private ListView lv;
     private RoomRepository roomRepo;
     private ListAdapter_20_HostRoom adapter;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.v(TAG, "OnCreate");
-        roomList = new ArrayList<>();
-        setContentView(R.layout.page_20_roomlist);
-        adapter = new ListAdapter_20_HostRoom(this, roomList);
-        lv = findViewById(R.id.lv_host_room);
-        lv.setAdapter(adapter);
-        roomRepo = new RoomRepository(this);
-        roomRepo.getDbAll().observe(this, observer);
-        lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
-    }
-    //Menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.room_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.create_newRoom:
-                Log.v(TAG,"onOptionsItemSelected() create new Room");
-               Intent intent = new Intent(this, Activity_21_CreateNewRoom.class );
-               startActivity(intent);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
         public void onChanged(List<RoomItem> changedTodos) {
@@ -70,8 +38,6 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     };
-
-
     private AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -82,5 +48,44 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
             startActivity(intent);
         }
     };
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.v(TAG, "OnCreate");
+        roomList = new ArrayList<>();
+        setContentView(R.layout.page_20_roomlist);
+        adapter = new ListAdapter_20_HostRoom(this, roomList);
+        lv = findViewById(R.id.lv_20_room);
+        lv.setAdapter(adapter);
+        roomRepo = new RoomRepository(this);
+        MySelf me = new MySelf(this);
+        roomRepo.getDbAllFromMeAsHost(
+                me.getFirstName(),
+                me.getName(),
+                me.getEmail(),
+                me.getPhone()).observe(this, observer);
+        lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
+    }
+
+    //Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_21_create_room, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_newRoom:
+                Log.v(TAG, "onOptionsItemSelected() create new Room");
+                Intent intent = new Intent(this, Activity_21_CreateNewRoom.class);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

@@ -30,8 +30,8 @@ public class Activity_00_Start extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_00_start);
 
-        btnHost = findViewById(R.id.btn_start_host);
-        btnParticipant = findViewById(R.id.btn_start_participant);
+        btnHost = findViewById(R.id.btn_00_start_host);
+        btnParticipant = findViewById(R.id.btn_00_start_participant);
 
         btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
@@ -42,7 +42,7 @@ public class Activity_00_Start extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.start, menu);
+        inflater.inflate(R.menu.menu_00_start, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -57,6 +57,8 @@ public class Activity_00_Start extends AppCompatActivity {
                 return true;
             case R.id.menu_start_history:
                 Log.v(TAG, "onOptionsItemSelected() History");
+                if (!checkMySelfe())
+                    return true;
                 intent = new Intent(Activity_00_Start.this, Activity_10_RoomListVisited.class);
                 startActivity(intent);
                 return true;
@@ -66,23 +68,32 @@ public class Activity_00_Start extends AppCompatActivity {
 
     private void iAmHost(View view) {
         Log.v(TAG, "iAmHost() clicked");
+        if (!checkMySelfe())
+            return;
         Intent intent = new Intent(Activity_00_Start.this, Activity_20_RoomListHost.class);
         startActivity(intent);
     }
 
     private void iAmParticipant(View view) {
         Log.v(TAG, "iAmParticipant() clicked");
-        MySelf me = new MySelf(Activity_00_Start.this);
-        if(!me.isValide()){
-            Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
-            Log.v(TAG, "prefs not valide");
-            Intent intent = new Intent(Activity_00_Start.this, PreferenceActivity.class );
-            startActivity(intent);
+        if (!checkMySelfe())
             return;
-        }
-        Log.v(TAG, "iAmHost() clicked");
         Intent intent = new Intent(Activity_00_Start.this, Activity_11_EnterViaQrNfc.class);
         startActivity(intent);
+    }
+
+    private boolean checkMySelfe(){
+        Log.v(TAG,"Check mySelfe()");
+        MySelf me = new MySelf(Activity_00_Start.this);
+        if (!me.isValide()) {
+            Toast.makeText(this, "Eigenangaben sind nicht vollständig", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Activity_00_Start.this, PreferenceActivity.class);
+            startActivity(intent);
+            Log.v(TAG,"Check mySelfe(): false");
+            return false;
+        }
+        Log.v(TAG,"Check mySelfe(): true");
+        return true;
     }
 
 }

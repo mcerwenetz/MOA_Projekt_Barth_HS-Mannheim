@@ -77,12 +77,12 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     private void bindUI(){
         //Button und Textview zuweisen
-        btnLeave    = findViewById(R.id.btn_view_partic_leave);
-        btnPartic   = findViewById(R.id.btn_view_partic_particlist);
+        btnLeave    = findViewById(R.id.btn_14_leave);
+        btnPartic   = findViewById(R.id.btn_14_particpantlist);
 
-        tvRoom      = findViewById(R.id.tv_view_partic_roomname);
-        tvOpenClose = findViewById(R.id.tv_view_partic_statustext);
-        tvTimeout   = findViewById(R.id.tv_view_partic_timeouttext);
+        tvRoom      = findViewById(R.id.tv_14_roomname_value);
+        tvOpenClose = findViewById(R.id.tv_14_status_value);
+        tvTimeout   = findViewById(R.id.tv_14_timeout_value);
 
         timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout,
                 DateTime.now().getMillis());

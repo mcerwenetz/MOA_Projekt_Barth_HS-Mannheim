@@ -14,7 +14,7 @@
             android:orientation="horizontal"
             android:layout_weight="0.1">
             <TextView
-                android:id="@+id/tv_view_partic_room"
+                android:id="@+id/tv_14_roomname"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Raum:"
@@ -24,7 +24,7 @@
                 android:gravity="center"
                 />
             <TextView
-                android:id="@+id/tv_view_partic_roomname"
+                android:id="@+id/tv_14_roomname_value"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="0"
@@ -39,7 +39,7 @@
             android:orientation="horizontal"
             android:layout_weight="0.1">
             <TextView
-                android:id="@+id/tv_view_partic_status"
+                android:id="@+id/tv_14_status"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Status:"
@@ -49,7 +49,7 @@
                 android:gravity="center"
                 />
             <TextView
-                android:id="@+id/tv_view_partic_statustext"
+                android:id="@+id/tv_14_status_value"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="offen/geschlossen"
@@ -64,7 +64,7 @@
             android:orientation="horizontal"
             android:layout_weight="0.1">
             <TextView
-                android:id="@+id/tv_view_partic_timeout"
+                android:id="@+id/tv_14_timeout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Timeout in:"
@@ -74,7 +74,7 @@
                 android:gravity="center"
                 />
             <TextView
-                android:id="@+id/tv_view_partic_timeouttext"
+                android:id="@+id/tv_14_timeout_value"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="00:00:00"
@@ -89,7 +89,7 @@
         android:orientation="vertical"
         android:layout_weight="1">
         <Button
-            android:id="@+id/btn_view_partic_leave"
+            android:id="@+id/btn_14_leave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -99,7 +99,7 @@
             />
 
         <Button
-            android:id="@+id/btn_view_partic_particlist"
+            android:id="@+id/btn_14_particpantlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

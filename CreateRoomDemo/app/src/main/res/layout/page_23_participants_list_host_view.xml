@@ -28,7 +28,7 @@
     </LinearLayout>
 
     <ListView
-        android:id="@+id/lv_participant"
+        android:id="@+id/lv_23_participant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

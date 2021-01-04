@@ -24,15 +24,12 @@ import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_15_ParticipantViewParticipant.class.getCanonicalName();
     final static String INTENT_ROOM_ID = "roomId";
+    ListView lv;
     private Long roomId = (long) 0;
-
     private RoomItem roomItem = null;
     private ArrayList<ParticipantItem> participantItemArrayList;
     private ParticipantRepository participantRepository;
     private RoomRepository roomRepository;
-
-    ListView lv;
-
     private ListAdapter_15_ParticipantParticipant adapter;
 
     Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
@@ -50,7 +47,7 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
         Log.v(TAG, "OnCreate ParticipantParticipantActivity");
 
         adapter = new ListAdapter_15_ParticipantParticipant(this, participantItemArrayList);
-        lv = findViewById(R.id.lv_participant_roomlist);
+        lv = findViewById(R.id.lv_15_participants);
         lv.setAdapter(adapter);
 
         //Holen der ID aus der Datenbank

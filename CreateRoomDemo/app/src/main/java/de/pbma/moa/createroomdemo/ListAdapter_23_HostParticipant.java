@@ -32,15 +32,15 @@ public class ListAdapter_23_HostParticipant extends ArrayAdapter<ParticipantItem
         View entityView = convertView;
         TextView view1 = null;
         if (entityView != null)
-            view1 = entityView.findViewById(R.id.tv_participant_name);
+            view1 = entityView.findViewById(R.id.tv_23_listview_participantname);
         if (entityView == null || view1 == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             entityView = layoutInflater.inflate(R.layout.page_23_participants_list_host_view, parent, false);
-            view1 = entityView.findViewById(R.id.tv_participant_name);
+            view1 = entityView.findViewById(R.id.tv_23_listview_participantname);
         }
-        TextView view2 = entityView.findViewById(R.id.tv_participant_extra);
-        TextView view3 = entityView.findViewById(R.id.tv_participant_enter);
-        TextView view4 = entityView.findViewById(R.id.tv_participant_exit);
+        TextView view2 = entityView.findViewById(R.id.tv_23_listview_participantextra);
+        TextView view3 = entityView.findViewById(R.id.tv_23_listview_participantentertime);
+        TextView view4 = entityView.findViewById(R.id.tv_23_listview_participantexittime);
 
         ParticipantItem item = values.get(position);
         view1.setText(item.name);

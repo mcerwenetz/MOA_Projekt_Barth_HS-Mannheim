@@ -84,12 +84,12 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     }
 
     private void bindUI() {
-        tvroomname = findViewById(R.id.tv_view_host_roomname);
-        tvstatus = findViewById(R.id.tv_view_host_statustext);
-        tvtimeout = findViewById(R.id.tv_view_host_timeouttext);
-        btnopen = findViewById(R.id.btn_view_host_close);
-        btntimeout = findViewById(R.id.btn_view_host_timechange);
-        btnpartic = findViewById(R.id.btn_view_host_particlist);
+        tvroomname = findViewById(R.id.tv_22_roomname_value);
+        tvstatus = findViewById(R.id.tv_22_roomstatus_value);
+        tvtimeout = findViewById(R.id.tv_22_timeout_value);
+        btnopen = findViewById(R.id.btn_22_closeroom);
+        btntimeout = findViewById(R.id.btn_22_changetimeout);
+        btnpartic = findViewById(R.id.btn_22_partiicipantlist);
         timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout,
                 DateTime.now().getMillis());
         btnpartic.setOnClickListener(this::onViewParticipants);
@@ -151,7 +151,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.room_host_detail_activity_menu, menu);
+        inflater.inflate(R.menu.menu_22_room_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -218,7 +218,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     public void callAlertDialog_QR(Drawable draw) {
         LayoutInflater qrDialogInflater = LayoutInflater.from(this);
-        View view = qrDialogInflater.inflate(R.layout.pop_up_qr, null);
+        View view = qrDialogInflater.inflate(R.layout.pop_up_22_qr, null);
 
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
@@ -231,7 +231,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     public void callAlertDialog_URI() {
         LayoutInflater uriDialogInflater = LayoutInflater.from(this);
-        View view = uriDialogInflater.inflate(R.layout.pop_up_uri, null);
+        View view = uriDialogInflater.inflate(R.layout.pop_up_22_uri, null);
 
         TextView tvUri = view.findViewById(R.id.tv_show_uri);
         tvUri.setText("URI: " + item.getUri());

@@ -62,7 +62,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
         setContentView(R.layout.page_23_participants_list_host_view);
 
         adapter = new ListAdapter_23_HostParticipant(this, participantItemArrayList);
-        lv = findViewById(R.id.lv_participant);
+        lv = findViewById(R.id.lv_23_participant);
         lv.setAdapter(adapter);
 
 
@@ -86,7 +86,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.participant_host_list, menu);
+        inflater.inflate(R.menu.menu_23_participants, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

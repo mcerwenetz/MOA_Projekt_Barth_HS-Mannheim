@@ -62,11 +62,11 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
         setContentView(R.layout.page_21_create_room);
 
-        btnCreate = findViewById(R.id.btn_raum_create);
-        btnEndDate = findViewById(R.id.btn_raum_end_date);
-        btnEndTime = findViewById(R.id.btn_raum_end_time);
-        btnStartDate = findViewById(R.id.btn_raum_start_date);
-        btnStartTime = findViewById(R.id.btn_raum_start_time);
+        btnCreate = findViewById(R.id.btn_21_create);
+        btnEndDate = findViewById(R.id.btn_21_enddate);
+        btnEndTime = findViewById(R.id.btn_21_endtime);
+        btnStartDate = findViewById(R.id.btn_21_startdate);
+        btnStartTime = findViewById(R.id.btn_21_starttime);
 
         btnEndDate.setText(String.format("%02d.%02d.%02d", day_end, (month_end + 1), year_end));
         btnStartDate.setText(String.format("%02d.%02d.%02d", day_start, (month_start + 1), year_start));
@@ -74,10 +74,10 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         btnStartTime.setText(String.format("%02d:%02d", hour_start, minute_start));
 
 
-        etAdresse = findViewById(R.id.et_raum_address);
-        etExtra = findViewById(R.id.et_raum_extra);
-        etOrt = findViewById(R.id.et_raum_ort);
-        etTitel = findViewById(R.id.et_raum_titel);
+        etAdresse = findViewById(R.id.et_21_raumaddress);
+        etExtra = findViewById(R.id.et_21_raumextra);
+        etOrt = findViewById(R.id.et_21_raumort);
+        etTitel = findViewById(R.id.et_21_raumtitel);
 
         btnStartTime.setOnClickListener(this::setBtnStartTimeClicked);
         btnStartDate.setOnClickListener(this::setBtnStartDateClicked);

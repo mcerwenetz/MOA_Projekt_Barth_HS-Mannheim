@@ -26,8 +26,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
 
         setContentView(R.layout.page_11_qr_nfc);
-        btnNfc = findViewById(R.id.btn_nfc);
-        btnQr = findViewById(R.id.btn_qr);
+        btnNfc = findViewById(R.id.btn_11_nfc);
+        btnQr = findViewById(R.id.btn_11_qr);
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);

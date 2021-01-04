@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tv_roomname"
+        android:id="@+id/tv_20_listview_roomname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-black"
@@ -13,7 +13,7 @@
     </TextView>
 
     <TextView
-        android:id="@+id/tv_roomhost"
+        android:id="@+id/tv_20_listview_roomhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -21,7 +21,7 @@
     </TextView>
 
     <TextView
-        android:id="@+id/tv_roomstarttime"
+        android:id="@+id/tv_20_listview_roomdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"

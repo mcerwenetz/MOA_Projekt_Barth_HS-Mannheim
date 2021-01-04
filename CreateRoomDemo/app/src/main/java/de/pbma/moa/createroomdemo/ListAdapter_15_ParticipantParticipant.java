@@ -30,13 +30,13 @@ public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<Particip
         View entityView = convertView;
         TextView view1 = null;
         if (entityView != null)
-            view1 = entityView.findViewById(R.id.tv_listview_partic_name);
+            view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         if (entityView == null || view1 == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             entityView = layoutInflater.inflate(R.layout.page_15_participants_list_participants_view, parent, false);
-            view1 = entityView.findViewById(R.id.tv_listview_partic_name);
+            view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         }
-        TextView view2 = entityView.findViewById(R.id.tv_listview_partic_matnr);
+        TextView view2 = entityView.findViewById(R.id.tv_15_listview_participantextra);
 
         ParticipantItem item = values.get(position);
         view1.setText(item.name);

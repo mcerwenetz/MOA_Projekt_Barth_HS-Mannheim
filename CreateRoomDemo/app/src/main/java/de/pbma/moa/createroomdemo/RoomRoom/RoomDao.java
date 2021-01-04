@@ -22,16 +22,22 @@ public abstract class RoomDao {
     abstract void delete(RoomItem item);
 
     @Query("SELECT * FROM  dbRoom WHERE id=:roomid")
-    abstract  LiveData<RoomItem> getById (long roomid);
+    abstract LiveData<RoomItem> getById(long roomid);
 
     @Query("SELECT * FROM  dbRoom WHERE id=:roomid")
-    abstract  RoomItem getItemByIdNow (long roomid);
+    abstract RoomItem getItemByIdNow(long roomid);
 
     @Query("DELETE FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
-    abstract void deleteAllOlderTwoWeeks(long timeNow,long timeSpanOfTwoWeeks );
+    abstract void deleteAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
 
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
+
+    @Query("SELECT * FROM  dbRoom WHERE eMail=:eMail OR host = :name OR phone =:phone")
+    abstract LiveData<List<RoomItem>> getAllFromMeAsHost(String name, String phone, String eMail);
+
+    @Query("SELECT * FROM  dbRoom WHERE eMail !=:eMail AND host != :name AND phone !=:phone ORDER BY startTime")
+    abstract LiveData<List<RoomItem>> getAllFromExceptMeAsHost(String name, String phone, String eMail);
 
 //    @Query("UPDATE dbRoom SET open=0 WHERE id=:roomid")
 //    abstract void closeRoomById(long roomid);
