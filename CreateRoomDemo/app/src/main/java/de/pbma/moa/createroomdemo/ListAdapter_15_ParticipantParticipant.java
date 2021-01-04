@@ -33,7 +33,7 @@ public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<Particip
             view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         if (entityView == null || view1 == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            entityView = layoutInflater.inflate(R.layout.page_15_participants_list_participants_view, parent, false);
+            entityView = layoutInflater.inflate(R.layout.list_15_item_participant_view_participant, parent, false);
             view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         }
         TextView view2 = entityView.findViewById(R.id.tv_15_listview_participantextra);
