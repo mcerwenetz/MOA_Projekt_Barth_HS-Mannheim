@@ -45,6 +45,7 @@ public class RoomRepository {
     public LiveData<RoomItem> getID(long searchid) {
         return dao.getById(searchid);
     }
+    public RoomItem getItemByIdNow(long searchid){return dao.getItemByIdNow(searchid);}
 
     public LiveData<List<RoomItem>> getDbAll() {
         return roomList;
