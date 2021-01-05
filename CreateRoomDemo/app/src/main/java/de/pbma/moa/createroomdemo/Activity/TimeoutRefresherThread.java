@@ -65,4 +65,8 @@ public class TimeoutRefresherThread {
                 .toFormatter();
         return formatter.print(period);
     }
+
+    public boolean isAlive() {
+        return this.refreshThread.isAlive();
+    }
 }
