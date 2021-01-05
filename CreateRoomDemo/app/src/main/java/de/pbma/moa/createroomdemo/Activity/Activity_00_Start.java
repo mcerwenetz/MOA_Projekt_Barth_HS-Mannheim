@@ -35,6 +35,10 @@ public class Activity_00_Start extends AppCompatActivity {
 
         btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
+
+        Intent intent = new Intent(this, RoomLivecycleService.class);
+        startService(intent);
+
     }
 
 
