@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import java.io.File;
 import java.net.URLConnection;
+import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
@@ -56,6 +57,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private RoomRepository repo;
     private LiveData<RoomItem> liveData;
     private TimeoutRefresherThread timeoutRefresherThread;
+    private AtomicLong endtimeAtomic;
 
 
     @Override
@@ -63,6 +65,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_22_room_host_detail_activity);
+        endtimeAtomic = new AtomicLong(0);
         bindUI();
 
         //Holt die Daten aus der Bank
@@ -73,10 +76,23 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             liveData.observe(this, new Observer<RoomItem>() {
                 @Override
                 public void onChanged(RoomItem roomItem) {
-                    updateRoom(roomItem);
                     Activity_22_RoomHostDetail.this.item = roomItem;
+                    updateRoom(roomItem);
+                    //Speichern für Nebenläufigkeit
+                    //So profitieren alle von Livedata
+                    endtimeAtomic.set(item.endTime);
+                    //der Timeoutrefresherthread wird nur gestartet wenn
+                    //Der Raum offen ist.
                     if (item.open) {
-                        timeoutRefresherThread.endtimeChanged(item.endTime);
+                        timeoutRefresherThread.initialStart();
+                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
+                        //werden. Aber nur wenn er läuft.
+                    } else {
+                        if (timeoutRefresherThread.isAlive()) {
+                            timeoutRefresherThread.stop();
+                            //Textview setzen nicht vergessen
+                            tvtimeout.setText("00:00:00");
+                        }
                     }
                 }
             });
@@ -90,8 +106,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
         btnpartic = findViewById(R.id.btn_22_partiicipantlist);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout,
-                DateTime.now().getMillis());
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout, endtimeAtomic);
         btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
         btntimeout.setOnClickListener(this::onChangeTimeout);
