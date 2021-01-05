@@ -23,7 +23,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     final static String ID = "RoomID";
     long roomId;
     private Button btnLeave, btnPartic;
-    private TextView tvRoom, tvOpenClose, tvTimeout;
+    private TextView tvRoom, tvOpenClose, tvTimeout,tvHost;
     private RoomItem itemPartic;
     private RoomRepository repoPartic;
     private LiveData<RoomItem> liveDataPartic;
@@ -80,6 +80,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         btnLeave = findViewById(R.id.btn_14_leave);
         btnPartic = findViewById(R.id.btn_14_particpantlist);
 
+        tvHost = findViewById(R.id.tv_14_kontakt_daten);
         tvRoom = findViewById(R.id.tv_14_roomname_value);
         tvOpenClose = findViewById(R.id.tv_14_status_value);
         tvTimeout = findViewById(R.id.tv_14_timeout_value);
@@ -88,6 +89,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
         btnLeave.setOnClickListener(this::onClickBtnLeave);
         btnPartic.setOnClickListener(this::onClickBtnPartic);
+
     }
 
 
