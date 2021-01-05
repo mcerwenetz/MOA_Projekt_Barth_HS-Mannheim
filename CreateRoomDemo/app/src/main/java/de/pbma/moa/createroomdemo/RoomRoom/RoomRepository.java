@@ -71,6 +71,19 @@ public class RoomRepository {
         return dao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
     }
 
+    public void closeById(long roomId) {
+        new Thread(() -> {
+            dao.closeRoomById(roomId);
+        }).start();
+    }
+
+    public void openById(long roomId) {
+        new Thread(() -> {
+            dao.openRoomById(roomId);
+        }).start();
+    }
+
+
     public static interface AfterInsert {
         public void inserted(RoomItem item);
     }
