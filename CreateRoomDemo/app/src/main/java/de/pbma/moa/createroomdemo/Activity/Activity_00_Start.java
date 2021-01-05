@@ -37,7 +37,6 @@ public class Activity_00_Start extends AppCompatActivity {
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
     }
 
-
     //Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
