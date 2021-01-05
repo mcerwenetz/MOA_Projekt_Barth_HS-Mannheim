@@ -49,7 +49,6 @@ public class TimeoutRefresherThread {
             keepRefreshing.set(true);
             this.refreshThread.start();
         }
-        this.endTime.set(endTime);
     }
 
     private String formatTimeout(long endTime) {
