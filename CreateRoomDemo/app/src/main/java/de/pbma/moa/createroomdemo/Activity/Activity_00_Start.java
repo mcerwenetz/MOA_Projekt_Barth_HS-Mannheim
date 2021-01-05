@@ -41,6 +41,14 @@ public class Activity_00_Start extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, RoomLivecycleService.class);
+        stopService(intent);
+    }
+
     //Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

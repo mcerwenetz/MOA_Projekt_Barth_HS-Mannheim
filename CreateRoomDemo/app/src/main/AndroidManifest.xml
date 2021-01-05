@@ -35,7 +35,7 @@
         <activity android:name=".Activity.Activity_15_ParticipantViewParticipant"/>
         <activity android:name=".Activity.Activity_10_RoomListVisited"/>
         <activity
-            android:name=".Activity.Activity_21_CreateNewRoom"> <!--android:noHistory="true"> -->
+            android:name=".Activity.Activity_21_CreateNewRoom">
         </activity>
         <service android:name=".Activity.RoomLivecycleService"/>
     </application>
