@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 
 public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<ParticipantItem> {
     private Context context;

@@ -20,17 +20,15 @@ import androidx.lifecycle.Observer;
 import java.io.File;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.ListAdapter_23_HostParticipant;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 public class Activity_23_HostViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_23_HostViewParticipant.class.getCanonicalName();
@@ -38,8 +36,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
     private RoomItem roomItem = null;
 
     private ArrayList<ParticipantItem> participantItemArrayList;
-    private ParticipantRepository participantRepository;
-    private RoomRepository roomRepository;
+    private Repository repository;
     private ListView lv;
     private ListAdapter_23_HostParticipant adapter;
 
@@ -55,8 +52,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
         lv = findViewById(R.id.lv_23_participant);
         lv.setAdapter(adapter);
 
-        roomRepository = new RoomRepository(Activity_23_HostViewParticipant.this);
-        participantRepository = new ParticipantRepository(Activity_23_HostViewParticipant.this);
+        repository = new Repository(Activity_23_HostViewParticipant.this);
 
         Long roomId = (long) 0;
         Bundle bundle = getIntent().getExtras();
@@ -64,7 +60,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
 
-        participantRepository.getParticipantsOfRoom(roomId).observe(this, new Observer<List<ParticipantItem>>() {
+        repository.getParticipantsOfRoom(roomId).observe(this, new Observer<List<ParticipantItem>>() {
             @Override
             public void onChanged(List<ParticipantItem> participantItems) {
                 participantItemArrayList.clear();
@@ -72,7 +68,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
-        roomRepository.getID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
+        repository.getID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_23_HostViewParticipant.this.roomItem = roomItem;

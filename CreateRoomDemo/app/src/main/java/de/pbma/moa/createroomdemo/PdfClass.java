@@ -17,7 +17,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
 
 public class PdfClass {

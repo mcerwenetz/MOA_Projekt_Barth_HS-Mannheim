@@ -42,7 +42,7 @@ import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 //Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
 //und der Status des raus dargestellt.
@@ -54,7 +54,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private TextView tvtimeout, tvstatus, tvroomname;
     private Button btnopen, btntimeout, btnpartic;
     private RoomItem item;
-    private RoomRepository repo;
+    private Repository repo;
     private LiveData<RoomItem> liveData;
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic;
@@ -69,7 +69,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         bindUI();
 
         //Holt die Daten aus der Bank
-        repo = new RoomRepository(this);
+        repo = new Repository(this);
         roomid = getIntent().getExtras().getLong(ID, -1);
         if (roomid != -1) {
             liveData = repo.getID(roomid);

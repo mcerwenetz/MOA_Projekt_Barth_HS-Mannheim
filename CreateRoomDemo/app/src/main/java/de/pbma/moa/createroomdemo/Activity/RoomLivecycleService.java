@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 public class RoomLivecycleService extends Service {
 
     private static final String TAG = "HostRoomCloserService";
-    private RoomRepository repository;
+    private Repository repository;
     private AtomicBoolean keepRunning;
     private Thread checkingThread;
     private List<RoomItem> closedrooms;
@@ -35,7 +35,7 @@ public class RoomLivecycleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        repository = new RoomRepository(this);
+        repository = new Repository(this);
         keepRunning =new AtomicBoolean(false);
         Log.v(TAG,"Service created");
     }

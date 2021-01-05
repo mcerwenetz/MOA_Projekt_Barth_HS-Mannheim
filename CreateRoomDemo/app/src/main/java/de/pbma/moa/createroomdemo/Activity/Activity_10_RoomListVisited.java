@@ -18,13 +18,13 @@ import de.pbma.moa.createroomdemo.ListAdapter_20_HostRoom;
 import de.pbma.moa.createroomdemo.Preferences.MySelf;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 public class Activity_10_RoomListVisited extends AppCompatActivity {
     final static String TAG = Activity_10_RoomListVisited.class.getCanonicalName();
     private ArrayList<RoomItem> roomList;
     private ListView lv;
-    private RoomRepository roomRepo;
+    private Repository roomRepo;
     private ListAdapter_20_HostRoom adapter;
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
@@ -54,7 +54,7 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
         adapter = new ListAdapter_20_HostRoom(this, roomList);
         lv = findViewById(R.id.lv_10_rooms);
         lv.setAdapter(adapter);
-        roomRepo = new RoomRepository(this);
+        roomRepo = new Repository(this);
         MySelf me = new MySelf(this);
         roomRepo.getDbAllFromExceptMeAsHost(
                 me.getFirstName(),

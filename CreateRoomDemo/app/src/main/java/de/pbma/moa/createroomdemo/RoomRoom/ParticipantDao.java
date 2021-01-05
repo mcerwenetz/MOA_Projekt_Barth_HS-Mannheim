@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.RoomParticipant;
+package de.pbma.moa.createroomdemo.RoomRoom;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -8,6 +8,8 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import java.util.List;
+
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 
 @Dao
 public abstract class ParticipantDao {

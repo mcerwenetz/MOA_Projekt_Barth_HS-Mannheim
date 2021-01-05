@@ -6,30 +6,32 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-public class RoomRepository {
-    private final RoomDao dao; //final hinzugefuegt
+public class Repository {
+    private final RoomDao roomDao; //final hinzugefuegt
+    private ParticipantDao participantDao;
     private LiveData<List<RoomItem>> roomList;
     private Context context;
 
-    public RoomRepository(Context context) {
+    public Repository(Context context) {
         this.context = context;
-        RoomDatabase roomDatabase = RoomDatabase.getInstance(context);
-        dao = roomDatabase.dao();
-        roomList = dao.getAll();
+        AppDatabase appDatabase = AppDatabase.getInstance(context);
+        roomDao = appDatabase.roomDao();
+        participantDao=appDatabase.participantDao();
+        roomList = roomDao.getAll();
     }
 
     public void deleteOlderTwoWeeks(long now) {
         final long timeSpanOfTwoWeeks = 1209600000;
         new Thread(() -> {
-            dao.deleteAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
+            roomDao.deleteAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
         }).start();
         ;
     }
 
     public void addEntry(RoomItem item, AfterInsert afterInsert) {
         new Thread(() -> {
-            long id = dao.insert(item);
-            RoomItem newItem = dao.getItemByIdNow(id);
+            long id = roomDao.insert(item);
+            RoomItem newItem = roomDao.getItemByIdNow(id);
             if (afterInsert != null) {
                 afterInsert.inserted(newItem);
             }
@@ -38,16 +40,16 @@ public class RoomRepository {
 
     public void update(RoomItem item) {
         new Thread(() -> {
-            dao.update(item);
+            roomDao.update(item);
         }).start();
     }
 
     public LiveData<RoomItem> getID(long searchid) {
-        return dao.getById(searchid);
+        return roomDao.getById(searchid);
     }
 
     public RoomItem getItemByIdNow(long searchid) {
-        return dao.getItemByIdNow(searchid);
+        return roomDao.getItemByIdNow(searchid);
     }
 
     public LiveData<List<RoomItem>> getDbAll() {
@@ -55,37 +57,57 @@ public class RoomRepository {
     }
 
     public List<RoomItem> getAllClosedRooms(){
-        return dao.getAllClosedRooms();
+        return roomDao.getAllClosedRooms();
     }
 
     public List<RoomItem> getAllOpenRooms(){
-        return dao.getAllOpenRooms();
+        return roomDao.getAllOpenRooms();
     }
 
 
     public LiveData<List<RoomItem>> getDbAllFromMeAsHost(String vorname, String name, String email, String phone) {
-        return dao.getAllFromMeAsHost(vorname + " " + name, phone, email);
+        return roomDao.getAllFromMeAsHost(vorname + " " + name, phone, email);
     }
 
     public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost(String vorname, String name, String email, String phone) {
-        return dao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
+        return roomDao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
     }
 
     public void closeById(long roomId) {
         new Thread(() -> {
-            dao.closeRoomById(roomId);
+            roomDao.closeRoomById(roomId);
         }).start();
     }
 
     public void openById(long roomId) {
         new Thread(() -> {
-            dao.openRoomById(roomId);
+            roomDao.openRoomById(roomId);
         }).start();
     }
 
 
     public static interface AfterInsert {
         public void inserted(RoomItem item);
+    }
+
+    public void deleteParticipantsOfRoom(long roomId) {
+        new Thread(() -> {
+            participantDao.deleteParticipantsOfRoom(roomId);
+        }).start();
+    }
+
+    public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
+        return participantDao.getParticipantsOfRoom(roomId);
+    }
+
+    public LiveData<List<ParticipantItem>> getAll() {
+        return participantDao.getAll();
+    }
+
+    public void addEntry(ParticipantItem item) {
+        new Thread(() -> {
+            participantDao.insert(item);
+        }).start();
     }
 }
 
