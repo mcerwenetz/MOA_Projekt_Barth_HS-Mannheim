@@ -18,8 +18,8 @@ public class TimeoutRefresherThread {
     private AtomicLong endTime;
     private Thread refreshThread;
 
-    public TimeoutRefresherThread(Activity activity, TextView tv, long endtime) {
-        endTime = new AtomicLong(endtime);
+    public TimeoutRefresherThread(Activity activity, TextView tv, AtomicLong endTime) {
+        this.endTime = endTime;
         this.tvtimeout = tv;
         this.activity = activity;
         refreshThread = new Thread(() -> {
@@ -44,7 +44,7 @@ public class TimeoutRefresherThread {
         }
     }
 
-    public void endtimeChanged(long endTime) {
+    public void initialStart() {
         if (!refreshThread.isAlive()) {
             keepRefreshing.set(true);
             this.refreshThread.start();
