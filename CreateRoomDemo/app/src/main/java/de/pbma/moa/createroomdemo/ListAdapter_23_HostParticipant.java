@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 
 public class ListAdapter_23_HostParticipant extends ArrayAdapter<ParticipantItem> {
     private final Context context;

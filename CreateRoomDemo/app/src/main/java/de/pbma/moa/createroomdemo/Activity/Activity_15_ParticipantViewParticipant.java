@@ -9,15 +9,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.ListAdapter_15_ParticipantParticipant;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantItem;
-import de.pbma.moa.createroomdemo.RoomParticipant.ParticipantRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 //Activity dient zur Ansicht der Teilnehmerliste aus der Ansicht eines Teinehmers hierfür wird nur der Name
 //und die Matrikelnummer eines Teilnehmers angezeigt.
@@ -28,8 +26,7 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
     private ListView lv;
     private RoomItem roomItem = null;
     private ArrayList<ParticipantItem> participantItemArrayList;
-    private ParticipantRepository participantRepository;
-    private RoomRepository roomRepository;
+    private Repository repository;
     private ListAdapter_15_ParticipantParticipant adapter;
 
     Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
@@ -59,8 +56,8 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
 
-        roomRepository = new RoomRepository(Activity_15_ParticipantViewParticipant.this);
-        roomRepository.getID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
+        repository = new Repository(Activity_15_ParticipantViewParticipant.this);
+        repository.getID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_15_ParticipantViewParticipant.this.roomItem = roomItem;

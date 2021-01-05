@@ -23,7 +23,7 @@ import de.pbma.moa.createroomdemo.Preferences.MySelf;
 import de.pbma.moa.createroomdemo.Preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
+import de.pbma.moa.createroomdemo.RoomRoom.Repository;
 
 public class Activity_21_CreateNewRoom extends AppCompatActivity {
     final static String TAG = Activity_21_CreateNewRoom.class.getCanonicalName();
@@ -40,14 +40,14 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
     int minute_start, hour_start, day_start, month_start, year_start;
     int minute_end, hour_end, day_end, month_end, year_end;
     long dataid;
-    RoomRepository repo;
+    Repository repo;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
-        repo = new RoomRepository(this);
+        repo = new Repository(this);
 
         calendar = Calendar.getInstance();
         year_end = calendar.get(Calendar.YEAR);
