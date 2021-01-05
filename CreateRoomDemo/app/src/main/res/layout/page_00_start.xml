@@ -5,13 +5,13 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_start_host"
+        android:id="@+id/btn_00_start_host"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Host" />
 
     <Button
-        android:id="@+id/btn_start_participant"
+        android:id="@+id/btn_00_start_participant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Participant" />

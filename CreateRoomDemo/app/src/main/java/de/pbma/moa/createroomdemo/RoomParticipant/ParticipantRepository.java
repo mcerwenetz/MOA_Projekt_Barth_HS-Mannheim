@@ -27,8 +27,14 @@ public class ParticipantRepository {
         return dao.getParticipantsOfRoom(roomId);
     }
 
+    public LiveData<List<ParticipantItem>> getAll() {
+        return dao.getAll();
+    }
+
     public void addEntry(ParticipantItem item) {
-         dao.insert(item);
+        new Thread(() -> {
+            dao.insert(item);
+        }).start();
     }
 
 }

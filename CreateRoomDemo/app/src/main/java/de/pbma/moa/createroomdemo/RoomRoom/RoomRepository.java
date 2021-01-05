@@ -50,6 +50,14 @@ public class RoomRepository {
         return roomList;
     }
 
+    public LiveData<List<RoomItem>> getDbAllFromMeAsHost(String vorname, String name, String email, String phone) {
+        return dao.getAllFromMeAsHost(vorname + " " + name, phone, email);
+    }
+
+    public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost(String vorname, String name, String email, String phone) {
+        return dao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
+    }
+
     public static interface AfterInsert {
         public void inserted(RoomItem item);
     }

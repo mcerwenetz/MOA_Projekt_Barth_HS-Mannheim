@@ -16,7 +16,7 @@
             android:text="@string/raum_titel" />
 
         <EditText
-            android:id="@+id/et_raum_titel"
+            android:id="@+id/et_21_raumtitel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20sp"
@@ -28,7 +28,7 @@
             android:text="@string/raum_extra_optional" />
 
         <EditText
-            android:id="@+id/et_raum_extra"
+            android:id="@+id/et_21_raumextra"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20sp"
@@ -40,7 +40,7 @@
             android:text="@string/raum_ort" />
 
         <EditText
-            android:id="@+id/et_raum_ort"
+            android:id="@+id/et_21_raumort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20sp"
@@ -52,7 +52,7 @@
             android:text="@string/raum_adresse" />
 
         <EditText
-            android:id="@+id/et_raum_address"
+            android:id="@+id/et_21_raumaddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20sp"
@@ -73,7 +73,7 @@
                 android:textSize="17sp" />
 
             <Button
-                android:id="@+id/btn_raum_start_date"
+                android:id="@+id/btn_21_startdate"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
                 android:textColor="@color/gray30" />
 
             <Button
-                android:id="@+id/btn_raum_start_time"
+                android:id="@+id/btn_21_starttime"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
                 android:textSize="17sp" />
 
             <Button
-                android:id="@+id/btn_raum_end_date"
+                android:id="@+id/btn_21_enddate"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                 android:textColor="@color/gray30" />
 
             <Button
-                android:id="@+id/btn_raum_end_time"
+                android:id="@+id/btn_21_endtime"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_raum_create"
+                android:id="@+id/btn_21_create"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

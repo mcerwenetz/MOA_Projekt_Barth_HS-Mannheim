@@ -31,7 +31,7 @@ public class QrCodeManger {
             scanIntegrator.setBeepEnabled(true);
             scanIntegrator.setOrientationLocked(true);
             scanIntegrator.setBarcodeImageEnabled(true);
-            scanIntegrator.setTimeout(10000);   //10ec
+            //scanIntegrator.setTimeout(10000);   //10ec timeout
             scanIntegrator.initiateScan();
         } catch (Exception e) {
             Log.v(TAG, "callScanner() " + e.getMessage());

@@ -5,13 +5,13 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_qr"
+        android:id="@+id/btn_11_qr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="QR" />
 
     <Button
-        android:id="@+id/btn_nfc"
+        android:id="@+id/btn_11_nfc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="NFC" />

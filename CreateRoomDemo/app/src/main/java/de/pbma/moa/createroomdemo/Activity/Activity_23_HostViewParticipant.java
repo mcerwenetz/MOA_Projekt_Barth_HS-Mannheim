@@ -35,45 +35,43 @@ import de.pbma.moa.createroomdemo.RoomRoom.RoomRepository;
 public class Activity_23_HostViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_23_HostViewParticipant.class.getCanonicalName();
     final static String INTENT_ROOM_ID = "roomId";
-    private Long roomId = (long) 0;
     private RoomItem roomItem = null;
+
     private ArrayList<ParticipantItem> participantItemArrayList;
     private ParticipantRepository participantRepository;
     private RoomRepository roomRepository;
-
     private ListView lv;
     private ListAdapter_23_HostParticipant adapter;
 
-    Observer<List<ParticipantItem>> observer = new Observer<List<ParticipantItem>>() {
-        @Override
-        public void onChanged(List<ParticipantItem> changedTodos) {
-            participantItemArrayList.clear();
-            participantItemArrayList.addAll(changedTodos);
-            adapter.notifyDataSetChanged();
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
-        participantItemArrayList = new ArrayList<>();
-        test(); //TODO zeigt zum testen einfach teilnehmer an
         setContentView(R.layout.page_23_participants_list_host_view);
 
-        adapter = new ListAdapter_23_HostParticipant(this, participantItemArrayList);
-        lv = findViewById(R.id.lv_participant);
+        participantItemArrayList = new ArrayList<>();
+        adapter = new ListAdapter_23_HostParticipant(Activity_23_HostViewParticipant.this, participantItemArrayList);
+        lv = findViewById(R.id.lv_23_participant);
         lv.setAdapter(adapter);
 
+        roomRepository = new RoomRepository(Activity_23_HostViewParticipant.this);
+        participantRepository = new ParticipantRepository(Activity_23_HostViewParticipant.this);
 
+        Long roomId = (long) 0;
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
 
-        //participantRepository = new ParticipantRepository(this);
-       // participantRepository.getParticipantsOfRoom(roomId).observe(this, observer);
-        roomRepository = new RoomRepository(Activity_23_HostViewParticipant.this);
+        participantRepository.getParticipantsOfRoom(roomId).observe(this, new Observer<List<ParticipantItem>>() {
+            @Override
+            public void onChanged(List<ParticipantItem> participantItems) {
+                participantItemArrayList.clear();
+                participantItemArrayList.addAll(participantItems);
+                adapter.notifyDataSetChanged();
+            }
+        });
         roomRepository.getID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
@@ -86,7 +84,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.participant_host_list, menu);
+        inflater.inflate(R.menu.menu_23_participants, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -103,9 +101,9 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
 
         //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(Activity_23_HostViewParticipant.this);
-        if(roomItem==null)
+        if (roomItem == null)
             return;
-        File file = pdf.createPdfParticipantInfos(this.participantItemArrayList,this.roomItem);
+        File file = pdf.createPdfParticipantInfos(this.participantItemArrayList, this.roomItem);
 
         Log.v(TAG, "showPDF(" + file.getName() + ")");
         if (!file.exists()) {
@@ -126,21 +124,5 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
             Toast.makeText(Activity_23_HostViewParticipant.this, "Something wrong \n " + "file: " + file.getPath(), Toast.LENGTH_LONG).show();
             Log.e(TAG, e.getMessage());
         }
-    }
-
-
-    //TODO irgendwann entfernen
-    private void test(){
-        Date date = new Date();
-        ArrayList<ParticipantItem> list = new ArrayList<ParticipantItem>();
-        ParticipantItem item =  ParticipantItem.createParticipant("Raphael Barth", "1727882", "barthra@web.de", "+49 0176 42619753", 0, date.getTime());
-        item.exitTime = date.getTime()+100000;
-
-        list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);
-        list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);
-        list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);
-        list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);list.add(item);
-
-        this.participantItemArrayList = list;
     }
 }
