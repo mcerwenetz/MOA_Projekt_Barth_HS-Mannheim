@@ -37,6 +37,7 @@
         <activity
             android:name=".Activity.Activity_21_CreateNewRoom"> <!--android:noHistory="true"> -->
         </activity>
+        <service android:name=".Activity.RoomLivecycleService"/>
     </application>
 
 </manifest>

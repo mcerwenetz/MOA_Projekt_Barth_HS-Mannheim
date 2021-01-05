@@ -46,9 +46,22 @@ public class RoomRepository {
         return dao.getById(searchid);
     }
 
+    public RoomItem getItemByIdNow(long searchid) {
+        return dao.getItemByIdNow(searchid);
+    }
+
     public LiveData<List<RoomItem>> getDbAll() {
         return roomList;
     }
+
+    public List<RoomItem> getAllClosedRooms(){
+        return dao.getAllClosedRooms();
+    }
+
+    public List<RoomItem> getAllOpenRooms(){
+        return dao.getAllOpenRooms();
+    }
+
 
     public LiveData<List<RoomItem>> getDbAllFromMeAsHost(String vorname, String name, String email, String phone) {
         return dao.getAllFromMeAsHost(vorname + " " + name, phone, email);
@@ -57,6 +70,19 @@ public class RoomRepository {
     public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost(String vorname, String name, String email, String phone) {
         return dao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
     }
+
+    public void closeById(long roomId) {
+        new Thread(() -> {
+            dao.closeRoomById(roomId);
+        }).start();
+    }
+
+    public void openById(long roomId) {
+        new Thread(() -> {
+            dao.openRoomById(roomId);
+        }).start();
+    }
+
 
     public static interface AfterInsert {
         public void inserted(RoomItem item);
