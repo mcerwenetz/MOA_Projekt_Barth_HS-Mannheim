@@ -33,17 +33,24 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
 
+    @Query("SELECT * FROM  dbRoom WHERE open=1")
+    public abstract List<RoomItem> getAllOpenRooms();
+
+    @Query("SELECT * FROM  dbRoom WHERE open=0")
+    public abstract List<RoomItem> getAllClosedRooms();
+
     @Query("SELECT * FROM  dbRoom WHERE eMail=:eMail OR host = :name OR phone =:phone")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost(String name, String phone, String eMail);
 
     @Query("SELECT * FROM  dbRoom WHERE eMail !=:eMail AND host != :name AND phone !=:phone ORDER BY startTime")
     abstract LiveData<List<RoomItem>> getAllFromExceptMeAsHost(String name, String phone, String eMail);
 
-//    @Query("UPDATE dbRoom SET open=0 WHERE id=:roomid")
-//    abstract void closeRoomById(long roomid);
-//
-//    @Query("UPDATE dbRoom SET endTime=:endtime")
-//    abstract void updateTimeout(long endtime);
+    @Query("UPDATE dbroom SET open=0 WHERE id=:roomId")
+    public abstract void closeRoomById(long roomId);
+
+    @Query("UPDATE dbroom SET open=1 WHERE id=:roomId")
+    public abstract void openRoomById(long roomId);
+
 
 
 }

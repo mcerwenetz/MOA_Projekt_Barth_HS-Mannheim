@@ -45,11 +45,23 @@ public class RoomRepository {
     public LiveData<RoomItem> getID(long searchid) {
         return dao.getById(searchid);
     }
-    public RoomItem getItemByIdNow(long searchid){return dao.getItemByIdNow(searchid);}
+
+    public RoomItem getItemByIdNow(long searchid) {
+        return dao.getItemByIdNow(searchid);
+    }
 
     public LiveData<List<RoomItem>> getDbAll() {
         return roomList;
     }
+
+    public List<RoomItem> getAllClosedRooms(){
+        return dao.getAllClosedRooms();
+    }
+
+    public List<RoomItem> getAllOpenRooms(){
+        return dao.getAllOpenRooms();
+    }
+
 
     public LiveData<List<RoomItem>> getDbAllFromMeAsHost(String vorname, String name, String email, String phone) {
         return dao.getAllFromMeAsHost(vorname + " " + name, phone, email);
