@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.joda.time.DateTime;
+
 import java.util.Calendar;
 
 import de.pbma.moa.createroomdemo.Preferences.MySelf;
@@ -54,10 +56,10 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         month_start = calendar.get(Calendar.MONTH);
         day_end = calendar.get(Calendar.DAY_OF_MONTH);
         day_start = calendar.get(Calendar.DAY_OF_MONTH);
-        hour_end = calendar.get(Calendar.HOUR_OF_DAY)+1;
+        hour_end = calendar.get(Calendar.HOUR_OF_DAY) + 1;
         hour_start = calendar.get(Calendar.HOUR_OF_DAY);
-        minute_end = calendar.get(Calendar.MINUTE)+5;
-        minute_start = calendar.get(Calendar.MINUTE)+5;
+        minute_end = calendar.get(Calendar.MINUTE) + 5;
+        minute_start = calendar.get(Calendar.MINUTE) + 5;
 
 
         setContentView(R.layout.page_21_create_room);
@@ -209,7 +211,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         if (!me.isValide()) {
             Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
             Log.v(TAG, "prefs not valide");
-            Intent intent = new Intent(Activity_21_CreateNewRoom.this, PreferenceActivity.class );
+            Intent intent = new Intent(Activity_21_CreateNewRoom.this, PreferenceActivity.class);
             startActivity(intent);
             return;
         }
@@ -217,8 +219,8 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
         RoomItem item = RoomItem.createRoom(
                 etTitel.getText().toString(),
-                true,
-                me.getFirstName() +" "+ me.getName(),
+                checkRoomOpen(start, end),
+                me.getFirstName() + " " + me.getName(),
                 me.getEmail(),
                 me.getPhone(),
                 etOrt.getText().toString(),
@@ -228,14 +230,25 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                 end);
 
         //TODO wenn wir lustig sind wird noch en observer
-        repo.addEntry(item,(newItem)-> {
-            Activity_21_CreateNewRoom.this.runOnUiThread(()->{
+        repo.addEntry(item, (newItem) -> {
+            Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
                 Intent intent = new Intent(Activity_21_CreateNewRoom.this, Activity_22_RoomHostDetail.class);
                 intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
                 startActivity(intent);
                 finish();
             });
         });
+    }
+
+    private boolean checkRoomOpen(long start, long end) {
+        long now = new DateTime().now().getMillis();
+        if (start <= now && end >= now) {
+            return true;
+        } else if (start >= now || end <= now) {
+            return false;
+        } else {
+            return false;
+        }
     }
 
 }
