@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.RoomRoom;
+package de.pbma.moa.createroomdemo.database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -29,6 +29,9 @@ public abstract class RoomDao {
 
     @Query("DELETE FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
     abstract void deleteAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
+
+    @Query("SELECT * FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
+    abstract LiveData<List<RoomItem>> getAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
 
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();

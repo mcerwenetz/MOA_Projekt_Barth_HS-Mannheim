@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.RoomRoom;
+package de.pbma.moa.createroomdemo.database;
 
 
 import androidx.room.ColumnInfo;

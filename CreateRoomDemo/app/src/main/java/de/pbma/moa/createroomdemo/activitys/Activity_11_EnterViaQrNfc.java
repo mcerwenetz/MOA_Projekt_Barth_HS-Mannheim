@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;

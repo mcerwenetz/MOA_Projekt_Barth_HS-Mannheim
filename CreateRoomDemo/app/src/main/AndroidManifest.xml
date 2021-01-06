@@ -20,24 +20,24 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".Activity.Activity_00_Start">
+        <activity android:name=".activitys.Activity_00_Start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Preferences.PreferenceActivity" />
-        <activity android:name=".Activity.Activity_20_RoomListHost" />
-        <activity android:name=".Activity.Activity_23_HostViewParticipant" />
-        <activity android:name=".Activity.Activity_22_RoomHostDetail" />
-        <activity android:name=".Activity.Activity_11_EnterViaQrNfc"/>
-        <activity android:name=".Activity.Activity_14_RoomParticipantDetail"/>
-        <activity android:name=".Activity.Activity_15_ParticipantViewParticipant"/>
-        <activity android:name=".Activity.Activity_10_RoomListVisited"/>
+        <activity android:name=".preferences.PreferenceActivity" />
+        <activity android:name=".activitys.Activity_20_RoomListHost" />
+        <activity android:name=".activitys.Activity_23_HostViewParticipant" />
+        <activity android:name=".activitys.Activity_22_RoomHostDetail" />
+        <activity android:name=".activitys.Activity_11_EnterViaQrNfc"/>
+        <activity android:name=".activitys.Activity_14_RoomParticipantDetail"/>
+        <activity android:name=".activitys.Activity_15_ParticipantViewParticipant"/>
+        <activity android:name=".activitys.Activity_10_RoomListVisited"/>
         <activity
-            android:name=".Activity.Activity_21_CreateNewRoom">
+            android:name=".activitys.Activity_21_CreateNewRoom">
         </activity>
-        <service android:name=".Activity.RoomLivecycleService"/>
+        <service android:name=".activitys.RoomLivecycleService"/>
     </application>
 
 </manifest>

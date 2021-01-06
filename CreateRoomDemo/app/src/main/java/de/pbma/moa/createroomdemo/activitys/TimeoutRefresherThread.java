@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.app.Activity;
 import android.widget.TextView;

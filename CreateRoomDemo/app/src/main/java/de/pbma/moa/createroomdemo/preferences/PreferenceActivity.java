@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Preferences;
+package de.pbma.moa.createroomdemo.preferences;
 
 import android.app.Activity;
 import android.os.Bundle;

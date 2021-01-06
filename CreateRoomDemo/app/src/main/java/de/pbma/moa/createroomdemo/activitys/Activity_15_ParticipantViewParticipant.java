@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +13,9 @@ import java.util.List;
 
 import de.pbma.moa.createroomdemo.ListAdapter_15_ParticipantParticipant;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.Repository;
+import de.pbma.moa.createroomdemo.database.ParticipantItem;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.database.Repository;
 
 //Activity dient zur Ansicht der Teilnehmerliste aus der Ansicht eines Teinehmers hierfür wird nur der Name
 //und die Matrikelnummer eines Teilnehmers angezeigt.

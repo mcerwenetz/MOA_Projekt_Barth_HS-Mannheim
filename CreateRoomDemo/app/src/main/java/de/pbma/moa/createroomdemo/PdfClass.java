@@ -17,8 +17,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
+import de.pbma.moa.createroomdemo.database.ParticipantItem;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 
 public class PdfClass {
     final static String TAG = PdfClass.class.getCanonicalName();

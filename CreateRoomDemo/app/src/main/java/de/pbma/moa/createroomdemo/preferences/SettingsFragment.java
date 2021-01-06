@@ -1,13 +1,11 @@
-package de.pbma.moa.createroomdemo.Preferences;
+package de.pbma.moa.createroomdemo.preferences;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.util.Patterns;
 

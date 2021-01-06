@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +13,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
-import de.pbma.moa.createroomdemo.Preferences.MySelf;
-import de.pbma.moa.createroomdemo.Preferences.PreferenceActivity;
+import java.util.List;
+
+import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.preferences.MySelf;
+import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
 
 public class Activity_00_Start extends AppCompatActivity {
@@ -38,6 +43,9 @@ public class Activity_00_Start extends AppCompatActivity {
 
         Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
+
+        //remove DB entries older two weeks
+        deleteOldEntries();
 
     }
 
@@ -105,6 +113,21 @@ public class Activity_00_Start extends AppCompatActivity {
         }
         Log.v(TAG,"Check mySelfe(): true");
         return true;
+    }
+
+    private void deleteOldEntries(){
+        Repository repository = new Repository(this);
+        long currentTime = System.currentTimeMillis();
+        repository.getAllRoomsOlderTwoWeeks(currentTime).observe(Activity_00_Start.this, new Observer<List<RoomItem>>() {
+            @Override
+            public void onChanged(List<RoomItem> roomItems) {
+                for (RoomItem item : roomItems){
+                    repository.deleteParticipantsOfRoom(item.id);
+                }
+            repository.deleteRoomsOlderTwoWeeks(currentTime);
+            }
+        });
+
     }
 
 }

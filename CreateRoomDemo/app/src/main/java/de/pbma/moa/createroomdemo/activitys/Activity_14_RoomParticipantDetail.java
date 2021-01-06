@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import androidx.lifecycle.Observer;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.database.Repository;
 
 public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();

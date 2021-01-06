@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.RoomRoom;
+package de.pbma.moa.createroomdemo.database;
 
 import android.content.Context;
 
@@ -8,6 +8,8 @@ import java.util.List;
 
 public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
+    final long timeSpanOfTwoWeeks = 1209600000;
+
     private ParticipantDao participantDao;
     private LiveData<List<RoomItem>> roomList;
     private Context context;
@@ -20,8 +22,7 @@ public class Repository {
         roomList = roomDao.getAll();
     }
 
-    public void deleteOlderTwoWeeks(long now) {
-        final long timeSpanOfTwoWeeks = 1209600000;
+    public void deleteRoomsOlderTwoWeeks(long now) {
         new Thread(() -> {
             roomDao.deleteAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
         }).start();
@@ -108,6 +109,9 @@ public class Repository {
         new Thread(() -> {
             participantDao.insert(item);
         }).start();
+    }
+    public LiveData<List<RoomItem>> getAllRoomsOlderTwoWeeks(long now){
+        return roomDao.getAllOlderTwoWeeks(now,timeSpanOfTwoWeeks);
     }
 }
 

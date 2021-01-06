@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -26,9 +26,9 @@ import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.ListAdapter_23_HostParticipant;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.Repository;
+import de.pbma.moa.createroomdemo.database.ParticipantItem;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.database.Repository;
 
 public class Activity_23_HostViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_23_HostViewParticipant.class.getCanonicalName();

@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
@@ -35,14 +35,16 @@ import org.joda.time.DateTime;
 
 import java.io.File;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.database.Repository;
 
 //Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
 //und der Status des raus dargestellt.
@@ -51,7 +53,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     final static String TAG = Activity_22_RoomHostDetail.class.getCanonicalName();
     final static String ID = "RoomID";
     long roomid;
-    private TextView tvtimeout, tvstatus, tvroomname;
+    private TextView tvtimeout, tvstatus, tvroomname, tvStartTime, tvEndTime, tvLocation;
     private Button btnopen, btntimeout, btnpartic;
     private RoomItem item;
     private Repository repo;
@@ -103,6 +105,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         tvroomname = findViewById(R.id.tv_22_roomname_value);
         tvstatus = findViewById(R.id.tv_22_roomstatus_value);
         tvtimeout = findViewById(R.id.tv_22_timeout_value);
+        tvEndTime = findViewById(R.id.tv_22_endtime);
+        tvStartTime = findViewById(R.id.tv_22_starttime);
+        tvLocation=findViewById(R.id.tv_22_location);
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
         btnpartic = findViewById(R.id.btn_22_partiicipantlist);
@@ -110,6 +115,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
         btntimeout.setOnClickListener(this::onChangeTimeout);
+
     }
 
     @Override
@@ -126,6 +132,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             } else {
                 tvstatus.setText("geschlossen");
             }
+            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
+            tvStartTime.setText("Von: "+df.format(item.startTime));
+            tvEndTime.setText("Bis: "+df.format(item.endTime));
+            tvLocation.setText(item.place +"\n" + item.address);
         }
     }
     // Todo: Service: TimeoutChecker

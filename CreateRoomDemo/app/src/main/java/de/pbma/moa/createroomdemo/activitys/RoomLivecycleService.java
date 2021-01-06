@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.Activity;
+package de.pbma.moa.createroomdemo.activitys;
 
 import android.app.Service;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.pbma.moa.createroomdemo.RoomRoom.RoomItem;
-import de.pbma.moa.createroomdemo.RoomRoom.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.database.Repository;
 
 public class RoomLivecycleService extends Service {
 

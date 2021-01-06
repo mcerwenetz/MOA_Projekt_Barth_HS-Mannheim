@@ -1,4 +1,4 @@
-package de.pbma.moa.createroomdemo.RoomRoom;
+package de.pbma.moa.createroomdemo.database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -8,8 +8,6 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import java.util.List;
-
-import de.pbma.moa.createroomdemo.RoomRoom.ParticipantItem;
 
 @Dao
 public abstract class ParticipantDao {
@@ -30,4 +28,5 @@ public abstract class ParticipantDao {
 
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId")
     abstract LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId);
+
 }
