@@ -22,6 +22,7 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.service.RoomLivecycleService;
 
 public class Activity_00_Start extends AppCompatActivity {
     final static String TAG = Activity_00_Start.class.getCanonicalName();

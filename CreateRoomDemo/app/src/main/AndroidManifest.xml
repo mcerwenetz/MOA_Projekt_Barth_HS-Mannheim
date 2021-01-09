@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.pbma.moa.createroomdemo">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,7 +40,11 @@
         <activity
             android:name=".activitys.Activity_21_CreateNewRoom">
         </activity>
-        <service android:name=".activitys.RoomLivecycleService"/>
+        <service android:name=".service.RoomLivecycleService"/>
+        <service
+            android:name=".service.MQTTService"
+            android:exported="false" />
     </application>
+
 
 </manifest>
