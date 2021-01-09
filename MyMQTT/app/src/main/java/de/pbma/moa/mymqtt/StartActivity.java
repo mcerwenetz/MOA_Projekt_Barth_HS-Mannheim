@@ -18,17 +18,36 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class StartActivity extends AppCompatActivity {
     final static String TAG = StartActivity.class.getCanonicalName();
-    
+
     private TextView tv;
     private Button btn;
     private EditText et;
+
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            mqttService.registerPressListener(myListener);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 
     private final Handler handler = new Handler();
     private final MyListener myListener = new MyListener() {
         @Override
         public void onRecieve(final String topic, final String msg) {
             handler.post(() -> {
-                tv.setText(topic + " " + msg);
+                tv.setText(tv.getText()+"\n"+topic + " " + msg);
             });
         }
 
@@ -48,24 +67,7 @@ public class StartActivity extends AppCompatActivity {
             handler.post(() -> Log.v("MQTTService", message));
         }
     };
-    private MQTTService mqttService;
-    private boolean mqttServiceBound;
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.v(TAG, "onServiceConnected");
-            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            mqttService.registerPressListener(myListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // unintentionally disconnected
-            Log.v(TAG, "onServiceDisconnected");
-            unbindMQTTService(); // cleanup
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

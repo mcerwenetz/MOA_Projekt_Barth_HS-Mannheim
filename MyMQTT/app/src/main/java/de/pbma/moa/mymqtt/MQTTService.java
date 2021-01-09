@@ -24,15 +24,21 @@ public class MQTTService extends Service {
     final static String MSGKEY_ID = "id";
     final static String MSGKEY_TEXT = "text";
 
-    final String DEVICENAME = "Rapha";
-    final String TOPIC = "20moa22/test";
-    final String CONNECTION_URL = "pma.inftech.hs-mannheim.de";
-    final String USER = "20moa22";
-    final String PASSWORT = "595e468b";
+    final public static String DEVICENAME = "Rapha";
+    final public static String TOPIC = "20moagm/test";
+    final public static String PROTOCOL_SECURE = "ssl";
+    final public static String PROTOCOL_TCP = "tcp";
+    final public static String URL = "pma.inftech.hs-mannheim.de";
+    final public static int PORT = 8883;
+    final public static String CONNECTION_URL = String.format("%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
+    final public static String USER = "20moagm";
+    final public static String PASSWORT = "1a748f9e";
 
+    private MqttMessaging mqttMessaging;
+
+    private String x = "";
 
     final private CopyOnWriteArrayList<MyListener> listeners = new CopyOnWriteArrayList<>();
-    final private IBinder localBinder = new LocalBinder();
 
     final private MqttMessaging.FailureListener failureListener = new MqttMessaging.FailureListener() {
         @Override
@@ -65,103 +71,11 @@ public class MQTTService extends Service {
         }
     };
 
-    final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
-        @Override
-        public void onMessage(String topic, String stringMsg) {
-            Log.v(TAG, "  mqttService receives: " + stringMsg);
-//            try {
-//                JSONObject msg = new JSONObject(stringMsg);
-//                if (!msg.has(MSGKEY_ID)) {
-//                    Log.e(TAG, "MqttMessaging::MessageListener: no " + MSGKEY_ID + ", ignoring");
-//                    return;
-//                }
-//                String id = msg.getString(MSGKEY_ID);
-//                String text = msg.getString(MSGKEY_TEXT);
-//                log("received: " + MSGKEY_ID + "=" + id + ", " + MSGKEY_TEXT + "=" + text);
-            // here you would typically call a setSomething of a model
-            // or store content in a content provider or whatever
-            // we delegate to listener
-            doOnRecieve(topic,stringMsg);
-//            } catch (JSONException e) {
-//                Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
-//            }
-
-        }
-    };
-
-    private MqttMessaging mqttMessaging;
-
-    private void log(String msg) {
-        Log.v(TAG, "remoteLog: " + msg);
-        for (MyListener listener : listeners) {
-            listener.log(msg);
-        }
-    }
-
-    private void doMqttStatus(boolean connected) {
-        for (MyListener listener : listeners) {
-            listener.onMQTTStatus(connected);
-        }
-    }
-    // end methods to call from a connected activity
-
-    private void doOnRecieve(String topic,String msg ) {
-        for (MyListener listener : listeners) {
-            listener.onRecieve(topic,msg);
-        }
-    }
-
-    public boolean registerPressListener(MyListener pressListener) {
-        return listeners.addIfAbsent(pressListener);
-    }
-
-    public boolean deregisterPressListener(MyListener pressListener) {
-        return listeners.remove(pressListener);
-    }
-
-    public void send(String msg) { // called by activity after binding
-        Log.v(TAG, "Send messgae: "+msg);
-//        try {
-//            JSONObject msg = new JSONObject(); // wrap in JSON
-//            // msg.put(MSGKEY_ID, deviceName);
-//            msg.put(MSGKEY_ID, deviceName);
-//            msg.put(MSGKEY_TEXT, greetings[msgIdx]);
-//            msgIdx = (msgIdx+1) % greetings.length;
-//            Log.v(TAG, "send: " + msg.toString());
-//            mqttMessaging.send(pressTopic, msg.toString());
-        mqttMessaging.send(TOPIC, msg);
-//        } catch (JSONException e) {
-//            String message = e.getMessage();
-//            if (message == null) {
-//                message = "message is null?";
-//            }
-//            Log.e(TAG, message);
-//        }
-    }
 
     @Override
     public void onCreate() {
         Log.v(TAG, "onCreate");
         super.onCreate();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.v(TAG, "onBind");
-        String action = intent.getAction();
-        if (action != null && action.equals(MQTTService.ACTION_PRESS)) {
-            Log.v(TAG, "onBind for Press");
-            return localBinder;
-            // } else if (action.equals(MQTTService.ACTION_LOG)) {
-            //    Log.v(TAG, "onBind for Log");
-            //    return messenger.getBinder();
-            // we do not provide messaging in this small example
-            // you might want to
-        } else {
-            Log.e(TAG, "onBind only defined for ACTION_PRESS"); // or ACTION_LOG ");
-            Log.e(TAG, "       did you want to call startService? ");
-            return null;
-        }
     }
 
     @Override
@@ -204,6 +118,87 @@ public class MQTTService extends Service {
         }
     }
 
+
+
+    private void log(String msg) {
+        Log.v(TAG, "remoteLog: " + msg);
+        for (MyListener listener : listeners) {
+            listener.log(msg);
+        }
+    }
+
+    private void doMqttStatus(boolean connected) {
+        for (MyListener listener : listeners) {
+            listener.onMQTTStatus(connected);
+        }
+    }
+
+    private void doOnRecieve(String topic,String msg ) {
+        for (MyListener listener : listeners) {
+            listener.onRecieve(topic,msg);
+        }
+    }
+
+
+
+
+    public boolean registerPressListener(MyListener pressListener) {
+        return listeners.addIfAbsent(pressListener);
+    }
+
+    public boolean deregisterPressListener(MyListener pressListener) {
+        return listeners.remove(pressListener);
+    }
+
+    //Send and Receive
+    final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
+        @Override
+        public void onMessage(String topic, String stringMsg) {
+            Log.v(TAG, "  mqttService receives: " + stringMsg);
+            if(x.equals(stringMsg))
+                return;
+//            try {
+//                JSONObject msg = new JSONObject(stringMsg);
+//                if (!msg.has(MSGKEY_ID)) {
+//                    Log.e(TAG, "MqttMessaging::MessageListener: no " + MSGKEY_ID + ", ignoring");
+//                    return;
+//                }
+//                String id = msg.getString(MSGKEY_ID);
+//                String text = msg.getString(MSGKEY_TEXT);
+//                log("received: " + MSGKEY_ID + "=" + id + ", " + MSGKEY_TEXT + "=" + text);
+            // here you would typically call a setSomething of a model
+            // or store content in a content provider or whatever
+            // we delegate to listener
+            doOnRecieve(topic,stringMsg);
+//            } catch (JSONException e) {
+//                Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
+//            }
+
+        }
+    };
+
+    public void send(String msg) { // called by activity after binding
+        x = msg;
+        Log.v(TAG, "Send messgae: "+msg);
+//        try {
+//            JSONObject msg = new JSONObject(); // wrap in JSON
+//            // msg.put(MSGKEY_ID, deviceName);
+//            msg.put(MSGKEY_ID, deviceName);
+//            msg.put(MSGKEY_TEXT, greetings[msgIdx]);
+//            msgIdx = (msgIdx+1) % greetings.length;
+//            Log.v(TAG, "send: " + msg.toString());
+//            mqttMessaging.send(pressTopic, msg.toString());
+        mqttMessaging.send(TOPIC, msg);
+//        } catch (JSONException e) {
+//            String message = e.getMessage();
+//            if (message == null) {
+//                message = "message is null?";
+//            }
+//            Log.e(TAG, message);
+//        }
+    }
+
+    //Connect and Disconnect
     private void connect() {
         Log.v(TAG, "connect");
         if (mqttMessaging != null) {
@@ -211,7 +206,7 @@ public class MQTTService extends Service {
             Log.w(TAG, "reconnect");
         }
         mqttMessaging = new MqttMessaging(failureListener, messageListener, connectionListener);
-        Log.v(TAG, "connectionURL=" + CONNECTION_URL + ", ");
+        Log.v(TAG, "connectionURL=" + CONNECTION_URL );
         MqttConnectOptions options = MqttMessaging.getMqttConnectOptions();
         options.setUserName(USER);
         options.setPassword(PASSWORT.toCharArray());
@@ -234,10 +229,33 @@ public class MQTTService extends Service {
         mqttMessaging = null;
     }
 
+    //BINDER
+
+    final private IBinder localBinder = new LocalBinder();
+
     public class LocalBinder extends Binder {
+
         MQTTService getMQTTService() {
             return MQTTService.this;
         }
-    }
 
+    }
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.v(TAG, "onBind");
+        String action = intent.getAction();
+        if (action != null && action.equals(MQTTService.ACTION_PRESS)) {
+            Log.v(TAG, "onBind for Press");
+            return localBinder;
+            // } else if (action.equals(MQTTService.ACTION_LOG)) {
+            //    Log.v(TAG, "onBind for Log");
+            //    return messenger.getBinder();
+            // we do not provide messaging in this small example
+            // you might want to
+        } else {
+            Log.e(TAG, "onBind only defined for ACTION_PRESS"); // or ACTION_LOG ");
+            Log.e(TAG, "       did you want to call startService? ");
+            return null;
+        }
+    }
 }
