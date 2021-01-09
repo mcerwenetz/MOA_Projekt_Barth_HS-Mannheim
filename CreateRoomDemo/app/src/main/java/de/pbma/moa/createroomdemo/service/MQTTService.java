@@ -7,9 +7,17 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import de.pbma.moa.createroomdemo.database.ParticipantItem;
+import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.preferences.MySelf;
 
 
 public class MQTTService extends Service {
@@ -19,15 +27,9 @@ public class MQTTService extends Service {
     final static String ACTION_STOP = "stop"; // disconnect
     // for LocalService Messaging
     final static String ACTION_PRESS = "press";
-    final static String ACTION_LOG = "log";
-    // MessageKeys
-    final static String MSGKEY_ID = "id";
-    final static String MSGKEY_TEXT = "text";
-
-    final public static String DEVICENAME = "Rapha";
-    final public static String TOPIC = "20moagm/test";
+    final static String TOPIC = "intent_topic";
     final public static String PROTOCOL_SECURE = "ssl";
-    final public static String PROTOCOL_TCP = "tcp";
+    //    final public static String PROTOCOL_TCP = "tcp";
     final public static String URL = "pma.inftech.hs-mannheim.de";
     final public static int PORT = 8883;
     final public static String CONNECTION_URL = String.format("%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
@@ -35,8 +37,7 @@ public class MQTTService extends Service {
     final public static String PASSWORT = "1a748f9e";
 
     private MqttMessaging mqttMessaging;
-
-    private String x = "";
+    private String topic = "20moagm/test";
 
     final private CopyOnWriteArrayList<MyListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -61,16 +62,25 @@ public class MQTTService extends Service {
         @Override
         public void onConnect() {
             log("connected");
-            doMqttStatus(true); // on purpose a little weird, typical to have interface translation
         }
 
         @Override
         public void onDisconnect() {
             log("disconnected");
-            doMqttStatus(false);
         }
     };
 
+    public boolean registerPressListener(MyListener pressListener) {
+        return listeners.addIfAbsent(pressListener);
+    }
+
+    public boolean deregisterPressListener(MyListener pressListener) {
+        return listeners.remove(pressListener);
+    }
+
+    public void changeTopic(String newTopic){
+        this.topic=newTopic;
+    }
 
     @Override
     public void onCreate() {
@@ -91,6 +101,10 @@ public class MQTTService extends Service {
         String action;
         if (intent != null) {
             action = intent.getAction();
+            this.topic= intent.getStringExtra(TOPIC);
+            if(this.topic==null)
+                Log.w(TAG, "upps, forgot toppic");
+            action = ACTION_START;
         } else {
             Log.w(TAG, "upps, restart");
             action = ACTION_START;
@@ -119,7 +133,6 @@ public class MQTTService extends Service {
     }
 
 
-
     private void log(String msg) {
         Log.v(TAG, "remoteLog: " + msg);
         for (MyListener listener : listeners) {
@@ -127,76 +140,108 @@ public class MQTTService extends Service {
         }
     }
 
-    private void doMqttStatus(boolean connected) {
+    private void doOnRecieve(String topic, String msg) {
         for (MyListener listener : listeners) {
-            listener.onMQTTStatus(connected);
+            listener.onRecieve(topic, msg);
         }
     }
 
-    private void doOnRecieve(String topic,String msg ) {
-        for (MyListener listener : listeners) {
-            listener.onRecieve(topic,msg);
-        }
+    private String getUriFromTopic(String topic) {
+        String[] ele = topic.split("/");
+        return ele[1] + "/" + ele[2] + "/" + ele[3];
     }
 
-
-
-
-    public boolean registerPressListener(MyListener pressListener) {
-        return listeners.addIfAbsent(pressListener);
-    }
-
-    public boolean deregisterPressListener(MyListener pressListener) {
-        return listeners.remove(pressListener);
-    }
 
     //Send and Receive
     final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
         @Override
         public void onMessage(String topic, String stringMsg) {
-            Log.v(TAG, "  mqttService receives: " + stringMsg);
-            if(x.equals(stringMsg))
+            Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
+            if (topic.equals(MQTTService.this.topic))
                 return;
-//            try {
-//                JSONObject msg = new JSONObject(stringMsg);
-//                if (!msg.has(MSGKEY_ID)) {
-//                    Log.e(TAG, "MqttMessaging::MessageListener: no " + MSGKEY_ID + ", ignoring");
-//                    return;
-//                }
-//                String id = msg.getString(MSGKEY_ID);
-//                String text = msg.getString(MSGKEY_TEXT);
-//                log("received: " + MSGKEY_ID + "=" + id + ", " + MSGKEY_TEXT + "=" + text);
-            // here you would typically call a setSomething of a model
-            // or store content in a content provider or whatever
-            // we delegate to listener
-            doOnRecieve(topic,stringMsg);
-//            } catch (JSONException e) {
-//                Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
-//            }
+
+            ObjectFactory objectFactory = new ObjectFactory();
+            Repository repository = new Repository(MQTTService.this);
+
+            try {
+                JSONObject msg = new JSONObject(stringMsg);
+                if (msg.has(JSONFactory.RAUM)) {
+                    repository.addEntry(objectFactory.createRoomItem(msg.getString(JSONFactory.RAUM)), null);
+                }
+                if (msg.has(JSONFactory.ENTERTIME)) {
+                    new Thread(() -> {
+                        ParticipantItem item = objectFactory.createParticipantItem(msg.getString(JSONFactory.TEILNEHMER));
+                        item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                        repository.addEntry(item);
+                    }).start();
+                }
+
+                if (msg.has(JSONFactory.EXITTIME)) {
+                    new Thread(() -> {
+                        ParticipantItem item = objectFactory.createParticipantItem(msg.getString(JSONFactory.TEILNEHMER));
+                        item = repository.getPaticipantItemNow(item.id, item.eMail);
+                        item.exitTime = Long.parseLong(msg.getString(JSONFactory.EXITTIME));
+                        repository.updateParticipantItem(item);
+                    }).start();
+                }
+
+                if (msg.has(JSONFactory.TEILNEHMERLIST)) {
+                    new Thread(() -> {
+                        ArrayList<ParticipantItem> list = objectFactory.createParticipantItemList(msg.getString(JSONFactory.TEILNEHMERLIST));
+                        long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                        for (ParticipantItem item : list) {
+                            item.roomId = id;
+                            repository.addEntry(item);
+                        }
+                    }).start();
+                }
+
+                doOnRecieve(topic, stringMsg);
+            } catch (JSONException e) {
+                Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
+            }
 
         }
     };
 
-    public void send(String msg) { // called by activity after binding
-        x = msg;
-        Log.v(TAG, "Send messgae: "+msg);
-//        try {
-//            JSONObject msg = new JSONObject(); // wrap in JSON
-//            // msg.put(MSGKEY_ID, deviceName);
-//            msg.put(MSGKEY_ID, deviceName);
-//            msg.put(MSGKEY_TEXT, greetings[msgIdx]);
-//            msgIdx = (msgIdx+1) % greetings.length;
-//            Log.v(TAG, "send: " + msg.toString());
-//            mqttMessaging.send(pressTopic, msg.toString());
-        mqttMessaging.send(TOPIC, msg);
-//        } catch (JSONException e) {
-//            String message = e.getMessage();
-//            if (message == null) {
-//                message = "message is null?";
-//            }
-//            Log.e(TAG, message);
-//        }
+    public boolean sendEnterRoom() { // called by activity after binding
+        Log.v(TAG, "sendEnterRoom()");
+        MySelf me = new MySelf(this);
+        if (!me.isValide())
+            return false;
+        JSONFactory factory = new JSONFactory();
+        msg = factory.anmelung(me).toString();
+        mqttMessaging.send(topic, msg);
+        return true;
     }
+
+    public boolean sendRoom(RoomItem room) { // called by activity after binding
+        Log.v(TAG, "sendRoom()");
+        JSONFactory factory = new JSONFactory();
+        msg = factory.raum(room).toString();
+        mqttMessaging.send(topic, msg);
+        return true;
+    }
+
+    public boolean sendParticipants(List<ParticipantItem> participantItems) { // called by activity after binding
+        Log.v(TAG, "sendRoom()");
+        JSONFactory factory = new JSONFactory();
+        msg = factory.teilnehmer(participantItems).toString();
+        mqttMessaging.send(topic, msg);
+        return true;
+    }
+
+    public boolean sendExitRoom() { // called by activity after binding
+        Log.v(TAG, "sendExitRoom()");
+        MySelf me = new MySelf(this);
+        if (!me.isValide())
+            return false;
+        JSONFactory factory = new JSONFactory();
+        msg = factory.abmeldung(me).toString();
+        mqttMessaging.send(topic, msg);
+        return true;
+    }
+
 
     //Connect and Disconnect
     private void connect() {
@@ -206,7 +251,7 @@ public class MQTTService extends Service {
             Log.w(TAG, "reconnect");
         }
         mqttMessaging = new MqttMessaging(failureListener, messageListener, connectionListener);
-        Log.v(TAG, "connectionURL=" + CONNECTION_URL );
+        Log.v(TAG, "connectionURL=" + CONNECTION_URL);
         MqttConnectOptions options = MqttMessaging.getMqttConnectOptions();
         options.setUserName(USER);
         options.setPassword(PASSWORT.toCharArray());
@@ -214,13 +259,13 @@ public class MQTTService extends Service {
 
         mqttMessaging.connect(CONNECTION_URL, options); // secure via URL
         // do not forget to subscribe
-        mqttMessaging.subscribe(TOPIC);
+        mqttMessaging.subscribe(topic);
     }
 
     private void disconnect() {
         Log.v(TAG, "disconnect");
         if (mqttMessaging != null) {
-            mqttMessaging.unsubscribe(TOPIC);
+            mqttMessaging.unsubscribe(topic);
             List<MqttMessaging.Pair<String, String>> pending = mqttMessaging.disconnect();
             if (!pending.isEmpty()) {
                 Log.w(TAG, "pending messages: " + pending.size());
@@ -240,6 +285,7 @@ public class MQTTService extends Service {
         }
 
     }
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.v(TAG, "onBind");

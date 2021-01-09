@@ -68,7 +68,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
-        repository.getID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
+        repository.getRoomByID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_23_HostViewParticipant.this.roomItem = roomItem;

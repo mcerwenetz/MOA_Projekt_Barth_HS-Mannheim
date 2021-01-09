@@ -57,7 +57,7 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
         }
 
         repository = new Repository(Activity_15_ParticipantViewParticipant.this);
-        repository.getID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
+        repository.getRoomByID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_15_ParticipantViewParticipant.this.roomItem = roomItem;

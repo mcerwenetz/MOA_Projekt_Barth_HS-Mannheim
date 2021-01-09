@@ -4,6 +4,5 @@ package de.pbma.moa.createroomdemo.service;
 
 public interface MyListener {
     void onRecieve(String topic,String msg);
-    void onMQTTStatus(boolean connected);
     void log(String message);
 }

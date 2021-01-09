@@ -39,7 +39,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
         //Holt die Daten aus der Bank
         if (roomId != -1) {
-            liveDataPartic = repoPartic.getID(roomId);
+            liveDataPartic = repoPartic.getRoomByID(roomId);
             repoPartic = new Repository(this);
             roomId = getIntent().getExtras().getLong(ID, -1);
             liveDataPartic.observe(this, new Observer<RoomItem>() {

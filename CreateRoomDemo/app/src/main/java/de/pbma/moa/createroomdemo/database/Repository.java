@@ -18,7 +18,7 @@ public class Repository {
         this.context = context;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
         roomDao = appDatabase.roomDao();
-        participantDao=appDatabase.participantDao();
+        participantDao = appDatabase.participantDao();
         roomList = roomDao.getAll();
     }
 
@@ -39,14 +39,30 @@ public class Repository {
         }).start();
     }
 
-    public void update(RoomItem item) {
+    public void updateRoomItem(RoomItem item) {
         new Thread(() -> {
             roomDao.update(item);
         }).start();
     }
 
-    public LiveData<RoomItem> getID(long searchid) {
+    public void updateParticipantItem(ParticipantItem item) {
+        new Thread(() -> {
+            participantDao.update(item);
+        }).start();
+    }
+
+    public long getIdOfRoomByUriNow(String uri) {
+        String[] elements = uri.split("/");
+        long fremdId = Long.parseLong(elements[2]);
+        return roomDao.getIdOfRoomByUriNow(elements[0], elements[1], fremdId);
+    }
+
+    public LiveData<RoomItem> getRoomByID(long searchid) {
         return roomDao.getById(searchid);
+    }
+
+    public ParticipantItem getPaticipantItemNow(Long roomId,String email){
+        return participantDao.getPaticipantItemNow(roomId,email);
     }
 
     public RoomItem getItemByIdNow(long searchid) {
@@ -57,21 +73,21 @@ public class Repository {
         return roomList;
     }
 
-    public List<RoomItem> getAllClosedRooms(){
+    public List<RoomItem> getAllClosedRooms() {
         return roomDao.getAllClosedRooms();
     }
 
-    public List<RoomItem> getAllOpenRooms(){
+    public List<RoomItem> getAllOpenRooms() {
         return roomDao.getAllOpenRooms();
     }
 
 
-    public LiveData<List<RoomItem>> getDbAllFromMeAsHost(String vorname, String name, String email, String phone) {
-        return roomDao.getAllFromMeAsHost(vorname + " " + name, phone, email);
+    public LiveData<List<RoomItem>> getDbAllFromMeAsHost() {
+        return roomDao.getAllFromMeAsHost();
     }
 
-    public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost(String vorname, String name, String email, String phone) {
-        return roomDao.getAllFromExceptMeAsHost(vorname + " " + name, phone, email);
+    public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost() {
+        return roomDao.getAllFromExceptMeAsHost();
     }
 
     public void closeById(long roomId) {
@@ -110,8 +126,9 @@ public class Repository {
             participantDao.insert(item);
         }).start();
     }
-    public LiveData<List<RoomItem>> getAllRoomsOlderTwoWeeks(long now){
-        return roomDao.getAllOlderTwoWeeks(now,timeSpanOfTwoWeeks);
+
+    public LiveData<List<RoomItem>> getAllRoomsOlderTwoWeeks(long now) {
+        return roomDao.getAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
     }
 }
 

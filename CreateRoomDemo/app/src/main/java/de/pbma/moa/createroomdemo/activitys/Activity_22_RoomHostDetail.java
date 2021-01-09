@@ -74,7 +74,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         repo = new Repository(this);
         roomid = getIntent().getExtras().getLong(ID, -1);
         if (roomid != -1) {
-            liveData = repo.getID(roomid);
+            liveData = repo.getRoomByID(roomid);
             liveData.observe(this, new Observer<RoomItem>() {
                 @Override
                 public void onChanged(RoomItem roomItem) {
@@ -145,7 +145,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         timeoutRefresherThread.stop();
         item.endTime = now;
         item.open = false;
-        repo.update(item);
+        repo.updateRoomItem(item);
         tvtimeout.setText("00:00:00");
     }
 
@@ -158,7 +158,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                 DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
                         now.dayOfMonth().get(), i, i1, 0);
                 item.endTime = timeout.getMillis();
-                repo.update(item);
+                repo.updateRoomItem(item);
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,

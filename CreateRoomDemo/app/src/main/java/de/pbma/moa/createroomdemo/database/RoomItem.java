@@ -13,6 +13,9 @@ public class RoomItem {
     @PrimaryKey(autoGenerate = true)
     public long id;
 
+    @ColumnInfo(name = "fremdId")
+    public Long fremdId;
+
     @ColumnInfo(name = "roomName")
     public String roomName;
 
@@ -65,6 +68,7 @@ public class RoomItem {
     public String toString() {
         return "RoomItem{" +
                 "id=" + id +
+                "fremdId=" + fremdId +
                 ", roomName='" + roomName + '\'' +
                 ", open=" + open +
                 ", host='" + host + '\'' +

@@ -8,10 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,9 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class StartActivity extends AppCompatActivity {
     final static String TAG = StartActivity.class.getCanonicalName();
 
-    private TextView tv;
-    private Button btn;
-    private EditText et;
 
     private boolean mqttServiceBound;
     private MQTTService mqttService;
@@ -46,20 +39,7 @@ public class StartActivity extends AppCompatActivity {
     private final MyListener myListener = new MyListener() {
         @Override
         public void onRecieve(final String topic, final String msg) {
-            handler.post(() -> {
-                tv.setText(tv.getText()+"\n"+topic + " " + msg);
-            });
-        }
-
-        @Override
-        public void onMQTTStatus(final boolean connected) {
-            handler.post(() -> {
-                if (connected) {
-                    Log.v("MQTTService", "connected");
-                } else {
-                    Log.v("MQTTService", "disconnected");
-                }
-            });
+            handler.post(() -> {  handler.post(() -> Log.v("MQTTService", topic+" "+msg));});
         }
 
         @Override
@@ -74,20 +54,9 @@ public class StartActivity extends AppCompatActivity {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mqttServiceBound = false;
-        setContentView(R.layout.page_start);
-        tv = findViewById(R.id.tv_page_start);
-        et = findViewById(R.id.et_page_start);
-        btn = findViewById(R.id.btn_page_start);
-
-        btn.setOnClickListener(this::btnSendClicked);
         onStartService();
     }
 
-    @Override
-    protected void onStart() {
-        Log.v(TAG, "onStart");
-        super.onStart();
-    }
 
     @Override
     protected void onResume() {
@@ -103,11 +72,6 @@ public class StartActivity extends AppCompatActivity {
         unbindMQTTService();
     }
 
-    @Override
-    protected void onStop() {
-        Log.v(TAG, "onStop");
-        super.onStop();
-    }
 
     @Override
     protected void onDestroy() {
@@ -128,21 +92,6 @@ public class StartActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MQTTService.class);
         intent.setAction(MQTTService.ACTION_STOP);
         startService(intent); // to stop
-    }
-
-    public void btnSendClicked(View view) {
-        Log.v(TAG, "onPress");
-        if (!mqttServiceBound) {
-            Log.e(TAG, "ignore press request, if not tried to bind");
-            return;
-        }
-        if (mqttService == null) {
-            Log.w(TAG, "tried to bind, but not yet successful, save for later");
-            return;
-        }
-        // is bound, do it
-        mqttService.send(et.getText().toString());
-        et.setText("");
     }
 
 

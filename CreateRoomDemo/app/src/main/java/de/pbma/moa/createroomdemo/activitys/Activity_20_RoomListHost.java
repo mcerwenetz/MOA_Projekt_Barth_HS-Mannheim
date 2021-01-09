@@ -60,11 +60,7 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
         lv.setAdapter(adapter);
         roomRepo = new Repository(this);
         MySelf me = new MySelf(this);
-        roomRepo.getDbAllFromMeAsHost(
-                me.getFirstName(),
-                me.getName(),
-                me.getEmail(),
-                me.getPhone()).observe(this, observer);
+        roomRepo.getDbAllFromMeAsHost().observe(this, observer);
         lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
     }
 
