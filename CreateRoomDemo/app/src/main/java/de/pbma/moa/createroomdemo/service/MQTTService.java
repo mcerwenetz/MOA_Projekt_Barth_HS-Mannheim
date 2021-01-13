@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import de.pbma.moa.createroomdemo.activitys.Activity_14_RoomParticipantDetail;
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
@@ -163,16 +164,21 @@ public class MQTTService extends Service {
             ObjectFactory objectFactory = new ObjectFactory();
             Repository repository = new Repository(MQTTService.this);
 
+
             try {
                 JSONObject msg = new JSONObject(stringMsg);
                 if (msg.has(JSONFactory.RAUM)) {
-                    repository.addEntry(objectFactory.createRoomItem(msg.getString(JSONFactory.RAUM)), null);
+                    new Thread(()-> {
+                        RoomItem roomItem = objectFactory.createRoomItem(msg.getString(JSONFactory.RAUM));
+                        roomItem.id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                        repository.updateRoomItem(roomItem);
+                    }).start();
                 }
                 if (msg.has(JSONFactory.ENTERTIME)) {
                     new Thread(() -> {
                         ParticipantItem item = objectFactory.createParticipantItem(msg.getString(JSONFactory.TEILNEHMER));
                         item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
-                        repository.addEntry(item);
+                        repository.addParticipantEntry(item);
                     }).start();
                 }
 
@@ -191,7 +197,7 @@ public class MQTTService extends Service {
                         long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
                         for (ParticipantItem item : list) {
                             item.roomId = id;
-                            repository.addEntry(item);
+                            repository.addParticipantEntry(item);
                         }
                     }).start();
                 }

@@ -118,17 +118,7 @@ public class Activity_00_Start extends AppCompatActivity {
 
     private void deleteOldEntries(){
         Repository repository = new Repository(this);
-        long currentTime = System.currentTimeMillis();
-        repository.getAllRoomsOlderTwoWeeks(currentTime).observe(Activity_00_Start.this, new Observer<List<RoomItem>>() {
-            @Override
-            public void onChanged(List<RoomItem> roomItems) {
-                for (RoomItem item : roomItems){
-                    repository.deleteParticipantsOfRoom(item.id);
-                }
-            repository.deleteRoomsOlderTwoWeeks(currentTime);
-            }
-        });
-
+        repository.DeleteRoomAndParticipantOlderTwoWeeks();
     }
 
 }

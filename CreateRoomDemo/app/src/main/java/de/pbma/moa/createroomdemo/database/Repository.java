@@ -14,6 +14,10 @@ public class Repository {
     private LiveData<List<RoomItem>> roomList;
     private Context context;
 
+    public static interface AfterInsert {
+        public void inserted(RoomItem item);
+    }
+
     public Repository(Context context) {
         this.context = context;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
@@ -22,14 +26,21 @@ public class Repository {
         roomList = roomDao.getAll();
     }
 
-    public void deleteRoomsOlderTwoWeeks(long now) {
+
+    public void DeleteRoomAndParticipantOlderTwoWeeks() {
         new Thread(() -> {
-            roomDao.deleteAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
+            long currentTime = System.currentTimeMillis();
+            final long timeSpanOfTwoWeeks = 1209600000;
+            List<RoomItem> roomItems = roomDao.getAllOlderTwoWeeks(System.currentTimeMillis(), timeSpanOfTwoWeeks);
+            for (RoomItem item : roomItems) {
+                participantDao.deleteParticipantsOfRoom(item.id);
+            }
+            roomDao.deleteAllOlderTwoWeeks(currentTime, timeSpanOfTwoWeeks);
         }).start();
-        ;
     }
 
-    public void addEntry(RoomItem item, AfterInsert afterInsert) {
+
+    public void addRoomEntry(RoomItem item, AfterInsert afterInsert) {
         new Thread(() -> {
             long id = roomDao.insert(item);
             RoomItem newItem = roomDao.getItemByIdNow(id);
@@ -37,6 +48,10 @@ public class Repository {
                 afterInsert.inserted(newItem);
             }
         }).start();
+    }
+
+    public long addRoomEntryNow(RoomItem roomItem) {
+        return roomDao.insert(roomItem);
     }
 
     public void updateRoomItem(RoomItem item) {
@@ -61,8 +76,8 @@ public class Repository {
         return roomDao.getById(searchid);
     }
 
-    public ParticipantItem getPaticipantItemNow(Long roomId,String email){
-        return participantDao.getPaticipantItemNow(roomId,email);
+    public ParticipantItem getPaticipantItemNow(Long roomId, String email) {
+        return participantDao.getPaticipantItemNow(roomId, email);
     }
 
     public RoomItem getItemByIdNow(long searchid) {
@@ -103,15 +118,7 @@ public class Repository {
     }
 
 
-    public static interface AfterInsert {
-        public void inserted(RoomItem item);
-    }
 
-    public void deleteParticipantsOfRoom(long roomId) {
-        new Thread(() -> {
-            participantDao.deleteParticipantsOfRoom(roomId);
-        }).start();
-    }
 
     public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
         return participantDao.getParticipantsOfRoom(roomId);
@@ -121,14 +128,12 @@ public class Repository {
         return participantDao.getAll();
     }
 
-    public void addEntry(ParticipantItem item) {
+    public void addParticipantEntry(ParticipantItem item) {
         new Thread(() -> {
             participantDao.insert(item);
         }).start();
     }
 
-    public LiveData<List<RoomItem>> getAllRoomsOlderTwoWeeks(long now) {
-        return roomDao.getAllOlderTwoWeeks(now, timeSpanOfTwoWeeks);
-    }
+
 }
 

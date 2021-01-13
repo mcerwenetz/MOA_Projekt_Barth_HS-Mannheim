@@ -20,7 +20,7 @@ import de.pbma.moa.createroomdemo.database.Repository;
 
 public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();
-    final static String ID = "RoomID";
+    public final static String ID = "RoomID";
     long roomId;
     private Button btnLeave, btnPartic;
     private TextView tvRoom, tvOpenClose, tvTimeout,tvHost;

@@ -34,7 +34,7 @@ public abstract class RoomDao {
     abstract void deleteAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
 
     @Query("SELECT * FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
-    abstract LiveData<List<RoomItem>> getAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
+    abstract List<RoomItem> getAllOlderTwoWeeks(long timeNow, long timeSpanOfTwoWeeks);
 
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();

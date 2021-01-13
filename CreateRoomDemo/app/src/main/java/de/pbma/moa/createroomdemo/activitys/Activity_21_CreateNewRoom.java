@@ -230,7 +230,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                 end);
 
         //TODO wenn wir lustig sind wird noch en observer
-        repo.addEntry(item, (newItem) -> {
+        repo.addRoomEntry(item, (newItem) -> {
             Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
                 Intent intent = new Intent(Activity_21_CreateNewRoom.this, Activity_22_RoomHostDetail.class);
                 intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);

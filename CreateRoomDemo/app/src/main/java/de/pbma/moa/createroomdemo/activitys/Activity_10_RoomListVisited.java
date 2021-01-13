@@ -34,6 +34,8 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     };
+
+    //TODO irgend was geht schief oder vielleicht auch in Activity_14
     private AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
