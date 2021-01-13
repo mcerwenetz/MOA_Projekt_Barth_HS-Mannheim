@@ -1,6 +1,9 @@
 # Messaging
 Für den Nachrichtenaustausch werden json-files als messages gesendet. Teilnehmer und Host senden auf zwei unterschiedlichen topics verschiedene Steuernachrichten.
 
+# Skizze
+![Skizze](MQTT_Messages.png)
+
 # Topics
 Es gibt pro Raum jeweils ein:
 * hosttopic
@@ -85,6 +88,7 @@ In der Teilnehmerliste stehen alle Teilnehmer des aktuellen Raums drin.
 
 ## rauminfo.json
 **Beschreibung**
+
 Eine Teilnehmer.json wird auf das participant-topic gesendet, also an den participant.
 Sie wird gesendet wenn sich die Umstände des Raumes ändern.
 Datunter zählen:
