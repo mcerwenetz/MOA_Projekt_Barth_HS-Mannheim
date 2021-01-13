@@ -3,8 +3,8 @@ Für den Nachrichtenaustausch werden json-files als messanges gesendet. Teilnehm
 
 # Topics
 Es gibt dpro Raum jeweils ein:
-*Hosttopic
-*Participant-Topic
+* Hosttopic
+* Participant-Topic
 
 ## Hosttopic
 Hier werden alle Nachrichten von Teilnehmern an den Host übermittelt
@@ -14,10 +14,10 @@ Hier werden alle Nachrichten von dem Host an die Teilnehmer übermittelt
 
 # JSONs
 Es gibt die JSON-Files/message-arten:
-+anmeldung.json
-+abmeldung.json
-+teilnehmer.json
-+rauminfo.json
+* anmeldung.json
+* abmeldung.json
+* teilnehmer.json
+* rauminfo.json
 
 ## anmeldung.json
 Eine anmeldung.json enthält die Felder:
@@ -34,8 +34,8 @@ Das ist die Zeit zu der der Teilnehmer den Raum betritt.
 
 ## abmeldung.json
 Eine abmeldung.json enthält die Felder:
-+Teilnehmer
-+exitTime
+* Teilnehmer
+* exitTime
 
 Eine Abmeldung wird auf das host-topic gesendet, also an den host. Sie wird gesendet wenn ein Teilnehmer sich per mqtt-service von einem topic disconnected. 
 
@@ -47,7 +47,7 @@ Das ist die Zeit zu der der Teilnehmer den Raum verlässt.
 
 ## teilnehmer.json
 Eine anmeldung.json enthält das Feld:
-+Teilnehmerliste
+* Teilnehmerliste
 
 Eine Teilnehmer.json wird auf das participant-topic gesendet, also an den participant. 
 Sie wird gesendet wenn sich ein neuer Teilnehmer an einen Raum angemeldet hat. 
@@ -64,14 +64,8 @@ Eine anmeldung.json enthält das Feld:
 Eine Teilnehmer.json wird auf das participant-topic gesendet, also an den participant.
 Sie wird gesendet wenn sich die Umstände des Raumes ändern.
 Datunter zählen:
-+neues Timeout
-+raumstatus hat sich von offen auf geschlossen oder vice versa geändert
+* neues Timeout
+* raumstatus hat sich von offen auf geschlossen oder vice versa geändert
 
 ### Raum
 Im Feld Raum steht die aktuelle Fassung des Raumes.
-
-wenn die msg ein feld "RAUM" hat, dann wurde eine "Raum.json" gesendet
-eine "Raum.json" wird vom Host an das teilnehmer-topic gesendet, damit
-alle Teilnehmer die aktuellen Raum-Infos haben.
-Sie wird gesendet, wenn sich z.B.das Timeout geändert hat, aber auch wenn sich
-ein Teilnehmer neu einwähllt
