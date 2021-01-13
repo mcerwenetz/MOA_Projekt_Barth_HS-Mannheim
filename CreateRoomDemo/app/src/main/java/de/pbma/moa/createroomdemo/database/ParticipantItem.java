@@ -27,7 +27,7 @@ public class ParticipantItem {
     @ColumnInfo(name = "phone")
     public String phone;
 
-    @ColumnInfo(name = "roomId") //Id of room Participant is in
+    @ColumnInfo(name = "roomId") //raumid von teilnehmer
     public long roomId;
 
     @ColumnInfo(name = "enterTime")
