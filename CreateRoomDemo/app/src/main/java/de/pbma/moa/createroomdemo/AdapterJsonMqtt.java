@@ -46,7 +46,7 @@ public class AdapterJsonMqtt {
             JSONObject teilnehmerAsJSON = getJSONTeilnehmer(teilnehmer);
             ret.put(TEILNEHMER,teilnehmerAsJSON);
             ret.put(ENTERTIME,entertime.getMillis());
-        } catch (JSONException e) {
+        } catch (JSONException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return  ret;
@@ -60,7 +60,7 @@ public class AdapterJsonMqtt {
             ret.put(TEILNEHMER,teilnehmerAsJSON);
             ret.put(EXITTIME, exittime.getMillis());
 
-        } catch (JSONException e) {
+        } catch (JSONException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -68,7 +68,7 @@ public class AdapterJsonMqtt {
 
     }
 
-    public static JSONObject getTeilnehmerJSON(List<MySelf> teilnehmende) throws JSONException {
+    public static JSONObject getTeilnehmerJSON(List<MySelf> teilnehmende) throws JSONException, IllegalAccessException {
         JSONArray teilnehmerliste = getTeilnehmerliste(teilnehmende);
         JSONObject ret = new JSONObject();
         ret.put(TYPE, JSONTypes.TEILNEHMER);
@@ -76,7 +76,7 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
-    private static JSONArray getTeilnehmerliste(List<MySelf> teilnehmende) throws JSONException {
+    private static JSONArray getTeilnehmerliste(List<MySelf> teilnehmende) throws JSONException, IllegalAccessException {
         JSONArray teilnehmerliste = new JSONArray();
         for(MySelf teilnehmer : teilnehmende){
             teilnehmerliste.put(getJSONTeilnehmer(teilnehmer));
