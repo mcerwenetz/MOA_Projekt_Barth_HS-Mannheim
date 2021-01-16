@@ -19,7 +19,7 @@ public class AdapterJsonMqtt {
         RoomItem roomItem = new RoomItem();
         //Auslesen der JsonFiles
         String roomName = (String)jsonObject.get("roomName");
-        boolean open     = (boolean)jsonObject.get("open");
+        boolean open    = (boolean)jsonObject.get("open");
         String host     = (String)jsonObject.get("host");
         String eMail    = (String)jsonObject.get("host");
         String phone    = (String)jsonObject.get("eMail");
@@ -56,6 +56,8 @@ public class AdapterJsonMqtt {
 
     public static List<ParticipantItem> createParticipantList(JSONObject jsonObject){
         return null;
+
+        //mit record bzw mit Iterator über die Liste iterieren und diese in die Paritcipantlist einfügen
     }
 
 }
