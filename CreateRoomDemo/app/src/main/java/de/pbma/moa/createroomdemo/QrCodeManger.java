@@ -27,7 +27,7 @@ public class QrCodeManger {
             IntentIntegrator scanIntegrator = new IntentIntegrator((Activity)context);
             scanIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
             scanIntegrator.setPrompt("");
-            //scanIntegrator.setTorchEnabled(true); //Flashlight  //TODO optional enable via light sensor ??
+            scanIntegrator.setTorchEnabled(true); //Flashlight
             scanIntegrator.setBeepEnabled(true);
             scanIntegrator.setOrientationLocked(true);
             scanIntegrator.setBarcodeImageEnabled(true);
