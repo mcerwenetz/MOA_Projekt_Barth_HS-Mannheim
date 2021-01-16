@@ -1,6 +1,5 @@
 package de.pbma.moa.createroomdemo;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,89 +29,101 @@ public class AdapterJsonMqtt {
         RAUMINFO("rauminfo")
         ;
         public final String label;
-        private JSONTypes(String label){
+        JSONTypes(String label){
             this.label = label;
         }
 
-    };
-
+    }
 
     private ParticipantItem participantItem;
 
-    public static JSONObject getAnmeldungJSON(MySelf teilnehmer, DateTime entertime){
+    public static JSONObject getAnmeldungJSON(MySelf teilnehmer, Long entertime){
         JSONObject ret = new JSONObject();
+        JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
         try {
             ret.put(TYPE, JSONTypes.LOGIN);
-            JSONObject teilnehmerAsJSON = getJSONTeilnehmer(teilnehmer);
             ret.put(TEILNEHMER,teilnehmerAsJSON);
-            ret.put(ENTERTIME,entertime.getMillis());
-        } catch (JSONException | IllegalAccessException e) {
+            ret.put(ENTERTIME,entertime);
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return  ret;
     }
 
-    public static JSONObject getAbmeldungJSON(MySelf teilnehmer, DateTime exittime){
+    public static JSONObject getAbmeldungJSON(MySelf teilnehmer, Long exittime){
         JSONObject ret = new JSONObject();
+        JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
         try {
-            JSONObject teilnehmerAsJSON = getJSONTeilnehmer(teilnehmer);
             ret.put(TYPE, JSONTypes.LOGOUT);
             ret.put(TEILNEHMER,teilnehmerAsJSON);
-            ret.put(EXITTIME, exittime.getMillis());
-
-        } catch (JSONException | IllegalAccessException e) {
+            ret.put(EXITTIME, exittime);
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return ret;
 
     }
 
-    public static JSONObject getTeilnehmerJSON(List<MySelf> teilnehmende) throws JSONException, IllegalAccessException {
-        JSONArray teilnehmerliste = getTeilnehmerliste(teilnehmende);
+    public static JSONObject getTeilnehmerListJSON(List<ParticipantItem> participants){
+        JSONArray teilnehmerliste = getTeilnehmerliste(participants);
         JSONObject ret = new JSONObject();
-        ret.put(TYPE, JSONTypes.TEILNEHMER);
-        ret.put(TEILNEHMERLIST, teilnehmerliste);
+        try {
+            ret.put(TYPE, JSONTypes.TEILNEHMER);
+            ret.put(TEILNEHMERLIST, teilnehmerliste);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return ret;
     }
 
-    private static JSONArray getTeilnehmerliste(List<MySelf> teilnehmende) throws JSONException, IllegalAccessException {
+    public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants){
         JSONArray teilnehmerliste = new JSONArray();
-        for(MySelf teilnehmer : teilnehmende){
-            teilnehmerliste.put(getJSONTeilnehmer(teilnehmer));
+        for(ParticipantItem participant : participants){
+            teilnehmerliste.put(getJSONParticipant(participant));
         }
         return teilnehmerliste;
     }
 
-    private static JSONObject getJSONTeilnehmer(MySelf teilnehmer) throws JSONException, IllegalAccessException {
+    private static JSONObject getJSONMySelf(MySelf teilnehmer){
         Map<Object, String> teilnehmermap = populateMap(teilnehmer);
-        JSONObject jsonTeilnehmer = new JSONObject(teilnehmermap);
-        return jsonTeilnehmer;
+        return new JSONObject(teilnehmermap);
     }
 
-    public static JSONObject getRauminfoJSON(RoomItem roomItem) throws Exception {
+    private static JSONObject getJSONParticipant(ParticipantItem participantItem){
+        Map<Object, String> teilnehmermap = populateMap(participantItem);
+        return new JSONObject(teilnehmermap);
+    }
+
+    public static JSONObject getRauminfoJSON(RoomItem roomItem){
         JSONObject rauminfoJSON = new JSONObject();
-        rauminfoJSON.put(TYPE,JSONTypes.RAUMINFO);
-        rauminfoJSON.put(RAUM, getRoomJSON(roomItem));
+        try {
+            rauminfoJSON.put(TYPE,JSONTypes.RAUMINFO);
+            rauminfoJSON.put(RAUM, getRoomJSON(roomItem));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return rauminfoJSON;
     }
 
-    private static JSONObject getRoomJSON(RoomItem roomItem) throws IllegalAccessException {
+    private static JSONObject getRoomJSON(RoomItem roomItem){
         Map<Object, String> roomMap = populateMap(roomItem);
-        JSONObject raumJSON = new JSONObject(roomMap);
-        return raumJSON;
+        return new JSONObject(roomMap);
     }
 
-    public static Map<Object, String> populateMap(final Object o) throws IllegalAccessException {
+    public static Map<Object, String> populateMap(final Object o){
         Map<Object, String> result = new HashMap<>();
         Field[] fields = o.getClass().getDeclaredFields();
         for(Field field : fields){
             String nicefield = field.toString();
             String classString = o.getClass().getName();
-            Integer startposition = nicefield.indexOf(classString);
+            int startposition = nicefield.indexOf(classString);
             nicefield = nicefield.substring(startposition, nicefield.length());
             nicefield = nicefield.substring(nicefield.indexOf(".")+1,nicefield.length());
-            result.put(nicefield, field.get(o).toString());
+            try {
+                result.put(nicefield, field.get(o).toString());
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
         return result;
     }
