@@ -24,10 +24,10 @@ import de.pbma.moa.createroomdemo.preferences.MySelf;
 public class MQTTService extends Service {
     final static String TAG = MQTTService.class.getCanonicalName();
     // for LocalService getInstance
-    final static String ACTION_START = "start"; // connect
-    final static String ACTION_STOP = "stop"; // disconnect
+    final public static String ACTION_START = "start"; // connect
+    final public static String ACTION_STOP = "stop"; // disconnect
     // for LocalService Messaging
-    final static String ACTION_PRESS = "press";
+    final public static String ACTION_PRESS = "press";
     final public static String PROTOCOL_SECURE = "ssl";
     //    final public static String PROTOCOL_TCP = "tcp";
     final public static String URL = "pma.inftech.hs-mannheim.de";
@@ -37,7 +37,7 @@ public class MQTTService extends Service {
     final public static String PASSWORT = "1a748f9e";
 
     private MqttMessaging mqttMessaging;
-    private ArrayList<String> topicList = new ArrayList<String>();
+    private final ArrayList<String> topicList = new ArrayList<String>();
 
     final private CopyOnWriteArrayList<MyListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -167,7 +167,6 @@ public class MQTTService extends Service {
         public void onMessage(String topic, String stringMsg) {
             Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
 
-            Repository repository = new Repository(MQTTService.this);
             JSONObject msg;
             try {
                 msg = new JSONObject(stringMsg);
@@ -178,6 +177,7 @@ public class MQTTService extends Service {
 //             Empfangen von Raum infos
             if (msg.has(AdapterJsonMqtt.RAUM)) {
                 new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
                     RoomItem roomItem = null;
                     try {
                         roomItem = AdapterJsonMqtt.createRoomItem(msg.getString(AdapterJsonMqtt.RAUM));
@@ -193,6 +193,7 @@ public class MQTTService extends Service {
 //           empfangen eines Teilnehmers welcher den raum betritt
             if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
                 new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
@@ -202,12 +203,17 @@ public class MQTTService extends Service {
                     }
                     item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
                     repository.addParticipantEntry(item);
+                    RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
+                    sendRoom(roomItem,false);
+                    sendParticipants(repository.getParticipantsOfRoomNow(item.roomId),roomItem);
                 }).start();
+
             }
 
 //           empfangen eines Teilnehmers welcher den raum verlässt
             if (msg.has(AdapterJsonMqtt.EXITTIME)) {
                 new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
@@ -225,6 +231,7 @@ public class MQTTService extends Service {
 //          empfangen einer liste mit allen teilnehmern aus einem raum
             if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
                 new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
                     ArrayList<ParticipantItem> list = null;
                     try {
                         list = AdapterJsonMqtt.createParticipantItemList(msg.getString(AdapterJsonMqtt.TEILNEHMERLIST));
@@ -255,7 +262,6 @@ public class MQTTService extends Service {
         this.topicList.add(topic);
         this.addTopic(topic);
     }
-
 
 
     /**
@@ -358,7 +364,7 @@ public class MQTTService extends Service {
 
     public class LocalBinder extends Binder {
 
-        MQTTService getMQTTService() {
+        public MQTTService getMQTTService() {
             return MQTTService.this;
         }
 

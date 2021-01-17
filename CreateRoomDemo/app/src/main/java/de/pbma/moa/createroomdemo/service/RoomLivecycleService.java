@@ -67,13 +67,13 @@ public class RoomLivecycleService extends Service {
                 openrooms = repository.getAllOpenRooms();
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
-                        repository.openById(closedroom.id);
+                        repository.openRoomById(closedroom.id);
                         Log.v(TAG, "opening room " + closedroom.id);
                     }
                 }
                 for (RoomItem openroom : openrooms) {
                     if (openroom.startTime >= now || openroom.endTime <= now) {
-                        repository.closeById(openroom.id);
+                        repository.closeRoomById(openroom.id);
                         Log.v(TAG, "Closing room " + openroom.id);
                     }
                 }

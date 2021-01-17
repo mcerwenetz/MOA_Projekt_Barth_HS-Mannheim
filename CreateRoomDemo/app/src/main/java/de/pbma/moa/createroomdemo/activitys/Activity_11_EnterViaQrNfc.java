@@ -1,7 +1,11 @@
 package de.pbma.moa.createroomdemo.activitys;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +20,8 @@ import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
+import de.pbma.moa.createroomdemo.preferences.MySelf;
+import de.pbma.moa.createroomdemo.service.MQTTService;
 
 public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
@@ -33,6 +39,19 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
+    }
+
+    @Override
+    protected void onResume() {
+        mqttServiceBound = false;
+        bindMQTTService();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unbindMQTTService();
+        super.onPause();
     }
 
     @Override
@@ -61,8 +80,11 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     }
 
     private void enterRoom(String uri) {
-        //TODO und was hier halt dann mit MQTT noch so rein muss
-
+        //enter room via mqtt
+        if(! mqttServiceBound)
+            return;
+        mqttService.sendEnterRoom(new MySelf(this),uri);
+        //add room to repo and enter details page
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
         String[] lis = uri.split("/");
         RoomItem roomItem = RoomItem.createRoom(lis[0], false, null, lis[1], null, null, null, null, 0, 0);
@@ -76,4 +98,44 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             });
         });
     }
+
+
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
+
+    private void bindMQTTService() {
+        Log.v(TAG, "bindMQTTService");
+        Intent intent = new Intent(this, MQTTService.class);
+        intent.setAction(MQTTService.ACTION_PRESS);
+        mqttServiceBound = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (!mqttServiceBound) {
+            Log.w(TAG, "could not try to bind service, will not be bound");
+        }
+    }
+
+    private void unbindMQTTService() {
+        Log.v(TAG, "unbindMQTTService");
+        if (mqttServiceBound) {
+            if (mqttService != null) {
+                // deregister listeners, if there are any
+            }
+            mqttServiceBound = false;
+            unbindService(serviceConnection);
+        }
+    }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 }

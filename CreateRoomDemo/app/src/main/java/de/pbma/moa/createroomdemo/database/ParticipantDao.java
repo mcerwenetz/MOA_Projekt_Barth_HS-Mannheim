@@ -29,6 +29,9 @@ public abstract class ParticipantDao {
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId")
     abstract LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId);
 
+    @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId")
+    abstract List<ParticipantItem> getParticipantsOfRoomNow(long roomId);
+
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail")
     abstract ParticipantItem getPaticipantItemNow(long roomId,String eMail);
 

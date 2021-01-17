@@ -8,11 +8,10 @@ import java.util.List;
 
 public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
-    final long timeSpanOfTwoWeeks = 1209600000;
 
-    private ParticipantDao participantDao;
+    private final ParticipantDao participantDao;
     private LiveData<List<RoomItem>> roomList;
-    private Context context;
+    private  final Context context;
 
     public int getCountOfExistingParticipantsInRoom(long roomId) {
         return participantDao.getCountOfExistingParticipantsInRoom(roomId);
@@ -84,11 +83,11 @@ public class Repository {
         return participantDao.getPaticipantItemNow(roomId, email);
     }
 
-    public RoomItem getItemByIdNow(long searchid) {
+    public RoomItem getRoomItemByIdNow(long searchid) {
         return roomDao.getItemByIdNow(searchid);
     }
 
-    public LiveData<List<RoomItem>> getDbAll() {
+    public LiveData<List<RoomItem>> getAllRooms() {
         return roomList;
     }
 
@@ -101,21 +100,21 @@ public class Repository {
     }
 
 
-    public LiveData<List<RoomItem>> getDbAllFromMeAsHost() {
+    public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {
         return roomDao.getAllFromMeAsHost();
     }
 
-    public LiveData<List<RoomItem>> getDbAllFromExceptMeAsHost() {
+    public LiveData<List<RoomItem>> getAllRoomsWithoutMeAsHost() {
         return roomDao.getAllFromExceptMeAsHost();
     }
 
-    public void closeById(long roomId) {
+    public void closeRoomById(long roomId) {
         new Thread(() -> {
             roomDao.closeRoomById(roomId);
         }).start();
     }
 
-    public void openById(long roomId) {
+    public void openRoomById(long roomId) {
         new Thread(() -> {
             roomDao.openRoomById(roomId);
         }).start();
@@ -127,8 +126,11 @@ public class Repository {
     public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
         return participantDao.getParticipantsOfRoom(roomId);
     }
+    public List<ParticipantItem> getParticipantsOfRoomNow(long roomId) {
+        return participantDao.getParticipantsOfRoomNow(roomId);
+    }
 
-    public LiveData<List<ParticipantItem>> getAll() {
+    public LiveData<List<ParticipantItem>> getAllParticipants() {
         return participantDao.getAll();
     }
 
