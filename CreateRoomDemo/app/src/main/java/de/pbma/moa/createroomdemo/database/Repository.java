@@ -14,6 +14,10 @@ public class Repository {
     private LiveData<List<RoomItem>> roomList;
     private Context context;
 
+    public int getCountOfExistingParticipantsInRoom(long roomId) {
+        return participantDao.getCountOfExistingParticipantsInRoom(roomId);
+    }
+
     public static interface AfterInsert {
         public void inserted(RoomItem item);
     }

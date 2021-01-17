@@ -32,4 +32,6 @@ public abstract class ParticipantDao {
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail")
     abstract ParticipantItem getPaticipantItemNow(long roomId,String eMail);
 
+    @Query("SELECT count(*) FROM  dbParticipant WHERE roomId=:roomId")
+    public abstract int getCountOfExistingParticipantsInRoom(long roomId);
 }

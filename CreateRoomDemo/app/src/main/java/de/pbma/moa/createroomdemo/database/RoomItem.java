@@ -63,14 +63,18 @@ public class RoomItem {
         room.endTime = endTime;
         return room;
     }
-
-
+    public String getUri(){
+        if(this.fremdId==0)
+            return this.roomName + "/" + this.eMail + "/" + this.id;
+        else
+            return this.roomName + "/" + this.eMail + "/" + this.fremdId;
+    }
 
     @Override
     public String toString() {
         return "RoomItem{" +
                 "id=" + id +
-                "fremdId=" + fremdId +
+                ", fremdId=" + fremdId +
                 ", roomName='" + roomName + '\'' +
                 ", open=" + open +
                 ", host='" + host + '\'' +
@@ -84,10 +88,6 @@ public class RoomItem {
                 '}';
     }
 
-    public String getUri(){
-        return this.roomName + "/" + this.eMail + "/" + this.id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -97,18 +97,19 @@ public class RoomItem {
                 open == roomItem.open &&
                 startTime == roomItem.startTime &&
                 endTime == roomItem.endTime &&
-                Objects.equals(roomName, roomItem.roomName) &&
-                Objects.equals(host, roomItem.host) &&
-                Objects.equals(eMail, roomItem.eMail) &&
-                Objects.equals(phone, roomItem.phone) &&
-                Objects.equals(place, roomItem.place) &&
-                Objects.equals(address, roomItem.address) &&
+                Objects.equals(fremdId, roomItem.fremdId) &&
+                roomName.equals(roomItem.roomName) &&
+                host.equals(roomItem.host) &&
+                eMail.equals(roomItem.eMail) &&
+                phone.equals(roomItem.phone) &&
+                place.equals(roomItem.place) &&
+                address.equals(roomItem.address) &&
                 Objects.equals(extra, roomItem.extra);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
+        return Objects.hash(id, fremdId, roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
     }
 }
 

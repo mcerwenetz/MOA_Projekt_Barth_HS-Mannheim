@@ -15,12 +15,12 @@ import de.pbma.moa.createroomdemo.preferences.MySelf;
 
 public class AdapterJsonMqtt {
 
-    private static final String TEILNEHMER = "teilnehmer";
-    private static final String ENTERTIME = "entertime";
-    private static final String TYPE = "type";
-    private static final String EXITTIME ="exittime";
-    private static final String TEILNEHMERLIST = "teilnehmerlist" ;
-    private static final String RAUM = "raum";
+    public static final String TEILNEHMER = "teilnehmer";
+    public static final String ENTERTIME = "entertime";
+    public static final String TYPE = "type";
+    public static final String EXITTIME ="exittime";
+    public static final String TEILNEHMERLIST = "teilnehmerlist" ;
+    public static final String RAUM = "raum";
 
     private enum JSONTypes {
         LOGIN("login"),
