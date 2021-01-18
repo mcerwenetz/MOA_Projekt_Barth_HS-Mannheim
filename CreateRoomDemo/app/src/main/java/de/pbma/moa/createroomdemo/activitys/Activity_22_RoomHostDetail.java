@@ -2,12 +2,16 @@ package de.pbma.moa.createroomdemo.activitys;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -45,6 +49,7 @@ import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.service.MQTTService;
 
 //Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
 //und der Status des raus dargestellt.
@@ -101,6 +106,12 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bindMQTTService();
+    }
+
     private void bindUI() {
         tvroomname = findViewById(R.id.tv_22_roomname_value);
         tvstatus = findViewById(R.id.tv_22_roomstatus_value);
@@ -122,6 +133,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         timeoutRefresherThread.stop();
+        unbindMQTTService();
     }
 
     private void updateRoom(RoomItem item) {
@@ -146,6 +158,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.open = false;
         repo.updateRoomItem(item);
         tvtimeout.setText("00:00:00");
+        mqttService.sendRoom(item, true);
     }
 
     private void onChangeTimeout(View view) {
@@ -158,6 +171,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         now.dayOfMonth().get(), i, i1, 0);
                 item.endTime = timeout.getMillis();
                 repo.updateRoomItem(item);
+                mqttService.sendRoom(item,false);
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
@@ -262,5 +276,45 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         AlertDialog alertDialogUri = new AlertDialog.Builder(this).setView(view).create();
         alertDialogUri.show();
     }
+
+    //MQTT Zeug
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
+
+    private void bindMQTTService() {
+        Log.v(TAG, "bindMQTTService");
+        Intent intent = new Intent(this, MQTTService.class);
+        intent.setAction(MQTTService.ACTION_PRESS);
+        mqttServiceBound = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (!mqttServiceBound) {
+            Log.w(TAG, "could not try to bind service, will not be bound");
+        }
+    }
+
+    private void unbindMQTTService() {
+        Log.v(TAG, "unbindMQTTService");
+        if (mqttServiceBound) {
+            if (mqttService != null) {
+                // deregister listeners, if there are any
+            }
+            mqttServiceBound = false;
+            unbindService(serviceConnection);
+        }
+    }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 
 }
