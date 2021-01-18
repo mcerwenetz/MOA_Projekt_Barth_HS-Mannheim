@@ -151,11 +151,12 @@ public class MQTTService extends Service {
         return USER + "/" + uri;
     }
 
-    private void addTopic(String topic){
+    private void addTopic(String topic) {
         this.topicList.add(topic);
         mqttMessaging.subscribe(topic);
     }
-    private void removeTopic(String topic){
+
+    private void removeTopic(String topic) {
         this.topicList.remove(topic);
         mqttMessaging.unsubscribe(topic);
     }
@@ -180,7 +181,7 @@ public class MQTTService extends Service {
                     Repository repository = new Repository(MQTTService.this);
                     RoomItem roomItem = null;
                     try {
-                        roomItem = AdapterJsonMqtt.createRoomItem(msg.getString(AdapterJsonMqtt.RAUM));
+                        roomItem = AdapterJsonMqtt.createRoomItem(msg.getJSONObject(AdapterJsonMqtt.RAUM));
                     } catch (JSONException e) {
                         e.printStackTrace();
                         return;
@@ -196,16 +197,18 @@ public class MQTTService extends Service {
                     Repository repository = new Repository(MQTTService.this);
                     ParticipantItem item = null;
                     try {
-                        item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
+                        item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                        item.enterTime = msg.getLong(AdapterJsonMqtt.ENTERTIME);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         return;
                     }
                     item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
                     repository.addParticipantEntry(item);
+                    //send infos to participants
                     RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
-                    sendRoom(roomItem,false);
-                    sendParticipants(repository.getParticipantsOfRoomNow(item.roomId),roomItem);
+                    sendRoom(roomItem, false);
+                    sendParticipants(repository.getParticipantsOfRoomNow(item.roomId), roomItem);
                 }).start();
 
             }
@@ -216,7 +219,7 @@ public class MQTTService extends Service {
                     Repository repository = new Repository(MQTTService.this);
                     ParticipantItem item = null;
                     try {
-                        item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
+                        item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
                         item = repository.getPaticipantItemNow(item.roomId, item.eMail);
                         item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
                     } catch (JSONException e) {
@@ -234,13 +237,13 @@ public class MQTTService extends Service {
                     Repository repository = new Repository(MQTTService.this);
                     ArrayList<ParticipantItem> list = null;
                     try {
-                        list = AdapterJsonMqtt.createParticipantItemList(msg.getString(AdapterJsonMqtt.TEILNEHMERLIST));
+                        list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
                     int count = repository.getCountOfExistingParticipantsInRoom(id);
-                    for (ParticipantItem item : list.subList(count-1,list.size())) {
+                    for (ParticipantItem item : list.subList(count - 1, list.size())) {
                         item.roomId = id;
                         repository.addParticipantEntry(item);
                     }
@@ -257,8 +260,8 @@ public class MQTTService extends Service {
      *
      * @param item RoomItem
      */
-    public void addOpenRoom(RoomItem item){
-        String topic = getTopic(item.getUri(),false);
+    public void addOpenRoom(RoomItem item) {
+        String topic = getTopic(item.getUri(), false);
         this.topicList.add(topic);
         this.addTopic(topic);
     }
@@ -276,7 +279,7 @@ public class MQTTService extends Service {
         Log.v(TAG, "sendEnterRoom()");
         String msg = AdapterJsonMqtt.getAnmeldungJSON(me, System.currentTimeMillis()).toString();
         mqttMessaging.send(getTopic(uri, false), msg);
-        addTopic(getTopic(uri,true));
+        addTopic(getTopic(uri, true));
         return true;
     }
 
@@ -292,7 +295,7 @@ public class MQTTService extends Service {
         Log.v(TAG, "sendExitRoom()");
         String msg = AdapterJsonMqtt.getAbmeldungJSON(me, System.currentTimeMillis()).toString();
         mqttMessaging.send(getTopic(uri, false), msg);
-        removeTopic(getTopic(uri,true));
+        removeTopic(getTopic(uri, true));
         return true;
     }
 
@@ -303,12 +306,12 @@ public class MQTTService extends Service {
      * @param room eine Instanz von RaumInfo
      * @return boolean mit erfolgreich oder fehler
      */
-    public boolean sendRoom(RoomItem room,boolean closeRoom) { // called by activity after binding
+    public boolean sendRoom(RoomItem room, boolean closeRoom) { // called by activity after binding
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getRauminfoJSON(room).toString();
         mqttMessaging.send(getTopic(room.getUri(), true), msg);
-        if(closeRoom)
-            removeTopic(getTopic(room.getUri(),false));
+        if (closeRoom)
+            removeTopic(getTopic(room.getUri(), false));
         return true;
     }
 
@@ -348,7 +351,7 @@ public class MQTTService extends Service {
     private void disconnect() {
         Log.v(TAG, "disconnect");
         if (mqttMessaging != null) {
-            for(String topic : this.topicList)
+            for (String topic : this.topicList)
                 mqttMessaging.unsubscribe(topic);
             List<MqttMessaging.Pair<String, String>> pending = mqttMessaging.disconnect();
             if (!pending.isEmpty()) {
