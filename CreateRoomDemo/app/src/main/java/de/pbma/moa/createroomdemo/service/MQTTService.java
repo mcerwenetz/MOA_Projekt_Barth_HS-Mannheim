@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import de.pbma.moa.createroomdemo.activitys.Activity_14_RoomParticipantDetail;
+import de.pbma.moa.createroomdemo.AdapterJsonMqtt;
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
@@ -24,11 +24,10 @@ import de.pbma.moa.createroomdemo.preferences.MySelf;
 public class MQTTService extends Service {
     final static String TAG = MQTTService.class.getCanonicalName();
     // for LocalService getInstance
-    final static String ACTION_START = "start"; // connect
-    final static String ACTION_STOP = "stop"; // disconnect
+    final public static String ACTION_START = "start"; // connect
+    final public static String ACTION_STOP = "stop"; // disconnect
     // for LocalService Messaging
-    final static String ACTION_PRESS = "press";
-    final static String TOPIC = "intent_topic";
+    final public static String ACTION_PRESS = "press";
     final public static String PROTOCOL_SECURE = "ssl";
     //    final public static String PROTOCOL_TCP = "tcp";
     final public static String URL = "pma.inftech.hs-mannheim.de";
@@ -38,7 +37,7 @@ public class MQTTService extends Service {
     final public static String PASSWORT = "1a748f9e";
 
     private MqttMessaging mqttMessaging;
-    private String topic = "20moagm/test";
+    private final ArrayList<String> topicList = new ArrayList<String>();
 
     final private CopyOnWriteArrayList<MyListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -79,9 +78,6 @@ public class MQTTService extends Service {
         return listeners.remove(pressListener);
     }
 
-    public void changeTopic(String newTopic){
-        this.topic=newTopic;
-    }
 
     @Override
     public void onCreate() {
@@ -102,10 +98,6 @@ public class MQTTService extends Service {
         String action;
         if (intent != null) {
             action = intent.getAction();
-            this.topic= intent.getStringExtra(TOPIC);
-            if(this.topic==null)
-                Log.w(TAG, "upps, forgot toppic");
-            action = ACTION_START;
         } else {
             Log.w(TAG, "upps, restart");
             action = ACTION_START;
@@ -152,99 +144,186 @@ public class MQTTService extends Service {
         return ele[1] + "/" + ele[2] + "/" + ele[3];
     }
 
+    private String getTopic(String uri, boolean isPublic) {
+        final String PUBLIC_TOPIC = "public";
+        if (isPublic)
+            return USER + "/" + uri + "/" + PUBLIC_TOPIC;
+        return USER + "/" + uri;
+    }
+
+    private void addTopic(String topic){
+        this.topicList.add(topic);
+        mqttMessaging.subscribe(topic);
+    }
+    private void removeTopic(String topic){
+        this.topicList.remove(topic);
+        mqttMessaging.unsubscribe(topic);
+    }
+
 
     //Send and Receive
     final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
         @Override
         public void onMessage(String topic, String stringMsg) {
             Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
-            if (topic.equals(MQTTService.this.topic))
-                return;
 
-            ObjectFactory objectFactory = new ObjectFactory();
-            Repository repository = new Repository(MQTTService.this);
-
-
+            JSONObject msg;
             try {
-                JSONObject msg = new JSONObject(stringMsg);
-                if (msg.has(JSONFactory.RAUM)) {
-                    new Thread(()-> {
-                        RoomItem roomItem = objectFactory.createRoomItem(msg.getString(JSONFactory.RAUM));
-                        roomItem.id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
-                        repository.updateRoomItem(roomItem);
-                    }).start();
-                }
-                if (msg.has(JSONFactory.ENTERTIME)) {
-                    new Thread(() -> {
-                        ParticipantItem item = objectFactory.createParticipantItem(msg.getString(JSONFactory.TEILNEHMER));
-                        item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
-                        repository.addParticipantEntry(item);
-                    }).start();
-                }
-
-                if (msg.has(JSONFactory.EXITTIME)) {
-                    new Thread(() -> {
-                        ParticipantItem item = objectFactory.createParticipantItem(msg.getString(JSONFactory.TEILNEHMER));
-                        item = repository.getPaticipantItemNow(item.id, item.eMail);
-                        item.exitTime = Long.parseLong(msg.getString(JSONFactory.EXITTIME));
-                        repository.updateParticipantItem(item);
-                    }).start();
-                }
-
-                if (msg.has(JSONFactory.TEILNEHMERLIST)) {
-                    new Thread(() -> {
-                        ArrayList<ParticipantItem> list = objectFactory.createParticipantItemList(msg.getString(JSONFactory.TEILNEHMERLIST));
-                        long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
-                        for (ParticipantItem item : list) {
-                            item.roomId = id;
-                            repository.addParticipantEntry(item);
-                        }
-                    }).start();
-                }
-
-                doOnRecieve(topic, stringMsg);
+                msg = new JSONObject(stringMsg);
             } catch (JSONException e) {
                 Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
+                return;
+            }
+//             Empfangen von Raum infos
+            if (msg.has(AdapterJsonMqtt.RAUM)) {
+                new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
+                    RoomItem roomItem = null;
+                    try {
+                        roomItem = AdapterJsonMqtt.createRoomItem(msg.getString(AdapterJsonMqtt.RAUM));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    roomItem.id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    repository.updateRoomItem(roomItem);
+                }).start();
             }
 
+//           empfangen eines Teilnehmers welcher den raum betritt
+            if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
+                new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
+                    ParticipantItem item = null;
+                    try {
+                        item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    repository.addParticipantEntry(item);
+                    RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
+                    sendRoom(roomItem,false);
+                    sendParticipants(repository.getParticipantsOfRoomNow(item.roomId),roomItem);
+                }).start();
+
+            }
+
+//           empfangen eines Teilnehmers welcher den raum verlässt
+            if (msg.has(AdapterJsonMqtt.EXITTIME)) {
+                new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
+                    ParticipantItem item = null;
+                    try {
+                        item = AdapterJsonMqtt.createParticipantItem(msg.getString(AdapterJsonMqtt.TEILNEHMER));
+                        item = repository.getPaticipantItemNow(item.roomId, item.eMail);
+                        item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    repository.updateParticipantItem(item);
+                }).start();
+            }
+
+
+//          empfangen einer liste mit allen teilnehmern aus einem raum
+            if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
+                new Thread(() -> {
+                    Repository repository = new Repository(MQTTService.this);
+                    ArrayList<ParticipantItem> list = null;
+                    try {
+                        list = AdapterJsonMqtt.createParticipantItemList(msg.getString(AdapterJsonMqtt.TEILNEHMERLIST));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    int count = repository.getCountOfExistingParticipantsInRoom(id);
+                    for (ParticipantItem item : list.subList(count-1,list.size())) {
+                        item.roomId = id;
+                        repository.addParticipantEntry(item);
+                    }
+                }).start();
+            }
+
+            doOnRecieve(topic, stringMsg);
         }
     };
 
-    public boolean sendEnterRoom() { // called by activity after binding
+    /**
+     * Hinzufügen eines Raumes auf dessen MQTT nachrichten gehört werden soll
+     * nur für den Host
+     *
+     * @param item RoomItem
+     */
+    public void addOpenRoom(RoomItem item){
+        String topic = getTopic(item.getUri(),false);
+        this.topicList.add(topic);
+        this.addTopic(topic);
+    }
+
+
+    /**
+     * called after binding
+     * senden der eigenen Daten sowie dem anmeldezeitpunk an den Host
+     *
+     * @param me  meine eignen Daten instanz von MySelf
+     * @param uri die erhaltene RaumUri
+     * @return boolean mit erfolgreich oder fehler
+     */
+    public boolean sendEnterRoom(MySelf me, String uri) {
         Log.v(TAG, "sendEnterRoom()");
-        MySelf me = new MySelf(this);
-        if (!me.isValide())
-            return false;
-        JSONFactory factory = new JSONFactory();
-        msg = factory.anmelung(me).toString();
-        mqttMessaging.send(topic, msg);
+        String msg = AdapterJsonMqtt.getAnmeldungJSON(me, System.currentTimeMillis()).toString();
+        mqttMessaging.send(getTopic(uri, false), msg);
+        addTopic(getTopic(uri,true));
         return true;
     }
 
-    public boolean sendRoom(RoomItem room) { // called by activity after binding
-        Log.v(TAG, "sendRoom()");
-        JSONFactory factory = new JSONFactory();
-        msg = factory.raum(room).toString();
-        mqttMessaging.send(topic, msg);
-        return true;
-    }
-
-    public boolean sendParticipants(List<ParticipantItem> participantItems) { // called by activity after binding
-        Log.v(TAG, "sendRoom()");
-        JSONFactory factory = new JSONFactory();
-        msg = factory.teilnehmer(participantItems).toString();
-        mqttMessaging.send(topic, msg);
-        return true;
-    }
-
-    public boolean sendExitRoom() { // called by activity after binding
+    /**
+     * called after binding
+     * senden der eigenen Daten sowie dem abmeldezeitpunkt an den Host
+     *
+     * @param me  meine eignen Daten instanz von MySelf
+     * @param uri die erhaltene RaumUri
+     * @return boolean mit erfolgreich oder fehler
+     */
+    public boolean sendExitFromRoom(MySelf me, String uri) { // called by activity after binding
         Log.v(TAG, "sendExitRoom()");
-        MySelf me = new MySelf(this);
-        if (!me.isValide())
-            return false;
-        JSONFactory factory = new JSONFactory();
-        msg = factory.abmeldung(me).toString();
-        mqttMessaging.send(topic, msg);
+        String msg = AdapterJsonMqtt.getAbmeldungJSON(me, System.currentTimeMillis()).toString();
+        mqttMessaging.send(getTopic(uri, false), msg);
+        removeTopic(getTopic(uri,true));
+        return true;
+    }
+
+    /**
+     * called after binding
+     * senden der Rauminfos an alle teilnehmer
+     *
+     * @param room eine Instanz von RaumInfo
+     * @return boolean mit erfolgreich oder fehler
+     */
+    public boolean sendRoom(RoomItem room,boolean closeRoom) { // called by activity after binding
+        Log.v(TAG, "sendRoom()");
+        String msg = AdapterJsonMqtt.getRauminfoJSON(room).toString();
+        mqttMessaging.send(getTopic(room.getUri(), true), msg);
+        if(closeRoom)
+            removeTopic(getTopic(room.getUri(),false));
+        return true;
+    }
+
+    /**
+     * called after binding
+     * senden der teilnehmer an alle teilnehmer
+     *
+     * @param participantItems liste aller teilnehmer in einem raum
+     * @param room             eine Instanz von RaumInfo
+     * @return boolean mit erfolgreich oder fehler
+     */
+    public boolean sendParticipants(List<ParticipantItem> participantItems, RoomItem room) { // called by activity after binding
+        Log.v(TAG, "sendRoom()");
+        String msg = AdapterJsonMqtt.getTeilnehmerListJSON(participantItems).toString();
+        mqttMessaging.send(getTopic(room.getUri(), true), msg);
         return true;
     }
 
@@ -264,14 +343,13 @@ public class MQTTService extends Service {
         Log.v(TAG, String.format("username=%s, password=%s, ", USER, PASSWORT));
 
         mqttMessaging.connect(CONNECTION_URL, options); // secure via URL
-        // do not forget to subscribe
-        mqttMessaging.subscribe(topic);
     }
 
     private void disconnect() {
         Log.v(TAG, "disconnect");
         if (mqttMessaging != null) {
-            mqttMessaging.unsubscribe(topic);
+            for(String topic : this.topicList)
+                mqttMessaging.unsubscribe(topic);
             List<MqttMessaging.Pair<String, String>> pending = mqttMessaging.disconnect();
             if (!pending.isEmpty()) {
                 Log.w(TAG, "pending messages: " + pending.size());
@@ -286,7 +364,7 @@ public class MQTTService extends Service {
 
     public class LocalBinder extends Binder {
 
-        MQTTService getMQTTService() {
+        public MQTTService getMQTTService() {
             return MQTTService.this;
         }
 

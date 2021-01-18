@@ -138,7 +138,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             tvLocation.setText(item.place +"\n" + item.address);
         }
     }
-    // Todo: Service: TimeoutChecker
 
     private void onCloseRoom(View view) {
         long now = DateTime.now().getMillis();
@@ -182,7 +181,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuitem) {
-        //TODO Hier müssen noch die einzelnen Funktionen ergaenzt werden
         switch (menuitem.getItemId()) {
             case R.id.menu_partic_share:
                 shareRoom(this.item);

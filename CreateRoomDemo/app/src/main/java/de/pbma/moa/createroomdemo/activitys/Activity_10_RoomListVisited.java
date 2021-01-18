@@ -58,7 +58,7 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
         lv.setAdapter(adapter);
         roomRepo = new Repository(this);
         MySelf me = new MySelf(this);
-        roomRepo.getDbAllFromExceptMeAsHost().observe(this, observer);
+        roomRepo.getAllRoomsWithoutMeAsHost().observe(this, observer);
         lv.setOnItemClickListener(oicl);
     }
 }

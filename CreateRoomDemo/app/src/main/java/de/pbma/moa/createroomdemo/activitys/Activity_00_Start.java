@@ -22,6 +22,7 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.service.MQTTService;
 import de.pbma.moa.createroomdemo.service.RoomLivecycleService;
 
 public class Activity_00_Start extends AppCompatActivity {
@@ -45,6 +46,7 @@ public class Activity_00_Start extends AppCompatActivity {
         Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
 
+        onStartMqttService();
         //remove DB entries older two weeks
         deleteOldEntries();
 
@@ -56,6 +58,7 @@ public class Activity_00_Start extends AppCompatActivity {
         super.onDestroy();
         Intent intent = new Intent(this, RoomLivecycleService.class);
         stopService(intent);
+        onStopMqttService();
     }
 
     //Menu
@@ -119,6 +122,22 @@ public class Activity_00_Start extends AppCompatActivity {
     private void deleteOldEntries(){
         Repository repository = new Repository(this);
         repository.DeleteRoomAndParticipantOlderTwoWeeks();
+    }
+
+
+    //MQTT Service
+    public void onStartMqttService() {
+        Log.v(TAG, "onStartService");
+        Intent intent = new Intent(this, MQTTService.class);
+        intent.setAction(MQTTService.ACTION_START);
+        startService(intent);
+    }
+
+    public void onStopMqttService() {
+        Log.v(TAG, "onStopService");
+        Intent intent = new Intent(this, MQTTService.class);
+        intent.setAction(MQTTService.ACTION_STOP);
+        startService(intent); // to stop
     }
 
 }
