@@ -23,6 +23,8 @@ public class AdapterJsonMqtt {
     private static final String TEILNEHMERLIST = "teilnehmerlist" ;
     private static final String RAUM = "raum";
 
+    private ParticipantItem participantItem;
+
     private enum JSONTypes {
         LOGIN("login"),
         LOGOUT("logout"),
@@ -37,7 +39,7 @@ public class AdapterJsonMqtt {
     };
 
 
-    private ParticipantItem participantItem;
+
 
     public static JSONObject getAnmeldungJSON(MySelf teilnehmer, DateTime entertime){
         JSONObject ret = new JSONObject();
