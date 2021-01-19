@@ -83,8 +83,18 @@ public class AdapterJsonMqtt {
     }
 
     private static JSONObject getJSONParticipant(ParticipantItem participantItem) {
-//        Map<Object, String> teilnehmermap = populateMap(participantItem);
-//        return new JSONObject(teilnehmermap);
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("name",participantItem.name);
+            ret.put("extra",participantItem.extra);
+            ret.put("eMail", participantItem.eMail);
+            ret.put("phone",participantItem.phone);
+            ret.put("enterTime",participantItem.enterTime);
+            ret.put("exitTime", participantItem.exitTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     public static JSONObject getRauminfoJSON(RoomItem roomItem) {
