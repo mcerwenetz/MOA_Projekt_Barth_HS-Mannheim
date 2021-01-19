@@ -22,8 +22,8 @@ public class AdapterJsonMqtt {
     public static final String TEILNEHMER = "teilnehmer";
     public static final String ENTERTIME = "entertime";
     public static final String TYPE = "type";
-    public static final String EXITTIME ="exittime";
-    public static final String TEILNEHMERLIST = "teilnehmerlist" ;
+    public static final String EXITTIME = "exittime";
+    public static final String TEILNEHMERLIST = "teilnehmerlist";
     public static final String RAUM = "raum";
 
 
@@ -32,36 +32,35 @@ public class AdapterJsonMqtt {
         LOGIN("login"),
         LOGOUT("logout"),
         TEILNEHMER("teilnehmer"),
-        RAUMINFO("rauminfo")
-        ;
+        RAUMINFO("rauminfo");
         public final String label;
-        JSONTypes(String label){
+
+        JSONTypes(String label) {
             this.label = label;
         }
 
     }
 
 
-
-    public static JSONObject getAnmeldungJSON(MySelf teilnehmer, Long entertime){
+    public static JSONObject getAnmeldungJSON(MySelf teilnehmer, Long entertime) {
         JSONObject ret = new JSONObject();
         JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
         try {
             ret.put(TYPE, JSONTypes.LOGIN);
-            ret.put(TEILNEHMER,teilnehmerAsJSON);
-            ret.put(ENTERTIME,entertime);
+            ret.put(TEILNEHMER, teilnehmerAsJSON);
+            ret.put(ENTERTIME, entertime);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return  ret;
+        return ret;
     }
 
-    public static JSONObject getAbmeldungJSON(MySelf teilnehmer, Long exittime){
+    public static JSONObject getAbmeldungJSON(MySelf teilnehmer, Long exittime) {
         JSONObject ret = new JSONObject();
         JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
         try {
             ret.put(TYPE, JSONTypes.LOGOUT);
-            ret.put(TEILNEHMER,teilnehmerAsJSON);
+            ret.put(TEILNEHMER, teilnehmerAsJSON);
             ret.put(EXITTIME, exittime);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -71,15 +70,13 @@ public class AdapterJsonMqtt {
     }
 
     //Funktion holt sich die Inhalte eines Teilnehmers aus den Myself Angaben
-    private static JSONObject getJSONMySelf(MySelf teilnehmer){
+    private static JSONObject getJSONMySelf(MySelf teilnehmer) {
         Map<Object, String> teilnehmermap = populateMap(teilnehmer);
         return new JSONObject(teilnehmermap);
     }
 
 
-
-
-    public static JSONObject getTeilnehmerListJSON(List<ParticipantItem> participants){
+    public static JSONObject getTeilnehmerListJSON(List<ParticipantItem> participants) {
         JSONArray teilnehmerliste = getTeilnehmerliste(participants);
         JSONObject ret = new JSONObject();
         try {
@@ -91,23 +88,23 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
-    public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants){
+    public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants) {
         JSONArray teilnehmerliste = new JSONArray();
-        for(ParticipantItem participant : participants){
+        for (ParticipantItem participant : participants) {
             teilnehmerliste.put(getJSONParticipant(participant));
         }
         return teilnehmerliste;
     }
 
-    public static Map<Object, String> populateMap(final Object o){
+    public static Map<Object, String> populateMap(final Object o) {
         Map<Object, String> result = new HashMap<>();
         Field[] fields = o.getClass().getDeclaredFields();
-        for(Field field : fields){
+        for (Field field : fields) {
             String nicefield = field.toString();
             String classString = o.getClass().getName();
             int startposition = nicefield.indexOf(classString);
             nicefield = nicefield.substring(startposition, nicefield.length());
-            nicefield = nicefield.substring(nicefield.indexOf(".")+1,nicefield.length());
+            nicefield = nicefield.substring(nicefield.indexOf(".") + 1, nicefield.length());
             try {
                 result.put(nicefield, field.get(o).toString());
             } catch (IllegalAccessException e) {
@@ -117,15 +114,15 @@ public class AdapterJsonMqtt {
         return result;
     }
 
-    private static JSONObject getJSONParticipant(ParticipantItem participantItem){
+    private static JSONObject getJSONParticipant(ParticipantItem participantItem) {
         Map<Object, String> teilnehmermap = populateMap(participantItem);
         return new JSONObject(teilnehmermap);
     }
 
-    public static JSONObject getRauminfoJSON(RoomItem roomItem){
+    public static JSONObject getRauminfoJSON(RoomItem roomItem) {
         JSONObject rauminfoJSON = new JSONObject();
         try {
-            rauminfoJSON.put(TYPE,JSONTypes.RAUMINFO);
+            rauminfoJSON.put(TYPE, JSONTypes.RAUMINFO);
             rauminfoJSON.put(RAUM, getRoomJSON(roomItem));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -133,86 +130,74 @@ public class AdapterJsonMqtt {
         return rauminfoJSON;
     }
 
-    private static JSONObject getRoomJSON(RoomItem roomItem){
+    private static JSONObject getRoomJSON(RoomItem roomItem) {
         Map<Object, String> roomMap = populateMap(roomItem);
         return new JSONObject(roomMap);
     }
 
 
-
-    public static RoomItem createRoomItem(JSONObject jsonObject) throws JSONException {
+    public static RoomItem createRoomItem(JSONObject jsonObject) {
         RoomItem roomItem = new RoomItem();
 
-        String roomName = (String)jsonObject.get("roomName");
-        boolean open    = (boolean)jsonObject.get("open");
-        String host     = (String)jsonObject.get("host");
-        String eMail    = (String)jsonObject.get("host");
-        String phone    = (String)jsonObject.get("eMail");
-        String place    = (String)jsonObject.get("place");
-        String address  = (String)jsonObject.get("address");
-        String extra    = (String)jsonObject.get("extra");
-        long startTime  = (long)jsonObject.get("startTime");
-        long endTime    = (long)jsonObject.get("endTime");
+        try {
+            String roomName = (String) jsonObject.get("roomName");
+            boolean open = (boolean) jsonObject.get("open");
+            String host = (String) jsonObject.get("host");
+            String eMail = (String) jsonObject.get("eMail");
+            String phone = (String) jsonObject.get("phone");
+            String place = (String) jsonObject.get("place");
+            String address = (String) jsonObject.get("address");
+            String extra = (String) jsonObject.get("extra");
+            long startTime = (long) jsonObject.get("startTime");
+            long endTime = (long) jsonObject.get("endTime");
 
-        roomItem.fremdId = (long)jsonObject.get("fremdId"); //TODO muss in der Create Room die Fremdid vergeben werden oder bekommt man diese im Json?
-        roomItem.createRoom(roomName,open,host,eMail,phone,place,address,extra,startTime,endTime);
-
+            roomItem.fremdId = (long) jsonObject.get("Id");
+            roomItem.createRoom(roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return roomItem;
     }
 
-    public static ParticipantItem createParticipantItem(JSONObject jsonObject) throws JSONException {
+    public static ParticipantItem createParticipantItem(JSONObject jsonObject) {
         ParticipantItem participantItem = new ParticipantItem();
 
-        String name     = (String)jsonObject.get("Name");
-        String extra    = (String)jsonObject.get("extra");
-        String eMail    = (String)jsonObject.get("extra");
-        String phone    = (String)jsonObject.get("extra");
 
-        long  enterTime = (long)jsonObject.get("enterTime");
-        long  exitTime  = (long)jsonObject.get("exitTime");
+        try {
+            String name = (String) jsonObject.get("Name");
+            String extra = (String) jsonObject.get("extra");
+            String eMail = (String) jsonObject.get("extra");
+            String phone = (String) jsonObject.get("extra");
 
-        if(exitTime == 0.0 )
-            participantItem.createParticipant(name,extra,eMail,phone,0, enterTime);
-        else
-        participantItem.createParticipant(name,extra,eMail,phone,0,exitTime);
+            long enterTime = (long) jsonObject.get("enterTime");
+            long exitTime = (long) jsonObject.get("exitTime");
+            participantItem.createParticipant(name, extra, eMail, phone, 0, 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         return participantItem;
     }
 
-
-
-//    public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants){
-//        JSONArray teilnehmerliste = new JSONArray();
-//        for(ParticipantItem participant : participants){
-//            teilnehmerliste.put(getJSONParticipant(participant));
-//        }
-//        return teilnehmerliste;
-//    }
-//
-//    private static JSONObject getJSONParticipant(ParticipantItem participantItem){
-//        Map<Object, String> teilnehmermap = populateMap(participantItem);
-//        return new JSONObject(teilnehmermap);
-//    }
-
-    public static ArrayList<ParticipantItem> createParticipantItemList(JSONArray jsonArray) throws JSONException{
+    public static ArrayList<ParticipantItem> createParticipantItemList(JSONArray jsonArray) {
         ArrayList<ParticipantItem> participantList = new ArrayList<>();
 
-        Iterator<JSONObject> objectIterator = jsonArray.iterator();
-
-        //Fuer  ein dimensionales
-        while(objectIterator.hasNext()){
-            participantList.add(createParticipantItem(objectIterator.next()));
+//        Iterator<JSONObject> objectIterator = jsonArray.iterator();
+//
+//        //Fuer  ein dimensionales
+//        while(objectIterator.hasNext()){
+//            participantList.add(createParticipantItem(objectIterator.next()));
+//
+//        }
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                createParticipantItem(jsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-
-        //Fuer das Durchlaufen eines zwei dimensionales Array
-        //Iterator<JSONArray> iterator = msg.iterator();
-        //while (iterator.hasNext()) {
-        //   Iterator<JSONObject> innerIterator = iterator.next().iterator();
-        //   while (innerIterator.hasNext()) {
-        //      particList.add(createParticipantItem(iterator.next()));
-        //   }
-        //}
-
+        
         return participantList;
     }
 
