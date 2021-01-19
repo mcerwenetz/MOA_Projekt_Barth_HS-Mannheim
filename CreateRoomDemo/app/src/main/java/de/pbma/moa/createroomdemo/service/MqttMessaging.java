@@ -147,7 +147,7 @@ public class MqttMessaging {
                 client.setCallback(mqttCallback);
                 MqttConnectOptions connectOptions = options;
                 if (connectOptions == null) { // default
-                    connectOptions = de.pbma.moa.mymqtt.MqttMessaging.getMqttConnectOptions();
+                    connectOptions = MqttMessaging.getMqttConnectOptions();
                 }
                 String passwd = new String(connectOptions.getPassword());
                 Log.v(TAG, String.format("mqttExecutor: username=%s, password=%s, ",

@@ -52,10 +52,10 @@ public class AdapterJsonMqtt {
         JSONObject ret = new JSONObject();
         String name = teilnehmer.getFirstName() + " " + teilnehmer.getName();
         try {
-            ret.put("Name", teilnehmer.getName());
-            ret.put("extra", teilnehmer.getExtra());
-            ret.put("eMail", teilnehmer.getEmail());
-            ret.put("phone", teilnehmer.getPhone());
+            ret.put(JSONItemTypes.NAME.label, teilnehmer.getName());
+            ret.put(JSONItemTypes.EXTRA.label, teilnehmer.getExtra());
+            ret.put(JSONItemTypes.EMAIL.label, teilnehmer.getEmail());
+            ret.put(JSONItemTypes.PHONE.label, teilnehmer.getPhone());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -85,12 +85,12 @@ public class AdapterJsonMqtt {
     private static JSONObject getJSONParticipant(ParticipantItem participantItem) {
         JSONObject ret = new JSONObject();
         try {
-            ret.put("name",participantItem.name);
-            ret.put("extra",participantItem.extra);
-            ret.put("eMail", participantItem.eMail);
-            ret.put("phone",participantItem.phone);
-            ret.put("enterTime",participantItem.enterTime);
-            ret.put("exitTime", participantItem.exitTime);
+            ret.put(JSONItemTypes.NAME.label, participantItem.name);
+            ret.put(JSONItemTypes.EXTRA.label, participantItem.extra);
+            ret.put(JSONItemTypes.EMAIL.label, participantItem.eMail);
+            ret.put(JSONItemTypes.PHONE.label, participantItem.phone);
+            ret.put(JSONItemTypes.ENTERTIME.label, participantItem.enterTime);
+            ret.put(JSONItemTypes.EXITTIME.label, participantItem.exitTime);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -111,40 +111,40 @@ public class AdapterJsonMqtt {
     private static JSONObject getRoomJSON(RoomItem roomItem) {
         JSONObject ret = new JSONObject();
         try {
-            ret.put("id",roomItem.id);
-            ret.put("roomName",roomItem.roomName);
-            ret.put("open",roomItem.open);
-            ret.put("host", roomItem.host);
-            ret.put("eMail",roomItem.eMail);
-            ret.put("phone", roomItem.phone);
-            ret.put("place", roomItem.place);
-            ret.put("address",roomItem.address);
-            ret.put("extra",roomItem.extra);
-            ret.put("startTime",roomItem.startTime);
-            ret.put("endTime", roomItem.endTime);
+            ret.put(JSONItemTypes.ID.label, roomItem.id);
+            ret.put(JSONItemTypes.ROOMNAME.label, roomItem.roomName);
+            ret.put(JSONItemTypes.OPEN.label, roomItem.open);
+            ret.put(JSONItemTypes.HOST.label, roomItem.host);
+            ret.put(JSONItemTypes.EMAIL.label, roomItem.eMail);
+            ret.put(JSONItemTypes.PHONE.label, roomItem.phone);
+            ret.put(JSONItemTypes.PLACE.label, roomItem.place);
+            ret.put(JSONItemTypes.ADDRESS.label, roomItem.address);
+            ret.put(JSONItemTypes.EXTRA.label, roomItem.extra);
+            ret.put(JSONItemTypes.ROOMSTARTTIME.label, roomItem.startTime);
+            ret.put(JSONItemTypes.ROOMENDTIME.label, roomItem.endTime);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return  ret;
+        return ret;
     }
 
     public static RoomItem createRoomItem(JSONObject jsonObject) {
         RoomItem roomItem = new RoomItem();
 
         try {
-            String roomName = (String) jsonObject.get("roomName");
-            boolean open = (boolean) jsonObject.get("open");
-            String host = (String) jsonObject.get("host");
-            String eMail = (String) jsonObject.get("eMail");
-            String phone = (String) jsonObject.get("phone");
-            String place = (String) jsonObject.get("place");
-            String address = (String) jsonObject.get("address");
-            String extra = (String) jsonObject.get("extra");
-            long startTime = (long) jsonObject.get("startTime");
-            long endTime = (long) jsonObject.get("endTime");
+            String roomName = (String) jsonObject.get(JSONItemTypes.ROOMNAME.label);
+            boolean open = (boolean) jsonObject.get(JSONItemTypes.OPEN.label);
+            String host = (String) jsonObject.get(JSONItemTypes.HOST.label);
+            String eMail = (String) jsonObject.get(JSONItemTypes.EMAIL.label);
+            String phone = (String) jsonObject.get(JSONItemTypes.PHONE.label);
+            String place = (String) jsonObject.get(JSONItemTypes.PLACE.label);
+            String address = (String) jsonObject.get(JSONItemTypes.ADDRESS.label);
+            String extra = (String) jsonObject.get(JSONItemTypes.EXTRA.label);
+            long startTime = (long) jsonObject.get(JSONItemTypes.ROOMSTARTTIME.label);
+            long endTime = (long) jsonObject.get(JSONItemTypes.ROOMENDTIME.label);
 
-            roomItem.fremdId = (long) jsonObject.get("Id");
-            roomItem.createRoom(roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
+            roomItem = roomItem.createRoom(roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
+            roomItem.fremdId = (long) jsonObject.get(JSONItemTypes.ID.label);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -153,17 +153,15 @@ public class AdapterJsonMqtt {
 
     public static ParticipantItem createParticipantItem(JSONObject jsonObject) {
         ParticipantItem participantItem = new ParticipantItem();
-
-
         try {
-            String name = (String) jsonObject.get("Name");
-            String extra = (String) jsonObject.get("extra");
-            String eMail = (String) jsonObject.get("email");
-            String phone = (String) jsonObject.get("phone");
+            String name = jsonObject.getString(JSONItemTypes.NAME.label);
+            String extra = jsonObject.getString(JSONItemTypes.EXTRA.label);
+            String eMail = jsonObject.getString(JSONItemTypes.EMAIL.label);
+            String phone = jsonObject.getString(JSONItemTypes.PHONE.label);
 
 //            long enterTime = (long) jsonObject.get("enterTime");
 //            long exitTime = (long) jsonObject.get("exitTime");
-            participantItem.createParticipant(name, extra, eMail, phone, 0, 0);
+            participantItem = participantItem.createParticipant(name, extra, eMail, phone, 0, 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -184,7 +182,7 @@ public class AdapterJsonMqtt {
 //        }
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
-                createParticipantItem(jsonArray.getJSONObject(i));
+                participantList.add(createParticipantItem(jsonArray.getJSONObject(i)));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -204,9 +202,30 @@ public class AdapterJsonMqtt {
         JSONTypes(String label) {
             this.label = label;
         }
-
     }
 
+    //JasonTYpes koennen diese vier Types annehmen
+    private enum JSONItemTypes {
+        ID("ID"),
+        NAME("NAME"),
+        ROOMNAME("ROOMNAME"),
+        OPEN("OPEN"),
+        HOST("HOST"),
+        EMAIL("EMAIL"),
+        PHONE("PHONE"),
+        PLACE("PLACE"),
+        ADDRESS("ADDRESS"),
+        EXTRA("EXTRA"),
+        ROOMSTARTTIME("ROOMSTARTTIME"),
+        ROOMENDTIME("ROOMENDTIME"),
+        ENTERTIME("ENTERTIME"),
+        EXITTIME("EXITTIME");
+        public final String label;
+
+        JSONItemTypes(String label) {
+            this.label = label;
+        }
+    }
 }
 
 

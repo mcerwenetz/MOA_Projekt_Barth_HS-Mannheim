@@ -13,17 +13,23 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import de.pbma.moa.createroomdemo.AdapterJsonMqtt;
+import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
-import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 import de.pbma.moa.createroomdemo.service.RoomLivecycleService;
+import de.pbma.moa.createroomdemo.test.TestAdapterJsonMqtt;
 
 public class Activity_00_Start extends AppCompatActivity {
     final static String TAG = Activity_00_Start.class.getCanonicalName();
@@ -43,12 +49,17 @@ public class Activity_00_Start extends AppCompatActivity {
         btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
 
+        //test JSON-MQTT-Adapter
+        //TestAdapterJsonMqtt test = new TestAdapterJsonMqtt(this);
+
+        
         Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
 
         onStartMqttService();
         //remove DB entries older two weeks
         deleteOldEntries();
+
 
     }
 
@@ -105,21 +116,21 @@ public class Activity_00_Start extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private boolean checkMySelfe(){
-        Log.v(TAG,"Check mySelfe()");
+    private boolean checkMySelfe() {
+        Log.v(TAG, "Check mySelfe()");
         MySelf me = new MySelf(Activity_00_Start.this);
         if (!me.isValide()) {
             Toast.makeText(this, "Eigenangaben sind nicht vollständig", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Activity_00_Start.this, PreferenceActivity.class);
             startActivity(intent);
-            Log.v(TAG,"Check mySelfe(): false");
+            Log.v(TAG, "Check mySelfe(): false");
             return false;
         }
-        Log.v(TAG,"Check mySelfe(): true");
+        Log.v(TAG, "Check mySelfe(): true");
         return true;
     }
 
-    private void deleteOldEntries(){
+    private void deleteOldEntries() {
         Repository repository = new Repository(this);
         repository.DeleteRoomAndParticipantOlderTwoWeeks();
     }
