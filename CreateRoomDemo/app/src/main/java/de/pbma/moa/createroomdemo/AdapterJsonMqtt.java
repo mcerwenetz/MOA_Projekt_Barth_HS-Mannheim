@@ -99,8 +99,23 @@ public class AdapterJsonMqtt {
     }
 
     private static JSONObject getRoomJSON(RoomItem roomItem) {
-//        Map<Object, String> roomMap = populateMap(roomItem);
-//        return new JSONObject(roomMap);
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("id",roomItem.id);
+            ret.put("roomName",roomItem.roomName);
+            ret.put("open",roomItem.open);
+            ret.put("host", roomItem.host);
+            ret.put("eMail",roomItem.eMail);
+            ret.put("phone", roomItem.phone);
+            ret.put("place", roomItem.place);
+            ret.put("address",roomItem.address);
+            ret.put("extra",roomItem.extra);
+            ret.put("startTime",roomItem.startTime);
+            ret.put("endTime", roomItem.endTime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  ret;
     }
 
     public static RoomItem createRoomItem(JSONObject jsonObject) {
