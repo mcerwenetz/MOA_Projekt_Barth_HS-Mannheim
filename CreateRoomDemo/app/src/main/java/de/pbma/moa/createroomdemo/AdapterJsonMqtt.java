@@ -1,17 +1,11 @@
 package de.pbma.moa.createroomdemo;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.RoomItem;
@@ -25,22 +19,6 @@ public class AdapterJsonMqtt {
     public static final String EXITTIME = "exittime";
     public static final String TEILNEHMERLIST = "teilnehmerlist";
     public static final String RAUM = "raum";
-
-
-    //JasonTYpes koennen diese vier Types annehmen
-    private enum JSONTypes {
-        LOGIN("login"),
-        LOGOUT("logout"),
-        TEILNEHMER("teilnehmer"),
-        RAUMINFO("rauminfo");
-        public final String label;
-
-        JSONTypes(String label) {
-            this.label = label;
-        }
-
-    }
-
 
     public static JSONObject getAnmeldungJSON(MySelf teilnehmer, Long entertime) {
         JSONObject ret = new JSONObject();
@@ -71,10 +49,18 @@ public class AdapterJsonMqtt {
 
     //Funktion holt sich die Inhalte eines Teilnehmers aus den Myself Angaben
     private static JSONObject getJSONMySelf(MySelf teilnehmer) {
-        Map<Object, String> teilnehmermap = populateMap(teilnehmer);
-        return new JSONObject(teilnehmermap);
+        JSONObject ret = new JSONObject();
+        String name = teilnehmer.getFirstName() + " " + teilnehmer.getName();
+        try {
+            ret.put("Name", teilnehmer.getName());
+            ret.put("extra", teilnehmer.getExtra());
+            ret.put("eMail", teilnehmer.getEmail());
+            ret.put("phone", teilnehmer.getPhone());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
-
 
     public static JSONObject getTeilnehmerListJSON(List<ParticipantItem> participants) {
         JSONArray teilnehmerliste = getTeilnehmerliste(participants);
@@ -96,27 +82,9 @@ public class AdapterJsonMqtt {
         return teilnehmerliste;
     }
 
-    public static Map<Object, String> populateMap(final Object o) {
-        Map<Object, String> result = new HashMap<>();
-        Field[] fields = o.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            String nicefield = field.toString();
-            String classString = o.getClass().getName();
-            int startposition = nicefield.indexOf(classString);
-            nicefield = nicefield.substring(startposition, nicefield.length());
-            nicefield = nicefield.substring(nicefield.indexOf(".") + 1, nicefield.length());
-            try {
-                result.put(nicefield, field.get(o).toString());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
-
     private static JSONObject getJSONParticipant(ParticipantItem participantItem) {
-        Map<Object, String> teilnehmermap = populateMap(participantItem);
-        return new JSONObject(teilnehmermap);
+//        Map<Object, String> teilnehmermap = populateMap(participantItem);
+//        return new JSONObject(teilnehmermap);
     }
 
     public static JSONObject getRauminfoJSON(RoomItem roomItem) {
@@ -131,10 +99,9 @@ public class AdapterJsonMqtt {
     }
 
     private static JSONObject getRoomJSON(RoomItem roomItem) {
-        Map<Object, String> roomMap = populateMap(roomItem);
-        return new JSONObject(roomMap);
+//        Map<Object, String> roomMap = populateMap(roomItem);
+//        return new JSONObject(roomMap);
     }
-
 
     public static RoomItem createRoomItem(JSONObject jsonObject) {
         RoomItem roomItem = new RoomItem();
@@ -166,11 +133,11 @@ public class AdapterJsonMqtt {
         try {
             String name = (String) jsonObject.get("Name");
             String extra = (String) jsonObject.get("extra");
-            String eMail = (String) jsonObject.get("extra");
-            String phone = (String) jsonObject.get("extra");
+            String eMail = (String) jsonObject.get("email");
+            String phone = (String) jsonObject.get("phone");
 
-            long enterTime = (long) jsonObject.get("enterTime");
-            long exitTime = (long) jsonObject.get("exitTime");
+//            long enterTime = (long) jsonObject.get("enterTime");
+//            long exitTime = (long) jsonObject.get("exitTime");
             participantItem.createParticipant(name, extra, eMail, phone, 0, 0);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -197,8 +164,22 @@ public class AdapterJsonMqtt {
                 e.printStackTrace();
             }
         }
-        
+
         return participantList;
+    }
+
+    //JasonTYpes koennen diese vier Types annehmen
+    private enum JSONTypes {
+        LOGIN("login"),
+        LOGOUT("logout"),
+        TEILNEHMER("teilnehmer"),
+        RAUMINFO("rauminfo");
+        public final String label;
+
+        JSONTypes(String label) {
+            this.label = label;
+        }
+
     }
 
 }
