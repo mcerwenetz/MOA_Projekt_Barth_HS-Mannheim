@@ -14,22 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import de.pbma.moa.createroomdemo.AdapterJsonMqtt;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
-import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 import de.pbma.moa.createroomdemo.service.RoomLivecycleService;
-import de.pbma.moa.createroomdemo.test.TestAdapterJsonMqtt;
+import de.pbma.moa.createroomdemo.test.TestClass;
 
 public class Activity_00_Start extends AppCompatActivity {
     final static String TAG = Activity_00_Start.class.getCanonicalName();
@@ -49,10 +40,12 @@ public class Activity_00_Start extends AppCompatActivity {
         btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
 
-        //test JSON-MQTT-Adapter
-        //TestAdapterJsonMqtt test = new TestAdapterJsonMqtt(this);
+//        TestKlassen um beim debuggen funktionalitäten testen zu können
+//        TestClass test = new TestClass(this);
+//        test.TestAdapterJsonMqtt();
+//        test.addDBfremdRaum();
 
-        
+
         Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
 

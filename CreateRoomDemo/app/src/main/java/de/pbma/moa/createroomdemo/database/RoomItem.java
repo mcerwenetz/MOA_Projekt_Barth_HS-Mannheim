@@ -64,7 +64,7 @@ public class RoomItem {
         return room;
     }
     public String getUri(){
-        if(this.fremdId==0)
+        if(this.fremdId==null)
             return this.roomName + "/" + this.eMail + "/" + this.id;
         else
             return this.roomName + "/" + this.eMail + "/" + this.fremdId;

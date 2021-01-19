@@ -29,14 +29,14 @@ public class MqttMessaging {
     private volatile MqttClient client;
     private final AtomicBoolean connectPending = new AtomicBoolean(false);
     private final AtomicBoolean ready = new AtomicBoolean(false); // client connected and read to send
-    
+
     private final ConcurrentSkipListSet<String> subscriptions = new ConcurrentSkipListSet<>();
     private final ConcurrentHashMap<Long, Pair<String, String>> pendingMessages = new ConcurrentHashMap<>();
     private final AtomicLong pendingMessageId = new AtomicLong(0);
 
     private ExecutorService mqttExecutor;
     private ExecutorService callbackExecutor;
-    
+
     public static class Pair<S, T> {
         private final S s;
         private final T t;
@@ -77,7 +77,7 @@ public class MqttMessaging {
     private volatile MessageListener messageListener;
     private volatile ConnectionListener connectionListener;
     private volatile FailureListener failureListener;
-    
+
     public MqttMessaging() {
         this(null, null, null);
     }
@@ -89,7 +89,7 @@ public class MqttMessaging {
     public MqttMessaging(FailureListener failureListener, MessageListener messageListener) {
         this(failureListener, messageListener, null);
     }
-    
+
     private final MqttCallback mqttCallback = new MqttCallback() {
         @Override
         public void messageArrived(String topic, MqttMessage message) {
@@ -116,20 +116,20 @@ public class MqttMessaging {
         clientId = MqttClient.generateClientId();
         Log.v(TAG, "constructed");
     }
-    
+
     public void connect(String broker) {
         connect(broker, null);
     }
 
     public static MqttConnectOptions getMqttConnectOptions() {
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(true);        
+        options.setCleanSession(true);
         return options;
     }
-    
+
     public void connect(String broker, final MqttConnectOptions options) { // do in startCommand
         if (ready.get() || connectPending.get()) { // already connected and ready or soon ready
-            return; 
+            return;
         }
         if (mqttExecutor != null) { // old executor for mqtt handling
             mqttExecutor.shutdown(); // cancel if exists
@@ -168,14 +168,14 @@ public class MqttMessaging {
             }
         });
     }
-    
+
     private void doConnectionFailure(Throwable e) {
         FailureListener f = failureListener;
         if (f != null) {
             f.onConnectionError(e);
         }
     }
-    
+
     private void doMessageFailure(Throwable e, String topic, String msg) {
         FailureListener f = failureListener;
         if (f != null) {
@@ -189,7 +189,7 @@ public class MqttMessaging {
             f.onSubscriptionError(e, topicFilter);
         }
     }
-    
+
     private void doMessage(final String topic, final MqttMessage message) {
         callbackExecutor.execute(() -> {
             MessageListener messageListener = this.messageListener;
@@ -227,7 +227,7 @@ public class MqttMessaging {
             }
         });
     }
-    
+
     public void unsubscribe(String topicFilter) {
         if (!ready.get() && !connectPending.get()) {
             throw new RuntimeException("connect not yet called");
@@ -245,9 +245,9 @@ public class MqttMessaging {
                 // even failed unsubscribe is a subscription failure
                 doSubscriptionFailure(e, topicFilter);
             }
-        });        
+        });
     }
-    
+
     public void send(final String topic, final String msg) {
         if (!ready.get() && !connectPending.get()) {
             throw new RuntimeException("connect not yet called");
@@ -270,9 +270,9 @@ public class MqttMessaging {
                 Log.e(TAG, String.format("  sent failed: topic=%s, msg=%s, cause=%s", topic, msg, e.getMessage()));
                 doMessageFailure(e, topic, msg);
             }
-        });            
+        });
     }
-    
+
     public String getClientId() {
         return clientId;
     }
@@ -280,7 +280,7 @@ public class MqttMessaging {
     public boolean hasPendingMessages() {
         return !pendingMessages.isEmpty();
     }
-    
+
     public List<Pair<String, String>> disconnect() { // do in onDestroy()
         final MqttClient c = client;
         client = null; // let all pending messaging perish
@@ -320,12 +320,12 @@ public class MqttMessaging {
         failureListener = null; // do not keep anything
         return getClearPendingMessages();
     }
-    
+
     private List<Pair<String, String>> getClearPendingMessages() {
         List<Pair<String, String>> pm = new ArrayList<>(pendingMessages.size());
         pm.addAll(pendingMessages.values());
         pendingMessages.clear();
         return pm;
     }
-    
+
 }

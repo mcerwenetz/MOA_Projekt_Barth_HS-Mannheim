@@ -47,10 +47,10 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom WHERE open=0")
     public abstract List<RoomItem> getAllClosedRooms();
 
-    @Query("SELECT * FROM  dbRoom WHERE fremdId = 0")
+    @Query("SELECT * FROM  dbRoom WHERE fremdId IS NULL")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost();
 
-    @Query("SELECT * FROM  dbRoom WHERE fremdId != 0")
+    @Query("SELECT * FROM  dbRoom WHERE fremdId IS NOT NULL")
     abstract LiveData<List<RoomItem>> getAllFromExceptMeAsHost();
 
     @Query("UPDATE dbroom SET open=0 WHERE id=:roomId")

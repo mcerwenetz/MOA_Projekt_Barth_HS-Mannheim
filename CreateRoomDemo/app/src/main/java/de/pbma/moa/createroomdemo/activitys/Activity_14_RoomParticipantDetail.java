@@ -19,8 +19,8 @@ import androidx.lifecycle.Observer;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
@@ -29,10 +29,10 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     public final static String ID = "RoomID";
     long roomId;
     private Button btnLeave, btnPartic;
-    private TextView tvRoom, tvOpenClose, tvTimeout,tvHost;
+    private TextView tvRoom, tvOpenClose, tvTimeout, tvHost;
     private RoomItem roomItem;
     private Repository repo;
-    private LiveData<RoomItem> liveDataPartic;
+    private LiveData<RoomItem> liveDataRoomItem;
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic;
 
@@ -44,11 +44,12 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         bindUI();
 
         //Holt die Daten aus der Bank
+        roomId = getIntent().getExtras().getLong(ID, -1);
+
         if (roomId != -1) {
-            liveDataPartic = repo.getRoomByID(roomId);
             repo = new Repository(this);
-            roomId = getIntent().getExtras().getLong(ID, -1);
-            liveDataPartic.observe(this, new Observer<RoomItem>() {
+            liveDataRoomItem = repo.getRoomByID(roomId);
+            liveDataRoomItem.observe(this, new Observer<RoomItem>() {
                 @Override
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
@@ -59,6 +60,8 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                     }
                 }
             });
+        } else {
+            finish();
         }
 
 
@@ -109,9 +112,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     private void onClickBtnLeave(View view) {
         //Todo so bald der Knopf aktiviert ist wird der Teilnehmner aus der Datenbank gelöscht
-        if(!mqttServiceBound)
+        if (!mqttServiceBound)
             return;
-        mqttService.sendExitFromRoom(new MySelf(this),roomItem.getUri());
+        mqttService.sendExitFromRoom(new MySelf(this), roomItem.getUri());
     }
 
     private void onClickBtnPartic(View view) {

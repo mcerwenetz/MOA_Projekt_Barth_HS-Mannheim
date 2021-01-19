@@ -278,7 +278,12 @@ public class MQTTService extends Service {
     public boolean sendEnterRoom(MySelf me, String uri) {
         Log.v(TAG, "sendEnterRoom()");
         String msg = AdapterJsonMqtt.getAnmeldungJSON(me, System.currentTimeMillis()).toString();
-        mqttMessaging.send(getTopic(uri, false), msg);
+        try {
+            mqttMessaging.send(getTopic(uri, false), msg);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
         addTopic(getTopic(uri, true));
         return true;
     }
@@ -294,7 +299,12 @@ public class MQTTService extends Service {
     public boolean sendExitFromRoom(MySelf me, String uri) { // called by activity after binding
         Log.v(TAG, "sendExitRoom()");
         String msg = AdapterJsonMqtt.getAbmeldungJSON(me, System.currentTimeMillis()).toString();
-        mqttMessaging.send(getTopic(uri, false), msg);
+        try {
+            mqttMessaging.send(getTopic(uri, false), msg);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
         removeTopic(getTopic(uri, true));
         return true;
     }
@@ -309,7 +319,12 @@ public class MQTTService extends Service {
     public boolean sendRoom(RoomItem room, boolean closeRoom) { // called by activity after binding
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getRauminfoJSON(room).toString();
-        mqttMessaging.send(getTopic(room.getUri(), true), msg);
+        try {
+            mqttMessaging.send(getTopic(room.getUri(), true), msg);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
         if (closeRoom)
             removeTopic(getTopic(room.getUri(), false));
         return true;
@@ -326,7 +341,12 @@ public class MQTTService extends Service {
     public boolean sendParticipants(List<ParticipantItem> participantItems, RoomItem room) { // called by activity after binding
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getTeilnehmerListJSON(participantItems).toString();
-        mqttMessaging.send(getTopic(room.getUri(), true), msg);
+        try {
+            mqttMessaging.send(getTopic(room.getUri(), true), msg);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
@@ -346,6 +366,8 @@ public class MQTTService extends Service {
         Log.v(TAG, String.format("username=%s, password=%s, ", USER, PASSWORT));
 
         mqttMessaging.connect(CONNECTION_URL, options); // secure via URL
+
+        Log.v(TAG, "connected");
     }
 
     private void disconnect() {

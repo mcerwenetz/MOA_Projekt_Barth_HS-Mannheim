@@ -42,8 +42,7 @@
         </activity>
         <service android:name=".service.RoomLivecycleService"/>
         <service
-            android:name=".service.MQTTService"
-            android:exported="false" />
+            android:name=".service.MQTTService"/>
     </application>
 
 
