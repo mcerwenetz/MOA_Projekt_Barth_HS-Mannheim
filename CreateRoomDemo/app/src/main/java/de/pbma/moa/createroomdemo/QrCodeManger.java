@@ -37,8 +37,9 @@ public class QrCodeManger {
             Log.v(TAG, "callScanner() " + e.getMessage());
         }
     }
-//TODO daten an die Activity weiter leiten / onReslutfixen
 
+
+//     daten an die Activity weiter leiten / onReslutfixen
 //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);

@@ -26,7 +26,6 @@ public class Activity_00_Start extends AppCompatActivity {
     final static String TAG = Activity_00_Start.class.getCanonicalName();
     private Button btnHost, btnParticipant;
 
-    //Todo: Service für TimeOutRunoutCapture
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -111,10 +111,10 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
 
     private void onClickBtnLeave(View view) {
-        //Todo so bald der Knopf aktiviert ist wird der Teilnehmner aus der Datenbank gelöscht
         if (!mqttServiceBound)
             return;
         mqttService.sendExitFromRoom(new MySelf(this), roomItem.getUri());
+        finish();
     }
 
     private void onClickBtnPartic(View view) {
