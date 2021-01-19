@@ -1,11 +1,15 @@
 package de.pbma.moa.createroomdemo;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +25,7 @@ public class AdapterJsonMqtt {
     public static final String EXITTIME ="exittime";
     public static final String TEILNEHMERLIST = "teilnehmerlist" ;
     public static final String RAUM = "raum";
+
 
     //JasonTYpes koennen diese vier Types annehmen
     private enum JSONTypes {
@@ -146,12 +151,10 @@ public class AdapterJsonMqtt {
         String place    = (String)jsonObject.get("place");
         String address  = (String)jsonObject.get("address");
         String extra    = (String)jsonObject.get("extra");
-
         long startTime  = (long)jsonObject.get("startTime");
         long endTime    = (long)jsonObject.get("endTime");
 
-        roomItem.fremdId = (long)jsonObject.get("fremdId");
-
+        roomItem.fremdId = (long)jsonObject.get("fremdId"); //TODO muss in der Create Room die Fremdid vergeben werden oder bekommt man diese im Json?
         roomItem.createRoom(roomName,open,host,eMail,phone,place,address,extra,startTime,endTime);
 
         return roomItem;
@@ -168,18 +171,49 @@ public class AdapterJsonMqtt {
         long  enterTime = (long)jsonObject.get("enterTime");
         long  exitTime  = (long)jsonObject.get("exitTime");
 
-        if(enterTime == 0 )
-            participantItem.createParticipant(name,extra,eMail,phone,0, exitTime);
+        if(exitTime == 0.0 )
+            participantItem.createParticipant(name,extra,eMail,phone,0, enterTime);
         else
-        participantItem.createParticipant(name,extra,eMail,phone,0,enterTime); // oder Exit Tim
+        participantItem.createParticipant(name,extra,eMail,phone,0,exitTime);
 
         return participantItem;
     }
 
-    public static List<ParticipantItem> createParticipantItemList(JSONObject jsonObject){
-        return null;
 
-        //mit record bzw mit Iterator über die Liste iterieren und diese in die Paritcipantlist einfügen
+
+//    public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants){
+//        JSONArray teilnehmerliste = new JSONArray();
+//        for(ParticipantItem participant : participants){
+//            teilnehmerliste.put(getJSONParticipant(participant));
+//        }
+//        return teilnehmerliste;
+//    }
+//
+//    private static JSONObject getJSONParticipant(ParticipantItem participantItem){
+//        Map<Object, String> teilnehmermap = populateMap(participantItem);
+//        return new JSONObject(teilnehmermap);
+//    }
+
+    public static ArrayList<ParticipantItem> createParticipantItemList(JSONArray jsonArray) throws JSONException{
+        ArrayList<ParticipantItem> participantList = new ArrayList<>();
+
+        Iterator<JSONObject> objectIterator = jsonArray.iterator();
+
+        //Fuer  ein dimensionales
+        while(objectIterator.hasNext()){
+            participantList.add(createParticipantItem(objectIterator.next()));
+        }
+
+        //Fuer das Durchlaufen eines zwei dimensionales Array
+        //Iterator<JSONArray> iterator = msg.iterator();
+        //while (iterator.hasNext()) {
+        //   Iterator<JSONObject> innerIterator = iterator.next().iterator();
+        //   while (innerIterator.hasNext()) {
+        //      particList.add(createParticipantItem(iterator.next()));
+        //   }
+        //}
+
+        return participantList;
     }
 
 }

@@ -120,9 +120,6 @@ public class Repository {
         }).start();
     }
 
-
-
-
     public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
         return participantDao.getParticipantsOfRoom(roomId);
     }
