@@ -1,11 +1,16 @@
 package de.pbma.moa.createroomdemo.service;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import org.joda.time.DateTime;
 
@@ -15,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 
+
 public class RoomLivecycleService extends Service {
 
     private static final String TAG = "HostRoomCloserService";
@@ -23,8 +29,46 @@ public class RoomLivecycleService extends Service {
     private Thread checkingThread;
     private List<RoomItem> closedrooms;
     private List<RoomItem> openrooms;
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
 
 
+    private void bindMQTTService() {
+        Log.v(TAG, "bindMQTTService");
+        Intent intent = new Intent(this, MQTTService.class);
+        intent.setAction(MQTTService.ACTION_PRESS);
+        mqttServiceBound = bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (!mqttServiceBound) {
+            Log.w(TAG, "could not try to bind service, will not be bound");
+        }
+    }
+
+    private void unbindMQTTService() {
+        Log.v(TAG, "unbindMQTTService");
+        if (mqttServiceBound) {
+            if (mqttService != null) {
+                // deregister listeners, if there are any
+            }
+            mqttServiceBound = false;
+            unbindService(serviceConnection);
+        }
+    }
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            LiveData<List<RoomItem>> roomsLiveData = repository.getAllRoomsWithMeAsHost();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 
     @Nullable
     @Override
@@ -37,6 +81,7 @@ public class RoomLivecycleService extends Service {
         super.onCreate();
         repository = new Repository(this);
         keepRunning =new AtomicBoolean(false);
+        bindMQTTService();
         Log.v(TAG,"Service created");
     }
 
@@ -57,23 +102,29 @@ public class RoomLivecycleService extends Service {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        unbindMQTTService();
     }
 
     void startThread() {
         checkingThread = new Thread(() -> {
             while (keepRunning.get()) {
-                long now = DateTime.now().getMillis();
+                //60000 weil + 1 Minute
+                long now = DateTime.now().getMillis()+60000;
                 closedrooms = repository.getAllClosedRooms();
                 openrooms = repository.getAllOpenRooms();
+                //raum öffnen
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
                         repository.openRoomById(closedroom.id);
+                        mqttService.addOpenRoom(closedroom);
                         Log.v(TAG, "opening room " + closedroom.id);
                     }
                 }
+                //raum schließen
                 for (RoomItem openroom : openrooms) {
                     if (openroom.startTime >= now || openroom.endTime <= now) {
                         repository.closeRoomById(openroom.id);
+                        mqttService.sendRoom(openroom,true);
                         Log.v(TAG, "Closing room " + openroom.id);
                     }
                 }

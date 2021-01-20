@@ -74,10 +74,10 @@ public class MQTTService extends Service {
         return listeners.addIfAbsent(pressListener);
     }
 
+
     public boolean deregisterPressListener(MyListener pressListener) {
         return listeners.remove(pressListener);
     }
-
 
     @Override
     public void onCreate() {

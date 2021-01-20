@@ -18,7 +18,6 @@ public class QrCodeManger {
 
     public QrCodeManger(Context context) {
         this.context = context;
-
     }
 
     public void callScanner() {
