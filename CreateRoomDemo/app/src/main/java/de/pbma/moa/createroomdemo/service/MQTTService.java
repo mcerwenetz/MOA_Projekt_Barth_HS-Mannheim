@@ -222,6 +222,7 @@ public class MQTTService extends Service {
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                        item.roomId= repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                         item = repository.getPaticipantItemNow(item.roomId, item.eMail);
                         item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
                     } catch (JSONException e) {

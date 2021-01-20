@@ -32,7 +32,7 @@ public abstract class ParticipantDao {
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId")
     abstract List<ParticipantItem> getParticipantsOfRoomNow(long roomId);
 
-    @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail")
+    @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail ORDER BY id DESC")
     abstract ParticipantItem getPaticipantItemNow(long roomId,String eMail);
 
     @Query("SELECT count(*) FROM  dbParticipant WHERE roomId=:roomId")
