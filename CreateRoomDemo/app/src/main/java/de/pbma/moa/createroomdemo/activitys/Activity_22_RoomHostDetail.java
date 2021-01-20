@@ -202,7 +202,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             case R.id.menu_partic_qr:
                 Display display = getWindowManager().getDefaultDisplay();
                 int breite = display.getWidth();
-                Drawable draw = new BitmapDrawable(getQR(this.item.getUri(), (breite / 2), (breite / 2)));
+                Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(), (breite / 2), (breite / 2)));
                 callAlertDialog_QR(draw);
                 return true;
             case R.id.menu_partic_uri:
@@ -230,7 +230,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
         //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(Activity_22_RoomHostDetail.this);
-        File file = pdf.createPdfRoomInfos(item, getQR(item.getUri(), PdfClass.A4_WIDTH / 2, PdfClass.A4_HEIGHT / 2));
+        File file = pdf.createPdfRoomInfos(item, getQR(item.getRoomTag(), PdfClass.A4_WIDTH / 2, PdfClass.A4_HEIGHT / 2));
 
         Log.v(TAG, "showPDF(" + file.getName() + ")");
         if (!file.exists()) {
@@ -260,7 +260,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
         ivQr.setImageDrawable(draw);
-        tvQrUri.setText("URI: " + item.getUri());
+        tvQrUri.setText("RoomTag: " + item.getRoomTag());
 
         AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
         alertDialogQR.show();
@@ -271,7 +271,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         View view = uriDialogInflater.inflate(R.layout.pop_up_22_uri, null);
 
         TextView tvUri = view.findViewById(R.id.tv_show_uri);
-        tvUri.setText("URI: " + item.getUri());
+        tvUri.setText("RoomTag: " + item.getRoomTag());
 
         AlertDialog alertDialogUri = new AlertDialog.Builder(this).setView(view).create();
         alertDialogUri.show();

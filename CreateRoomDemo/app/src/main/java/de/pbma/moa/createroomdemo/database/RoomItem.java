@@ -63,7 +63,7 @@ public class RoomItem {
         room.endTime = endTime;
         return room;
     }
-    public String getUri(){
+    public String getRoomTag(){
         if(this.fremdId==null)
             return this.roomName + "/" + this.eMail + "/" + this.id;
         else

@@ -69,10 +69,10 @@ public class Repository {
         }).start();
     }
 
-    public long getIdOfRoomByUriNow(String uri) {
+    public long getIdOfRoomByRoomTagNow(String uri) {
         String[] elements = uri.split("/");
         long fremdId = Long.parseLong(elements[2]);
-        return roomDao.getIdOfRoomByUriNow(elements[0], elements[1], fremdId);
+        return roomDao.getIdOfRoomByRoomTagNow(elements[0], elements[1], fremdId);
     }
 
     public LiveData<RoomItem> getRoomByID(long searchid) {

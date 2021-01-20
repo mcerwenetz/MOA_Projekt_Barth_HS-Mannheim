@@ -53,7 +53,7 @@ public class PdfClass {
         canvas.drawText("Gastgeber", leftborder, 8 * y_spacing, paint);
         canvas.drawText("E-Mail", leftborder, 9 * y_spacing, paint);
         canvas.drawText("Telephon", leftborder, 10 * y_spacing, paint);
-        canvas.drawText("NFC-Uri", leftborder, 11 * y_spacing, paint);
+        canvas.drawText("NFC-RoomTag", leftborder, 11 * y_spacing, paint);
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         paint.setColor(Color.GRAY);
         canvas.drawText(item.roomName, infosleftborder, 2 * y_spacing, paint);
@@ -65,7 +65,7 @@ public class PdfClass {
         canvas.drawText(item.host, infosleftborder, 8 * y_spacing, paint);
         canvas.drawText(item.eMail, infosleftborder, 9 * y_spacing, paint);
         canvas.drawText(item.phone, infosleftborder, 10 * y_spacing, paint);
-        canvas.drawText(item.getUri(), infosleftborder, 11 * y_spacing, paint);
+        canvas.drawText(item.getRoomTag(), infosleftborder, 11 * y_spacing, paint);
 
         Log.v(TAG, "createPdfRoomInfos() draw Bitmap");
         paint.setColor(Color.BLACK);

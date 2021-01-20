@@ -113,7 +113,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void onClickBtnLeave(View view) {
         if (!mqttServiceBound)
             return;
-        mqttService.sendExitFromRoom(new MySelf(this), roomItem.getUri());
+        mqttService.sendExitFromRoom(new MySelf(this), roomItem.getRoomTag());
         finish();
     }
 

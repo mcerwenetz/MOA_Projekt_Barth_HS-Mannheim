@@ -139,16 +139,16 @@ public class MQTTService extends Service {
         }
     }
 
-    private String getUriFromTopic(String topic) {
+    private String getRoomTagFromTopic(String topic) {
         String[] ele = topic.split("/");
         return ele[1] + "/" + ele[2] + "/" + ele[3];
     }
 
-    private String getTopic(String uri, boolean isPublic) {
+    private String getTopic(String RoomTag, boolean isPublic) {
         final String PUBLIC_TOPIC = "public";
         if (isPublic)
-            return USER + "/" + uri + "/" + PUBLIC_TOPIC;
-        return USER + "/" + uri;
+            return USER + "/" + RoomTag + "/" + PUBLIC_TOPIC;
+        return USER + "/" + RoomTag;
     }
 
     private void addTopic(String topic) {
@@ -186,7 +186,7 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                         return;
                     }
-                    roomItem.id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    roomItem.id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     repository.updateRoomItem(roomItem);
                 }).start();
             }
@@ -203,7 +203,7 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                         return;
                     }
-                    item.roomId = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     repository.addParticipantEntry(item);
                     //send infos to participants
                     RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
@@ -241,7 +241,7 @@ public class MQTTService extends Service {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    long id = repository.getIdOfRoomByUriNow(getUriFromTopic(topic));
+                    long id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     int count = repository.getCountOfExistingParticipantsInRoom(id);
                     for (ParticipantItem item : list.subList(count - 1, list.size())) {
                         item.roomId = id;
@@ -261,7 +261,7 @@ public class MQTTService extends Service {
      * @param item RoomItem
      */
     public void addOpenRoom(RoomItem item) {
-        String topic = getTopic(item.getUri(), false);
+        String topic = getTopic(item.getRoomTag(), false);
         this.topicList.add(topic);
         this.addTopic(topic);
     }
@@ -320,13 +320,13 @@ public class MQTTService extends Service {
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getRauminfoJSON(room).toString();
         try {
-            mqttMessaging.send(getTopic(room.getUri(), true), msg);
+            mqttMessaging.send(getTopic(room.getRoomTag(), true), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
         if (closeRoom)
-            removeTopic(getTopic(room.getUri(), false));
+            removeTopic(getTopic(room.getRoomTag(), false));
         return true;
     }
 
@@ -342,7 +342,7 @@ public class MQTTService extends Service {
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getTeilnehmerListJSON(participantItems).toString();
         try {
-            mqttMessaging.send(getTopic(room.getUri(), true), msg);
+            mqttMessaging.send(getTopic(room.getRoomTag(), true), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
