@@ -55,15 +55,14 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
         if (bundle != null) {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
-
         repository = new Repository(Activity_15_ParticipantViewParticipant.this);
+        repository.getParticipantsOfRoom(roomId).observe(Activity_15_ParticipantViewParticipant.this,observer);
         repository.getRoomByID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_15_ParticipantViewParticipant.this.roomItem = roomItem;
             }
         });
-
 
     }
 }

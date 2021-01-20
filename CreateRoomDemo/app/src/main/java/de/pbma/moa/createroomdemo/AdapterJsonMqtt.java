@@ -144,8 +144,7 @@ public class AdapterJsonMqtt {
             long endTime = (long) jsonObject.get(JSONItemTypes.ROOMENDTIME.label);
 
             roomItem = roomItem.createRoom(roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
-            roomItem.fremdId = (long) jsonObject.get(JSONItemTypes.ID.label);
-            roomItem=null;
+            roomItem.fremdId = new Long (jsonObject.getLong(JSONItemTypes.ID.label));
         } catch (JSONException e) {
             e.printStackTrace();
         }

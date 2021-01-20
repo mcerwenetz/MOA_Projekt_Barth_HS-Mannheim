@@ -245,8 +245,8 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                     }
                     long id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    int count = repository.getCountOfExistingParticipantsInRoom(id);
-                    for (ParticipantItem item : list.subList(count - 1, list.size())) {
+                    int count = repository.getCountOfExistingParticipantsInRoomNow(id);
+                    for (ParticipantItem item : list.subList(count, list.size())) {
                         item.roomId = id;
                         repository.addParticipantEntry(item);
                     }

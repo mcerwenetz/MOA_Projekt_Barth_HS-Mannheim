@@ -29,7 +29,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     public final static String ID = "RoomID";
     long roomId;
     private Button btnLeave, btnPartic;
-    private TextView tvRoom, tvOpenClose, tvTimeout, tvHost;
+    private TextView tvRoom, tvOpenClose, tvTimeout, tvHost,tvHosteMail,tvHostPhone;
     private RoomItem roomItem;
     private Repository repo;
     private LiveData<RoomItem> liveDataRoomItem;
@@ -90,6 +90,8 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                 tvOpenClose.setText("geschlossen");
             }
             tvHost.setText(item.host);
+            tvHosteMail.setText(item.eMail);
+            tvHostPhone.setText(item.phone);
         }
     }
 
@@ -98,7 +100,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         btnLeave = findViewById(R.id.btn_14_leave);
         btnPartic = findViewById(R.id.btn_14_particpantlist);
 
-        tvHost = findViewById(R.id.tv_14_kontakt_daten);
+        tvHost = findViewById(R.id.tv_14_kontakt_host_value);
+        tvHosteMail = findViewById(R.id.tv_14_kontakt_hostemail);
+        tvHostPhone = findViewById(R.id.tv_14_kontakt_hosttelefon);
         tvRoom = findViewById(R.id.tv_14_roomname_value);
         tvOpenClose = findViewById(R.id.tv_14_status_value);
         tvTimeout = findViewById(R.id.tv_14_timeout_value);
@@ -120,7 +124,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     private void onClickBtnPartic(View view) {
         Intent intent = new Intent(Activity_14_RoomParticipantDetail.this, Activity_15_ParticipantViewParticipant.class);
-//        intent.putExtra(ParticipantParticipantActivity.INTENT_ROOM_ID, item.id);
+        intent.putExtra(Activity_15_ParticipantViewParticipant.INTENT_ROOM_ID, this.roomId);
         startActivity(intent);
     }
 

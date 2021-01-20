@@ -11,10 +11,16 @@ public class Repository {
 
     private final ParticipantDao participantDao;
     private LiveData<List<RoomItem>> roomList;
-    private  final Context context;
+    private final Context context;
 
-    public int getCountOfExistingParticipantsInRoom(long roomId) {
+    public int getCountOfExistingParticipantsInRoomNow(long roomId) {
         return participantDao.getCountOfExistingParticipantsInRoom(roomId);
+    }
+
+    public void setParticipantExitTime(RoomItem item, long currentTimeMillis) {
+        new Thread(() -> {
+            participantDao.setParticipantExitTime(item.id, currentTimeMillis);
+        }).start();
     }
 
     public static interface AfterInsert {
@@ -99,7 +105,7 @@ public class Repository {
         return roomDao.getAllOpenRooms();
     }
 
-    public List<RoomItem> getAllOwnFutureRoomsNow(long currenMs){
+    public List<RoomItem> getAllOwnFutureRoomsNow(long currenMs) {
         return roomDao.getAllOwnFutureRoomsNow(currenMs);
     }
 
@@ -126,6 +132,7 @@ public class Repository {
     public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
         return participantDao.getParticipantsOfRoom(roomId);
     }
+
     public List<ParticipantItem> getParticipantsOfRoomNow(long roomId) {
         return participantDao.getParticipantsOfRoomNow(roomId);
     }

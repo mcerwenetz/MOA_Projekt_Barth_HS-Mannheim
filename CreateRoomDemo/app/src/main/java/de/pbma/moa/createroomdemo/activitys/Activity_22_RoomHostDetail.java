@@ -41,14 +41,15 @@ import java.io.File;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
 //Activity dient zur Ansicht der Gastgeberinformationen eines Raumes. In Ihr werden Informationen über den Raum, Timeout
@@ -118,7 +119,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         tvtimeout = findViewById(R.id.tv_22_timeout_value);
         tvEndTime = findViewById(R.id.tv_22_endtime);
         tvStartTime = findViewById(R.id.tv_22_starttime);
-        tvLocation=findViewById(R.id.tv_22_location);
+        tvLocation = findViewById(R.id.tv_22_location);
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
         btnpartic = findViewById(R.id.btn_22_partiicipantlist);
@@ -145,9 +146,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                 tvstatus.setText("geschlossen");
             }
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
-            tvStartTime.setText("Von: "+df.format(item.startTime));
-            tvEndTime.setText("Bis: "+df.format(item.endTime));
-            tvLocation.setText(item.place +"\n" + item.address);
+            tvStartTime.setText("Von: " + df.format(item.startTime));
+            tvEndTime.setText("Bis: " + df.format(item.endTime));
+            tvLocation.setText(item.place + "\n" + item.address);
         }
     }
 
@@ -157,12 +158,17 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.endTime = now;
         item.open = false;
         repo.updateRoomItem(item);
+        repo.setParticipantExitTime(item,System.currentTimeMillis());
         tvtimeout.setText("00:00:00");
         mqttService.sendRoom(item, true);
     }
 
     private void onChangeTimeout(View view) {
-        int hour = 0, minute = 0;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(item.endTime);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
         TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int i, int i1) {
@@ -171,7 +177,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         now.dayOfMonth().get(), i, i1, 0);
                 item.endTime = timeout.getMillis();
                 repo.updateRoomItem(item);
-                mqttService.sendRoom(item,false);
+                mqttService.sendRoom(item, false);
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
