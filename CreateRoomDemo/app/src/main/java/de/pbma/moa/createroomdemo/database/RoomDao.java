@@ -29,7 +29,7 @@ public abstract class RoomDao {
 
     @Query("SELECT id FROM dbRoom " +
             "WHERE roomName= :name AND eMail=:eMail AND fremdId=:fremdId " +
-            "OR roomName= :name AND eMail=:eMail AND id=:fremdId AND fremdId=null")
+            "OR roomName= :name AND eMail=:eMail AND id=:fremdId AND fremdId IS NULL")
     abstract long getIdOfRoomByRoomTagNow(String name, String eMail, long fremdId);
 
     @Query("DELETE FROM dbRoom WHERE endTime <(:timeNow-:timeSpanOfTwoWeeks)")
@@ -59,5 +59,6 @@ public abstract class RoomDao {
     @Query("UPDATE dbroom SET open=1 WHERE id=:roomId")
     public abstract void openRoomById(long roomId);
 
-
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND startTime>= :currenMs")
+    public abstract List<RoomItem> getAllOwnFutureRoomsNow(long currenMs);
 }

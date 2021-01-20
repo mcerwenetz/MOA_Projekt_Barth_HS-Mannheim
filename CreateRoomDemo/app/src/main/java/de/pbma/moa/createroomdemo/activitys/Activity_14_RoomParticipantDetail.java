@@ -89,6 +89,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
             } else {
                 tvOpenClose.setText("geschlossen");
             }
+            tvHost.setText(item.host);
         }
     }
 

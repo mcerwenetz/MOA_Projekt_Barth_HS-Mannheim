@@ -69,8 +69,8 @@ public class Repository {
         }).start();
     }
 
-    public long getIdOfRoomByRoomTagNow(String uri) {
-        String[] elements = uri.split("/");
+    public long getIdOfRoomByRoomTagNow(String roomTag) {
+        String[] elements = roomTag.split("/");
         long Id = Long.parseLong(elements[2]);
         return roomDao.getIdOfRoomByRoomTagNow(elements[0], elements[1], Id);
     }
@@ -99,6 +99,9 @@ public class Repository {
         return roomDao.getAllOpenRooms();
     }
 
+    public List<RoomItem> getAllOwnFutureRoomsNow(long currenMs){
+        return roomDao.getAllOwnFutureRoomsNow(currenMs);
+    }
 
     public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {
         return roomDao.getAllFromMeAsHost();

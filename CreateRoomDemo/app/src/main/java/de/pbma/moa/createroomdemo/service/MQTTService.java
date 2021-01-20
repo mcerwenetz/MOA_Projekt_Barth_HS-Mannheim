@@ -205,7 +205,6 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                         return;
                     }
-                    //TODO da hackts
                     item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     repository.addParticipantEntry(item);
                     //send infos to participants
