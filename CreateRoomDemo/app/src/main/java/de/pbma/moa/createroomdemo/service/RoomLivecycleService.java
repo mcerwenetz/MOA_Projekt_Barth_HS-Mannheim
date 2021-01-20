@@ -116,12 +116,12 @@ public class RoomLivecycleService extends Service {
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
                         repository.openRoomById(closedroom.id);
-                        mqttService.addOpenRoom(closedroom);
                         Log.v(TAG, "opening room " + closedroom.id);
                     }
                 }
                 //raum schließen
                 for (RoomItem openroom : openrooms) {
+                    mqttService.addOpenRoom(openroom);
                     if (openroom.startTime >= now || openroom.endTime <= now) {
                         repository.closeRoomById(openroom.id);
                         mqttService.sendRoom(openroom,true);

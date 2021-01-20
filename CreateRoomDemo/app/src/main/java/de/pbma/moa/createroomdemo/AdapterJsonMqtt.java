@@ -52,7 +52,7 @@ public class AdapterJsonMqtt {
         JSONObject ret = new JSONObject();
         String name = teilnehmer.getFirstName() + " " + teilnehmer.getName();
         try {
-            ret.put(JSONItemTypes.NAME.label, teilnehmer.getName());
+            ret.put(JSONItemTypes.NAME.label, teilnehmer.getFirstName()+" "+teilnehmer.getName());
             ret.put(JSONItemTypes.EXTRA.label, teilnehmer.getExtra());
             ret.put(JSONItemTypes.EMAIL.label, teilnehmer.getEmail());
             ret.put(JSONItemTypes.PHONE.label, teilnehmer.getPhone());

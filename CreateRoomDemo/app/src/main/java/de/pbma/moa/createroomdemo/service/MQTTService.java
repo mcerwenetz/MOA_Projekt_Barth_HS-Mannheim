@@ -152,6 +152,8 @@ public class MQTTService extends Service {
     }
 
     private void addTopic(String topic) {
+        if (this.topicList.contains(topic))
+            return;
         this.topicList.add(topic);
         mqttMessaging.subscribe(topic);
     }
@@ -203,6 +205,7 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                         return;
                     }
+                    //TODO da hackts
                     item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     repository.addParticipantEntry(item);
                     //send infos to participants
@@ -262,7 +265,6 @@ public class MQTTService extends Service {
      */
     public void addOpenRoom(RoomItem item) {
         String topic = getTopic(item.getRoomTag(), false);
-        this.topicList.add(topic);
         this.addTopic(topic);
     }
 
