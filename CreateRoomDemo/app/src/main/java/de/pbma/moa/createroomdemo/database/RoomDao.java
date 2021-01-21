@@ -65,9 +65,9 @@ public abstract class RoomDao {
     @Query("UPDATE dbroom SET open=1 WHERE id=:roomId")
     public abstract void openRoomById(long roomId);
 
-    @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND (startTime>= :currenMs OR open =1)")
-    public abstract List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs);
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND (open = 1 OR open IS NULL)")
+      public abstract List<RoomItem> getAllOwnNotClosedRoomsNow();
 
-    @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND (startTime>= :currentTimeMillis OR open =1)")
-    public abstract List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis);
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND (open = 1 OR open IS NULL)")
+    public abstract List<RoomItem> getAllNotOwnNotClosedRoomsNow();
 }

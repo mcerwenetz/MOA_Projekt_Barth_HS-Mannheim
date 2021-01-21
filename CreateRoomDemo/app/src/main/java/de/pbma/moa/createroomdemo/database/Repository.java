@@ -26,8 +26,8 @@ public class Repository {
         }).start();
     }
 
-    public List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis) {
-        return roomDao.getAllNotOwnNotClosedRoomsNow(currentTimeMillis);
+    public List<RoomItem> getAllNotOwnNotClosedRoomsNow() {
+        return roomDao.getAllNotOwnNotClosedRoomsNow();
 
     }
 
@@ -105,21 +105,23 @@ public class Repository {
         return roomList;
     }
 
-    public List<RoomItem> getAllClosedRoomsNow() {
+    public List<RoomItem> getAllOwnClosedRoomsNow() {
         return roomDao.getAllOwnClosedRooms();
     }
 
-
+    public List<RoomItem> getAllOwnFutureRoomsNow() {
+        return roomDao.getAllOwnFutureRoomsNow();
+    }
 
     //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
     //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
     //eigenen LivecycleService schließen können.
-    public List<RoomItem> getAllOpenRoomsNow() {
+    public List<RoomItem> getAllOwnOpenRoomsNow() {
         return roomDao.getAllOwnOpenRooms();
     }
 
-    public List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs) {
-        return roomDao.getAllOwnNotClosedRoomsNow(currenMs);
+    public List<RoomItem> getAllOwnNotClosedRoomsNow() {
+        return roomDao.getAllOwnNotClosedRoomsNow();
 	}
 
     public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {
