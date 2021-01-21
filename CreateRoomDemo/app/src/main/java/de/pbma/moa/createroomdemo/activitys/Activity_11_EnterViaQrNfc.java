@@ -39,12 +39,11 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
+        mqttServiceBound = false;
     }
 
     @Override
     protected void onResume() {
-        mqttServiceBound = false;
-        bindMQTTService();
         super.onResume();
     }
 
@@ -60,6 +59,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         Log.v(TAG, "onActivityResult()");
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanningResult != null) {
+            bindMQTTService();
             uri = scanningResult.getContents();
             enterRoom(uri);
             Log.v(TAG, "Scan successfully " + uri);
