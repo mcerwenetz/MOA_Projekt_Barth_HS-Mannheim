@@ -6,6 +6,9 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+
+//Alle Funktionen die NOW enthlten geben kein live data zurück und dürfen nur in einem extra thread verwendet werden
+//Alle Funktionen die Own enthalten geben Selbsterstellte Räume, also Räume des hostes, zurück.
 public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
 
@@ -23,8 +26,8 @@ public class Repository {
         }).start();
     }
 
-    public List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis) {
-        return roomDao.getAllNotOwnNotClosedRoomsNow(currentTimeMillis);
+    public List<RoomItem> getAllNotOwnNotClosedRoomsNow() {
+        return roomDao.getAllNotOwnNotClosedRoomsNow();
 
     }
 
@@ -102,21 +105,24 @@ public class Repository {
         return roomList;
     }
 
-    public List<RoomItem> getAllClosedRoomsNow() {
-        return roomDao.getAllClosedRooms();
-    }
-    public List<RoomItem> getAllFutureRoomsNow(){
-        return roomDao.getAllFutureRoomsNow();
-
+    public List<RoomItem> getAllOwnClosedRoomsNow() {
+        return roomDao.getAllOwnClosedRooms();
     }
 
-    public List<RoomItem> getAllOpenRoomsNow() {
-        return roomDao.getAllOpenRooms();
+    public List<RoomItem> getAllOwnFutureRoomsNow() {
+        return roomDao.getAllOwnFutureRoomsNow();
     }
 
-    public List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs) {
-        return roomDao.getAllOwnNotClosedRoomsNow(currenMs);
+    //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
+    //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
+    //eigenen LivecycleService schließen können.
+    public List<RoomItem> getAllOwnOpenRoomsNow() {
+        return roomDao.getAllOwnOpenRooms();
     }
+
+    public List<RoomItem> getAllOwnNotClosedRoomsNow() {
+        return roomDao.getAllOwnNotClosedRoomsNow();
+	}
 
     public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {
         return roomDao.getAllFromMeAsHost();

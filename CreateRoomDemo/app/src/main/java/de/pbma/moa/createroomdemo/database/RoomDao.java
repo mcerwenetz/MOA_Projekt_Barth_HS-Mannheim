@@ -41,14 +41,17 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
 
-    @Query("SELECT * FROM  dbRoom WHERE open=1")
-    public abstract List<RoomItem> getAllOpenRooms();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden die offen sind
+    @Query("SELECT * FROM  dbRoom WHERE open=1 AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnOpenRooms();
 
-    @Query("SELECT * FROM  dbRoom WHERE open=0")
-    public abstract List<RoomItem> getAllClosedRooms();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden die geschlossen sind
+    @Query("SELECT * FROM  dbRoom WHERE open=0 AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnClosedRooms();
 
-    @Query("SELECT * FROM  dbRoom WHERE open IS NULL")
-    public abstract List<RoomItem> getAllFutureRoomsNow();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden und die sich (hoffentlich) öffnen werden
+    @Query("SELECT * FROM  dbRoom WHERE open IS null AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnFutureRoomsNow();
 
     @Query("SELECT * FROM  dbRoom WHERE fremdId IS NULL")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost();
@@ -62,9 +65,9 @@ public abstract class RoomDao {
     @Query("UPDATE dbroom SET open=1 WHERE id=:roomId")
     public abstract void openRoomById(long roomId);
 
-    @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND (startTime>= :currenMs OR open =1)")
-    public abstract List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs);
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND (open = 1 OR open IS NULL)")
+      public abstract List<RoomItem> getAllOwnNotClosedRoomsNow();
 
-    @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND (startTime>= :currentTimeMillis OR open =1)")
-    public abstract List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis);
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND (open = 1 OR open IS NULL)")
+    public abstract List<RoomItem> getAllNotOwnNotClosedRoomsNow();
 }

@@ -87,7 +87,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         //add room to repo and enter details page
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
         String[] lis = uri.split("/");
-        RoomItem roomItem = RoomItem.createRoom(lis[0], false, null, lis[1], null, null, null, null, 0, 0);
+        RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null, null, null, null, 0, 0);
         roomItem.fremdId = Long.parseLong(lis[2]);
         repository.addRoomEntry(roomItem, (newItem) -> {
             Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
