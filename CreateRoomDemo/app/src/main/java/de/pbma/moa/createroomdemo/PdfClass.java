@@ -132,7 +132,10 @@ public class PdfClass {
             canvas.drawText(ele.phone, x_kontaktDaten, (currentY + zeilenAbstand), paint);
 
             canvas.drawText(df.format(ele.enterTime), x_enterTime, currentY, paint);
-            canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
+            if(ele.exitTime == 0)
+                canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
+            else
+                canvas.drawText("", x_exitTime, currentY, paint);
 
             canvas.drawLine(margin, (float) (currentY + 1.25 * zeilenAbstand), A4_WIDTH - margin, (float) (currentY + 1.5 * zeilenAbstand), paint);
             currentY += 2 * zeilenAbstand;

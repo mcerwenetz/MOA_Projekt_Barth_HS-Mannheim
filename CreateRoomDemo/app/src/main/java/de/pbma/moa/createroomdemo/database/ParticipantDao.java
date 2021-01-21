@@ -32,9 +32,12 @@ public abstract class ParticipantDao {
     @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId")
     abstract List<ParticipantItem> getParticipantsOfRoomNow(long roomId);
 
-    @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail")
+    @Query("SELECT * FROM  dbParticipant WHERE roomId=:roomId AND eMail=:eMail ORDER BY id DESC")
     abstract ParticipantItem getPaticipantItemNow(long roomId,String eMail);
 
     @Query("SELECT count(*) FROM  dbParticipant WHERE roomId=:roomId")
     public abstract int getCountOfExistingParticipantsInRoom(long roomId);
+
+    @Query("UPDATE dbParticipant SET exitTime=:currentTimeMillis WHERE id=:roomId")
+    public abstract void setParticipantExitTime(long roomId, long currentTimeMillis);
 }

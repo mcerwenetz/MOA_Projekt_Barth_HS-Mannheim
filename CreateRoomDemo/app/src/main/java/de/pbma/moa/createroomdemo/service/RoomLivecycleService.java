@@ -10,15 +10,14 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 
 
 public class RoomLivecycleService extends Service {
@@ -29,6 +28,7 @@ public class RoomLivecycleService extends Service {
     private Thread checkingThread;
     private List<RoomItem> closedrooms;
     private List<RoomItem> openrooms;
+    private List<RoomItem> futureOwnRooms;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
 
@@ -80,14 +80,14 @@ public class RoomLivecycleService extends Service {
     public void onCreate() {
         super.onCreate();
         repository = new Repository(this);
-        keepRunning =new AtomicBoolean(false);
+        keepRunning = new AtomicBoolean(false);
         bindMQTTService();
-        Log.v(TAG,"Service created");
+        Log.v(TAG, "Service created");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v(TAG,"Started Service");
+        Log.v(TAG, "Started Service");
         keepRunning.set(true);
         startThread();
         return START_STICKY;
@@ -109,14 +109,13 @@ public class RoomLivecycleService extends Service {
         checkingThread = new Thread(() -> {
             while (keepRunning.get()) {
                 //60000 weil + 1 Minute
-                long now = DateTime.now().getMillis()+60000;
+                long now = DateTime.now().getMillis() + 60000;
                 closedrooms = repository.getAllClosedRooms();
                 openrooms = repository.getAllOpenRooms();
                 //raum öffnen
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
                         repository.openRoomById(closedroom.id);
-                        mqttService.addOpenRoom(closedroom);
                         Log.v(TAG, "opening room " + closedroom.id);
                     }
                 }
@@ -124,10 +123,17 @@ public class RoomLivecycleService extends Service {
                 for (RoomItem openroom : openrooms) {
                     if (openroom.startTime >= now || openroom.endTime <= now) {
                         repository.closeRoomById(openroom.id);
-                        mqttService.sendRoom(openroom,true);
+                        mqttService.sendRoom(openroom, true);
                         Log.v(TAG, "Closing room " + openroom.id);
                     }
                 }
+
+                //hinzufügen aller eigenen Raume auf welche gehört werden soll
+                futureOwnRooms = repository.getAllOwnFutureRoomsNow(System.currentTimeMillis());
+                for (RoomItem room : futureOwnRooms) {
+                    mqttService.addOpenRoom(room);
+                }
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

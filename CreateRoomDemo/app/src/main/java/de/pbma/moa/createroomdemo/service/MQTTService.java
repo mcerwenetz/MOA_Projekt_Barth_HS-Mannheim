@@ -152,6 +152,8 @@ public class MQTTService extends Service {
     }
 
     private void addTopic(String topic) {
+        if (this.topicList.contains(topic))
+            return;
         this.topicList.add(topic);
         mqttMessaging.subscribe(topic);
     }
@@ -220,6 +222,7 @@ public class MQTTService extends Service {
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                        item.roomId= repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                         item = repository.getPaticipantItemNow(item.roomId, item.eMail);
                         item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
                     } catch (JSONException e) {
@@ -242,8 +245,8 @@ public class MQTTService extends Service {
                         e.printStackTrace();
                     }
                     long id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    int count = repository.getCountOfExistingParticipantsInRoom(id);
-                    for (ParticipantItem item : list.subList(count - 1, list.size())) {
+                    int count = repository.getCountOfExistingParticipantsInRoomNow(id);
+                    for (ParticipantItem item : list.subList(count, list.size())) {
                         item.roomId = id;
                         repository.addParticipantEntry(item);
                     }
@@ -262,7 +265,6 @@ public class MQTTService extends Service {
      */
     public void addOpenRoom(RoomItem item) {
         String topic = getTopic(item.getRoomTag(), false);
-        this.topicList.add(topic);
         this.addTopic(topic);
     }
 
