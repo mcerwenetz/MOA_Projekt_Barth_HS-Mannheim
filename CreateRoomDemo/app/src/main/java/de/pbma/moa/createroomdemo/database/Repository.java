@@ -23,6 +23,11 @@ public class Repository {
         }).start();
     }
 
+    public List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis) {
+        return roomDao.getAllNotOwnNotClosedRoomsNow(currentTimeMillis);
+
+    }
+
     public static interface AfterInsert {
         public void inserted(RoomItem item);
     }
@@ -97,16 +102,20 @@ public class Repository {
         return roomList;
     }
 
-    public List<RoomItem> getAllClosedRooms() {
+    public List<RoomItem> getAllClosedRoomsNow() {
         return roomDao.getAllClosedRooms();
     }
+    public List<RoomItem> getAllFutureRoomsNow(){
+        return roomDao.getAllFutureRoomsNow();
 
-    public List<RoomItem> getAllOpenRooms() {
+    }
+
+    public List<RoomItem> getAllOpenRoomsNow() {
         return roomDao.getAllOpenRooms();
     }
 
-    public List<RoomItem> getAllOwnFutureRoomsNow(long currenMs) {
-        return roomDao.getAllOwnFutureRoomsNow(currenMs);
+    public List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs) {
+        return roomDao.getAllOwnNotClosedRoomsNow(currenMs);
     }
 
     public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {

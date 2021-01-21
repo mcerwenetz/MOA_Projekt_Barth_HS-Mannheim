@@ -28,6 +28,7 @@ public class RoomLivecycleService extends Service {
     private Thread checkingThread;
     private List<RoomItem> closedrooms;
     private List<RoomItem> openrooms;
+    private List<RoomItem> futureRooms;
     private List<RoomItem> futureOwnRooms;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
@@ -110,8 +111,19 @@ public class RoomLivecycleService extends Service {
             while (keepRunning.get()) {
                 //60000 weil + 1 Minute
                 long now = DateTime.now().getMillis() + 60000;
-                closedrooms = repository.getAllClosedRooms();
-                openrooms = repository.getAllOpenRooms();
+                closedrooms = repository.getAllClosedRoomsNow();
+                openrooms = repository.getAllOpenRoomsNow();
+
+//                Alternative damit schon geschlossene räume nicht wieder geöffnt werde ?
+//                futureRooms = repository.getAllFutureRoomsNow();
+//                //raum öffnen
+//                for (RoomItem futureRoom : futureRooms) {
+//                    if (futureRoom.startTime <= now && futureRoom.endTime >= now) {
+//                        repository.openRoomById(futureRoom.id);
+//                        Log.v(TAG, "opening room " + futureRoom.id);
+//                    }
+//                }
+
                 //raum öffnen
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
@@ -129,9 +141,14 @@ public class RoomLivecycleService extends Service {
                 }
 
                 //hinzufügen aller eigenen Raume auf welche gehört werden soll
-                futureOwnRooms = repository.getAllOwnFutureRoomsNow(System.currentTimeMillis());
+                futureOwnRooms = repository.getAllOwnNotClosedRoomsNow(System.currentTimeMillis());
                 for (RoomItem room : futureOwnRooms) {
-                    mqttService.addOpenRoom(room);
+                    mqttService.addRoomToListen(room,false);
+                }
+                //hinzufügen aller fremd Raume auf welche gehört werden soll
+                futureRooms = repository.getAllNotOwnNotClosedRoomsNow(System.currentTimeMillis());
+                for (RoomItem room : futureRooms) {
+                    mqttService.addRoomToListen(room,true);
                 }
 
                 try {
