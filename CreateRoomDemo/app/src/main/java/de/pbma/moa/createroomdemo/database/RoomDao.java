@@ -41,14 +41,17 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
 
-    @Query("SELECT * FROM  dbRoom WHERE open=1 AND fremdId IS NOT NULL")
-    public abstract List<RoomItem> getAllOpenRooms();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden die offen sind
+    @Query("SELECT * FROM  dbRoom WHERE open=1 AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnOpenRooms();
 
-    @Query("SELECT * FROM  dbRoom WHERE open=0 AND fremdId IS NOT NULL")
-    public abstract List<RoomItem> getAllClosedRooms();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden die geschlossen sind
+    @Query("SELECT * FROM  dbRoom WHERE open=0 AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnClosedRooms();
 
-    @Query("SELECT * FROM  dbRoom WHERE open IS NULL")
-    public abstract List<RoomItem> getAllFutureRoomsNow();
+    //Dise Funktion liefert alle Räume die selbst erstellt wurden und die sich (hoffentlich) öffnen werden
+    @Query("SELECT * FROM  dbRoom WHERE open IS null AND fremdId IS NULL")
+    public abstract List<RoomItem> getAllOwnFutureRoomsNow();
 
     @Query("SELECT * FROM  dbRoom WHERE fremdId IS NULL")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost();
