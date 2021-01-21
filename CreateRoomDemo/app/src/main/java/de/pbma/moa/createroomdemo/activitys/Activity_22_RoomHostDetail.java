@@ -91,11 +91,17 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     endtimeAtomic.set(item.endTime);
                     //der Timeoutrefresherthread wird nur gestartet wenn
                     //Der Raum offen ist.
-                    if (item.open) {
+                    if (item.open != false) {
                         timeoutRefresherThread.initialStart();
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
                     } else {
+                        //Tasten für Raum schließen disable
+                        btntimeout.setEnabled(false);
+//                        btntimeout.setAlpha(.5f); //transparent
+
+                        btnopen.setEnabled(false);
+//                        btnopen.setAlpha(.5f);
                         if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
                             //Textview setzen nicht vergessen
@@ -153,37 +159,50 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     }
 
     private void onCloseRoom(View view) {
-        long now = DateTime.now().getMillis();
-        timeoutRefresherThread.stop();
-        item.endTime = now;
-        item.open = false;
-        repo.updateRoomItem(item);
-        repo.setParticipantExitTime(item,System.currentTimeMillis());
-        tvtimeout.setText("00:00:00");
-        mqttService.sendRoom(item, true);
+        //Taste macht nichts mehr wenn der Raum geschlossen wurde
+//        if(item.open == true){
+            long now = DateTime.now().getMillis();
+            timeoutRefresherThread.stop();
+            item.endTime = now;
+            item.open = false;
+            repo.updateRoomItem(item);
+            repo.setParticipantExitTime(item,System.currentTimeMillis());
+            tvtimeout.setText("00:00:00");
+            mqttService.sendRoom(item, true);
+//        }
+//        else {
+//            //Beendet die Uebersicht
+//            Toast.makeText(this, "Raum ist geschlossen", Toast.LENGTH_LONG).show();
+//        }
     }
 
     private void onChangeTimeout(View view) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(item.endTime);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
+//        if(item.open ==true){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(item.endTime);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                DateTime now = new DateTime();
-                DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
-                        now.dayOfMonth().get(), i, i1, 0);
-                item.endTime = timeout.getMillis();
-                repo.updateRoomItem(item);
-                mqttService.sendRoom(item, false);
-            }
-        };
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
-                minute, true);
-        timePickerDialog.show();
+            TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                    DateTime now = new DateTime();
+                    DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
+                            now.dayOfMonth().get(), i, i1, 0);
+                    item.endTime = timeout.getMillis();
+                    repo.updateRoomItem(item);
+                    mqttService.sendRoom(item, false);
+                }
+            };
+            TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
+                    minute, true);
+            timePickerDialog.show();
+//        }
+//        else{
+//            Toast.makeText(this, "Timeout kann bei einem geschlossenen Raum nicht veraendert werden.", Toast.LENGTH_LONG).show();
+//        }
     }
+
 
     private void onViewParticipants(View view) {
         Intent intent = new Intent(Activity_22_RoomHostDetail.this, Activity_23_HostViewParticipant.class);
