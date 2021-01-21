@@ -47,12 +47,11 @@ public class RoomItem {
     public long endTime;
 
 
-    public static RoomItem createRoom(String roomName,boolean open ,String host,String eMail,
+    public static RoomItem createRoom(String roomName ,String host,String eMail,
                                       String phone, String place,String address, String extra,
                                       long startTime, long endTime) {
         RoomItem room = new RoomItem();
         room.roomName = roomName;
-        room.open =open;
         room.host = host;
         room.eMail = eMail;
         room.phone = phone;

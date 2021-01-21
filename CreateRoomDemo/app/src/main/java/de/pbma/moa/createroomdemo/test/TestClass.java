@@ -45,7 +45,6 @@ public class TestClass {
 
         jsonObject = AdapterJsonMqtt.getRauminfoJSON(RoomItem.createRoom(
                 "Test",
-                false,
                 "Raphael Barth",
                 "test@moagm.de",
                 "123456789",
@@ -85,7 +84,6 @@ public class TestClass {
     public void addDBfremdRaum() {
         RoomItem x = RoomItem.createRoom(
                 "Test",
-                false,
                 "Raphael Barth",
                 "test@moagm.de",
                 "123456789",
