@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+
+// alles funktioenen die NOW enthlten geben kein live data zurück und dürfen nur in einem extra thread verwendet werden
 public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
 
@@ -109,7 +111,9 @@ public class Repository {
         return roomDao.getAllFutureRoomsNow();
 
     }
-
+    //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
+    //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
+    //eigenen LivecycleService schließen können.
     public List<RoomItem> getAllOpenRoomsNow() {
         return roomDao.getAllOpenRooms();
     }
@@ -118,9 +122,7 @@ public class Repository {
         return roomDao.getAllOwnNotClosedRoomsNow(currenMs);
 	}
 
-    //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
-    //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
-    //eigenen LivecycleService schließen können.
+
     public List<RoomItem> getAllOwnFutureRoomsNow(long currenMs) {
         return roomDao.getAllOwnFutureRoomsNow(currenMs);
 

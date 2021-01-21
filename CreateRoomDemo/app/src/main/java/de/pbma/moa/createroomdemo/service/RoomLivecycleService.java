@@ -114,20 +114,12 @@ public class RoomLivecycleService extends Service {
                 closedrooms = repository.getAllClosedRoomsNow();
                 openrooms = repository.getAllOpenRoomsNow();
 
-//                Alternative damit schon geschlossene räume nicht wieder geöffnt werde ?
-//                futureRooms = repository.getAllFutureRoomsNow();
-//                //raum öffnen
-//                for (RoomItem futureRoom : futureRooms) {
-//                    if (futureRoom.startTime <= now && futureRoom.endTime >= now) {
-//                        repository.openRoomById(futureRoom.id);
-//                        Log.v(TAG, "opening room " + futureRoom.id);
-//                    }
-//                }
 
                 //raum öffnen
                 for (RoomItem closedroom : closedrooms) {
                     if (closedroom.startTime <= now && closedroom.endTime >= now) {
                         repository.openRoomById(closedroom.id);
+                        mqttService.sendRoom(closedroom,false);
                         Log.v(TAG, "opening room " + closedroom.id);
                     }
                 }
