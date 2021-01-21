@@ -47,6 +47,9 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom WHERE open=0")
     public abstract List<RoomItem> getAllClosedRooms();
 
+    @Query("SELECT * FROM  dbRoom WHERE open IS NULL")
+    public abstract List<RoomItem> getAllFutureRoomsNow();
+
     @Query("SELECT * FROM  dbRoom WHERE fremdId IS NULL")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost();
 
@@ -60,7 +63,8 @@ public abstract class RoomDao {
     public abstract void openRoomById(long roomId);
 
     @Query("SELECT * FROM dbRoom WHERE fremdId IS NULL AND (startTime>= :currenMs OR open =1)")
-    public abstract List<RoomItem> getAllOwnFutureRoomsNow(long currenMs);
+    public abstract List<RoomItem> getAllOwnNotClosedRoomsNow(long currenMs);
 
-
+    @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND (startTime>= :currentTimeMillis OR open =1)")
+    public abstract List<RoomItem> getAllNotOwnNotClosedRoomsNow(long currentTimeMillis);
 }

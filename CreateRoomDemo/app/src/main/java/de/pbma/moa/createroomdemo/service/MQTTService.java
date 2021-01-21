@@ -263,8 +263,8 @@ public class MQTTService extends Service {
      *
      * @param item RoomItem
      */
-    public void addOpenRoom(RoomItem item) {
-        String topic = getTopic(item.getRoomTag(), false);
+    public void addRoomToListen(RoomItem item,boolean imGuest) {
+        String topic = getTopic(item.getRoomTag(), imGuest);
         this.addTopic(topic);
     }
 
