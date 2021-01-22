@@ -36,7 +36,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private Repository repo;
     private LiveData<RoomItem> liveDataRoomItem;
     private TimeoutRefresherThread timeoutRefresherThread;
-    private AtomicLong endtimeAtomic;
+    private AtomicLong endtimeAtomic, startTimeAtomic;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                     updateRoom(roomItem);
                     Activity_14_RoomParticipantDetail.this.roomItem = roomItem;
                     endtimeAtomic.set(roomItem.endTime);
-
+                    startTimeAtomic.set(roomItem.startTime);
                     if (roomItem.status == RoomItem.ROOMISOPEN) {
                         timeoutRefresherThread.initialStart();
                         btnLeave.setEnabled(true);
@@ -103,9 +103,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
             tvStartTime.setText("Von: " + df.format(item.startTime));
             tvEndTime.setText("Bis: " + df.format(item.endTime));
             if (item.status == RoomItem.ROOMWILLOPEN) {
-                tvStatus.setText("offen");
+                tvStatus.setText("schließt in");
             } else if (item.status == RoomItem.ROOMWILLOPEN) {
-                tvStatus.setText("Der Raum wird bald geöffnet");
+                tvStatus.setText("öffnet in");
             } else {
                 tvStatus.setText("geschlossen");
             }
@@ -133,7 +133,8 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         tvPlace = findViewById(R.id.tv_14_location_place);
         tvAddress = findViewById(R.id.tv_14_location_address);
         endtimeAtomic = new AtomicLong(0);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic);
+        startTimeAtomic = new AtomicLong(0);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic, startTimeAtomic);
 
         btnLeave.setOnClickListener(this::onClickBtnLeave);
         btnPartic.setOnClickListener(this::onClickBtnPartic);

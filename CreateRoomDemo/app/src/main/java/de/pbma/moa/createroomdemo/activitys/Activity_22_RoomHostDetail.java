@@ -65,7 +65,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private Repository repo;
     private LiveData<RoomItem> liveData;
     private TimeoutRefresherThread timeoutRefresherThread;
-    private AtomicLong endtimeAtomic;
+    private AtomicLong endtimeAtomic, startTimeAtomic;
 
 
     @Override
@@ -74,6 +74,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
         setContentView(R.layout.page_22_room_host_detail_activity);
         endtimeAtomic = new AtomicLong(0);
+        startTimeAtomic = new AtomicLong(0);
         bindUI();
 
         //Holt die Daten aus der Bank
@@ -88,8 +89,8 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     updateRoom(roomItem);
                     //Speichern für Nebenläufigkeit
                     //So profitieren alle von Livedata
-                    endtimeAtomic.set(item.endTime);
-
+                    endtimeAtomic.set(roomItem.endTime);
+                    startTimeAtomic.set(roomItem.startTime);
                     //der Timeoutrefresherthread wird nur gestartet wenn
                     //Der Raum offen ist.
                     if (item.status == RoomItem.ROOMISOPEN) {
@@ -97,6 +98,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         btntimeout.setEnabled(true);
                         btnopen.setEnabled(true);
                     } else if (item.status == RoomItem.ROOMWILLOPEN) {
+                        timeoutRefresherThread.initialStart();
                         btntimeout.setEnabled(true);
                         btnopen.setEnabled(false);
                     } else {
@@ -130,10 +132,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
         btnpartic = findViewById(R.id.btn_22_partiicipantlist);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout, endtimeAtomic);
         btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
         btntimeout.setOnClickListener(this::onChangeTimeout);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout, endtimeAtomic,startTimeAtomic);
 
     }
 
@@ -150,9 +152,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         if (item != null) {
             tvroomname.setText(item.roomName);
             if (item.status == RoomItem.ROOMISOPEN) {
-                tvstatus.setText("offen");
+                tvstatus.setText("schließt in");
             } else if (item.status == RoomItem.ROOMWILLOPEN) {
-                tvstatus.setText("Der Raum wird bald geöffnet");
+                tvstatus.setText("öffnet in");
             } else {
                 tvstatus.setText("geschlossen");
             }

@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 
 import org.joda.time.DateTime;
 
@@ -60,7 +59,7 @@ public class RoomLivecycleService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            LiveData<List<RoomItem>> roomsLiveData = repository.getAllRoomsWithMeAsHost();
+            mqttServiceBound = true;
         }
 
         @Override
@@ -110,7 +109,7 @@ public class RoomLivecycleService extends Service {
         checkingThread = new Thread(() -> {
             while (keepRunning.get()) {
                 //60000 weil + 1 Minute
-                long now = DateTime.now().getMillis() + 60000;
+                long now = System.currentTimeMillis();
                 openrooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
                 futureRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
 
@@ -119,9 +118,7 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime <= now && room.endTime >= now) {
                         room.status = RoomItem.ROOMISOPEN;
                         repository.updateRoomItem(room);
-                        if (mqttServiceBound) {
-                            mqttService.sendRoom(room, false);
-                        }
+                        mqttService.sendRoom(room, false);
                         Log.v(TAG, "opening room " + room.id);
                     }
                 }
@@ -130,9 +127,7 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime >= now || room.endTime <= now) {
                         room.status = RoomItem.ROOMISCLOSE;
                         repository.updateRoomItem(room);
-                        if (mqttServiceBound) {
-                            mqttService.sendRoom(room, true);
-                        }
+                        mqttService.sendRoom(room, true);
                         Log.v(TAG, "Closing room " + room.id);
                     }
                 }
@@ -141,18 +136,14 @@ public class RoomLivecycleService extends Service {
                 notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedOwnRooms) {
-                    if (mqttServiceBound) {
-                        mqttService.addRoomToListen(room, false);
-                    }
+                    mqttService.addRoomToListen(room, false);
                 }
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
                 notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedNotOwnRooms) {
-                    if (mqttServiceBound) {
-                        mqttService.addRoomToListen(room, true);
-                    }
+                    mqttService.addRoomToListen(room, true);
                 }
 
                 try {
