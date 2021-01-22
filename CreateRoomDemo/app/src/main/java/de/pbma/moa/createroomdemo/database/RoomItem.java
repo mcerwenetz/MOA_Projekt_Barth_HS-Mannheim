@@ -9,9 +9,9 @@ import java.util.Objects;
 
 @Entity(tableName = "dbRoom")
 public class RoomItem {
-    public static int ROOMWILLOPEN = 1;
-    public static int ROOMISOPEN = 2;
-    public static int ROOMISCLOSE = 3;
+    public static final int ROOMWILLOPEN = 1;
+    public static final int ROOMISOPEN = 2;
+    public static final int ROOMISCLOSE = 3;
 
     @PrimaryKey(autoGenerate = true)
     public long id;
@@ -50,8 +50,8 @@ public class RoomItem {
     public long endTime;
 
 
-    public static RoomItem createRoom(String roomName ,String host,String eMail,
-                                      String phone, String place,String address, String extra,
+    public static RoomItem createRoom(String roomName, String host, String eMail,
+                                      String phone, String place, String address, String extra,
                                       long startTime, long endTime) {
         RoomItem room = new RoomItem();
         room.roomName = roomName;
@@ -66,8 +66,9 @@ public class RoomItem {
         room.status = RoomItem.ROOMWILLOPEN;
         return room;
     }
-    public String getRoomTag(){
-        if(this.fremdId==null)
+
+    public String getRoomTag() {
+        if (this.fremdId == null)
             return this.roomName + "/" + this.eMail + "/" + this.id;
         else
             return this.roomName + "/" + this.eMail + "/" + this.fremdId;

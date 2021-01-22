@@ -96,20 +96,20 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         timeoutRefresherThread.initialStart();
                         btntimeout.setEnabled(true);
                         btnopen.setEnabled(true);
-                    }  else if (item.status == RoomItem.ROOMWILLOPEN) {
+                    } else if (item.status == RoomItem.ROOMWILLOPEN) {
                         btntimeout.setEnabled(true);
+//                        btntimeout.setAlpha(.5f); //transparent
                         btnopen.setEnabled(false);
-                        }
-                        else{
+//                        btnopen.setAlpha(.5f);
+                    } else {
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
-                            if (timeoutRefresherThread.isAlive()) {
+                        if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
                             //Tasten für Raum schließen disable
                             btnopen.setEnabled(false);
                             btntimeout.setEnabled(false);
                             //Textview setzen nicht vergessen
-                            tvtimeout.setText("00:00:00");
                         }
                     }
                 }
@@ -154,10 +154,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             tvroomname.setText(item.roomName);
             if (item.status == RoomItem.ROOMISOPEN) {
                 tvstatus.setText("offen");
-            }  else if(item.status == RoomItem.ROOMWILLOPEN) {
+            } else if (item.status == RoomItem.ROOMWILLOPEN) {
                 tvstatus.setText("Der Raum wird bald geöffnet");
-            }
-            else{
+            } else {
                 tvstatus.setText("geschlossen");
             }
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
@@ -171,14 +170,14 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private void onCloseRoom(View view) {
         //Taste macht nichts mehr wenn der Raum geschlossen wurde
 //        if(item.open == true){
-            long now = DateTime.now().getMillis();
-            timeoutRefresherThread.stop();
-            item.endTime = now;
-            item.status = 3; //3 == close
-            repo.updateRoomItem(item);
-            repo.setParticipantExitTime(item,System.currentTimeMillis());
-            tvtimeout.setText("00:00:00");
-            mqttService.sendRoom(item, true);
+        long now = DateTime.now().getMillis();
+        timeoutRefresherThread.stop();
+        item.endTime = now;
+        item.status = 3; //3 == close
+        repo.updateRoomItem(item);
+        repo.setParticipantExitTime(item, System.currentTimeMillis());
+        tvtimeout.setText("00:00:00");
+        mqttService.sendRoom(item, true);
 //        }
 //        else {
 //            //Beendet die Uebersicht
@@ -188,25 +187,25 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     private void onChangeTimeout(View view) {
 //        if(item.open ==true){
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(item.endTime);
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(item.endTime);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
 
-            TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                    DateTime now = new DateTime();
-                    DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
-                            now.dayOfMonth().get(), i, i1, 0);
-                    item.endTime = timeout.getMillis();
-                    repo.updateRoomItem(item);
-                    mqttService.sendRoom(item, false);
-                }
-            };
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
-                    minute, true);
-            timePickerDialog.show();
+        TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                DateTime now = new DateTime();
+                DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
+                        now.dayOfMonth().get(), i, i1, 0);
+                item.endTime = timeout.getMillis();
+                repo.updateRoomItem(item);
+                mqttService.sendRoom(item, false);
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
+                minute, true);
+        timePickerDialog.show();
 //        }
 //        else{
 //            Toast.makeText(this, "Timeout kann bei einem geschlossenen Raum nicht veraendert werden.", Toast.LENGTH_LONG).show();

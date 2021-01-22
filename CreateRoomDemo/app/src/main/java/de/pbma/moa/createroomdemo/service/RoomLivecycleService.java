@@ -119,16 +119,20 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime <= now && room.endTime >= now) {
                         room.status = RoomItem.ROOMISOPEN;
                         repository.updateRoomItem(room);
-                        mqttService.sendRoom(room,false);
+                        if (mqttServiceBound) {
+                            mqttService.sendRoom(room, false);
+                        }
                         Log.v(TAG, "opening room " + room.id);
                     }
                 }
                 //raum schließen
                 for (RoomItem room : openrooms) {
                     if (room.startTime >= now || room.endTime <= now) {
-                        room.status=RoomItem.ROOMISCLOSE;
+                        room.status = RoomItem.ROOMISCLOSE;
                         repository.updateRoomItem(room);
-                        mqttService.sendRoom(room, true);
+                        if (mqttServiceBound) {
+                            mqttService.sendRoom(room, true);
+                        }
                         Log.v(TAG, "Closing room " + room.id);
                     }
                 }
@@ -137,14 +141,18 @@ public class RoomLivecycleService extends Service {
                 notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedOwnRooms) {
-                    mqttService.addRoomToListen(room,false);
+                    if (mqttServiceBound) {
+                        mqttService.addRoomToListen(room, false);
+                    }
                 }
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
                 notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedNotOwnRooms) {
-                    mqttService.addRoomToListen(room,true);
+                    if (mqttServiceBound) {
+                        mqttService.addRoomToListen(room, true);
+                    }
                 }
 
                 try {
