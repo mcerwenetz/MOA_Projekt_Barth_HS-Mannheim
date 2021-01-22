@@ -5,12 +5,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,6 +35,8 @@ public class RoomLivecycleService extends Service {
     private MQTTService mqttService;
     private List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
     private List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
+
+    private Handler handler;
 
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
@@ -60,6 +64,7 @@ public class RoomLivecycleService extends Service {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            postPendingRooms();
             mqttServiceBound = true;
         }
 
@@ -80,6 +85,7 @@ public class RoomLivecycleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        handler = new Handler();
         repository = new Repository(this);
         keepRunning = new AtomicBoolean(false);
         bindMQTTService();
@@ -98,11 +104,6 @@ public class RoomLivecycleService extends Service {
     public void onDestroy() {
         super.onDestroy();
         keepRunning.set(false);
-        try {
-            checkingThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         unbindMQTTService();
     }
 
@@ -148,10 +149,13 @@ public class RoomLivecycleService extends Service {
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedNotOwnRooms) {
                     toSubscribe.add(room);
-//                    mqttService.addRoomToListen(room, true);
+
                 }
 
-                Room
+                handler.post(()->{
+                    RoomLivecycleService.this.postPendingRooms();
+                });
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -163,4 +167,30 @@ public class RoomLivecycleService extends Service {
     }
 
 
+    private void postPendingRooms() {
+        if (mqttService == null){
+            return;
+        }
+        ArrayList<RoomItem> localToSend = new ArrayList<>();
+        synchronized (toSend) {
+            localToSend.addAll(toSend);
+            toSend.clear();
+        }
+
+        for(RoomItem room : localToSend){
+            boolean status = room.status == RoomItem.ROOMISCLOSE;
+            mqttService.sendRoom(room, status);
+        }
+
+        ArrayList<RoomItem> localToSubscribe = new ArrayList<>();
+        synchronized (toSubscribe) {
+            localToSubscribe.addAll(toSubscribe);
+            toSubscribe.clear();
+        }
+
+        for(RoomItem room : localToSubscribe){
+            boolean status = room.fremdId != null;
+            mqttService.addRoomToListen(room, status);
+        }
+    }
 }
