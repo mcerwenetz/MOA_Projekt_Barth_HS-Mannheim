@@ -91,7 +91,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     endtimeAtomic.set(item.endTime);
                     //der Timeoutrefresherthread wird nur gestartet wenn
                     //Der Raum offen ist.
-                    if (item.open != false) {
+                    if (item.status != false) {
                         timeoutRefresherThread.initialStart();
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
@@ -146,7 +146,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(item.roomName);
-            if (item.open) {
+            if (item.status) {
                 tvstatus.setText("offen");
             } else {
                 tvstatus.setText("geschlossen");
@@ -164,7 +164,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             long now = DateTime.now().getMillis();
             timeoutRefresherThread.stop();
             item.endTime = now;
-            item.open = false;
+            item.status = false;
             repo.updateRoomItem(item);
             repo.setParticipantExitTime(item,System.currentTimeMillis());
             tvtimeout.setText("00:00:00");

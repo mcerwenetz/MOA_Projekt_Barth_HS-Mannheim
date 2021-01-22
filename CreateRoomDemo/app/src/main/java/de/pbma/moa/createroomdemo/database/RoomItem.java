@@ -9,6 +9,9 @@ import java.util.Objects;
 
 @Entity(tableName = "dbRoom")
 public class RoomItem {
+    public static int ROOMWILLOPEN = 1;
+    public static int ROOMISOPEN = 2;
+    public static int ROOMISCLOSE = 3;
 
     @PrimaryKey(autoGenerate = true)
     public long id;
@@ -19,8 +22,8 @@ public class RoomItem {
     @ColumnInfo(name = "roomName")
     public String roomName;
 
-    @ColumnInfo(name = "open")
-    public boolean open;
+    @ColumnInfo(name = "status")
+    public int status;
 
     @ColumnInfo(name = "host") // Vorname+Nachname+Extra
     public String host;
@@ -60,6 +63,7 @@ public class RoomItem {
         room.extra = extra;
         room.startTime = startTime;
         room.endTime = endTime;
+        room.status = RoomItem.ROOMWILLOPEN;
         return room;
     }
     public String getRoomTag(){
@@ -75,7 +79,7 @@ public class RoomItem {
                 "id=" + id +
                 ", fremdId=" + fremdId +
                 ", roomName='" + roomName + '\'' +
-                ", open=" + open +
+                ", status=" + status +
                 ", host='" + host + '\'' +
                 ", eMail='" + eMail + '\'' +
                 ", phone='" + phone + '\'' +
@@ -93,7 +97,7 @@ public class RoomItem {
         if (o == null || getClass() != o.getClass()) return false;
         RoomItem roomItem = (RoomItem) o;
         return id == roomItem.id &&
-                open == roomItem.open &&
+                status == roomItem.status &&
                 startTime == roomItem.startTime &&
                 endTime == roomItem.endTime &&
                 Objects.equals(fremdId, roomItem.fremdId) &&
@@ -108,7 +112,7 @@ public class RoomItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, fremdId, roomName, open, host, eMail, phone, place, address, extra, startTime, endTime);
+        return Objects.hash(id, fremdId, roomName, status, host, eMail, phone, place, address, extra, startTime, endTime);
     }
 }
 

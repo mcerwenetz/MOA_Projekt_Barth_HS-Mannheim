@@ -55,7 +55,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                     updateRoom(roomItem);
                     Activity_14_RoomParticipantDetail.this.roomItem = roomItem;
                     endtimeAtomic.set(Activity_14_RoomParticipantDetail.this.roomItem.endTime);
-                    if (Activity_14_RoomParticipantDetail.this.roomItem.open) {
+                    if (Activity_14_RoomParticipantDetail.this.roomItem.status) {
                         timeoutRefresherThread.initialStart();
                     }
                 }
@@ -84,7 +84,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvRoom.setText(item.roomName);
-            if (item.open) {
+            if (item.status) {
                 tvOpenClose.setText("offen");
             } else {
                 tvOpenClose.setText("geschlossen");

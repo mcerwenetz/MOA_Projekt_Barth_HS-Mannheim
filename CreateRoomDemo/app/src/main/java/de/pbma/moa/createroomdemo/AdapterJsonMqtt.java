@@ -113,7 +113,7 @@ public class AdapterJsonMqtt {
         try {
             ret.put(JSONItemTypes.ID.label, roomItem.id);
             ret.put(JSONItemTypes.ROOMNAME.label, roomItem.roomName);
-            ret.put(JSONItemTypes.OPEN.label, roomItem.open);
+            ret.put(JSONItemTypes.STATUS.label, roomItem.status);
             ret.put(JSONItemTypes.HOST.label, roomItem.host);
             ret.put(JSONItemTypes.EMAIL.label, roomItem.eMail);
             ret.put(JSONItemTypes.PHONE.label, roomItem.phone);
@@ -133,7 +133,7 @@ public class AdapterJsonMqtt {
 
         try {
             String roomName = (String) jsonObject.get(JSONItemTypes.ROOMNAME.label);
-            boolean open = (boolean) jsonObject.get(JSONItemTypes.OPEN.label);
+            int status = (int) jsonObject.get(JSONItemTypes.STATUS.label);
             String host = (String) jsonObject.get(JSONItemTypes.HOST.label);
             String eMail = (String) jsonObject.get(JSONItemTypes.EMAIL.label);
             String phone = (String) jsonObject.get(JSONItemTypes.PHONE.label);
@@ -145,7 +145,7 @@ public class AdapterJsonMqtt {
 
             roomItem = roomItem.createRoom(roomName,  host, eMail, phone, place, address, extra, startTime, endTime);
             roomItem.fremdId = new Long (jsonObject.getLong(JSONItemTypes.ID.label));
-            roomItem.open = new Boolean(open);
+            roomItem.status = status;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -210,7 +210,7 @@ public class AdapterJsonMqtt {
         ID("ID"),
         NAME("NAME"),
         ROOMNAME("ROOMNAME"),
-        OPEN("OPEN"),
+        STATUS("STATUS"),
         HOST("HOST"),
         EMAIL("EMAIL"),
         PHONE("PHONE"),

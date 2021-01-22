@@ -28,8 +28,8 @@ public class RoomLivecycleService extends Service {
     private Thread checkingThread;
     private List<RoomItem> futureRooms;
     private List<RoomItem> openrooms;
-    private List<RoomItem> futureNotOwnRooms;
-    private List<RoomItem> futureOwnRooms;
+    private List<RoomItem> notClosedNotOwnRooms;
+    private List<RoomItem> notClosedOwnRooms;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
 
@@ -111,36 +111,39 @@ public class RoomLivecycleService extends Service {
             while (keepRunning.get()) {
                 //60000 weil + 1 Minute
                 long now = DateTime.now().getMillis() + 60000;
-                futureRooms = repository.getAllOwnFutureRoomsNow();
-                openrooms = repository.getAllOwnOpenRoomsNow();
-
+                openrooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
+                futureRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
 
                 //raum öffnen
-                for (RoomItem futureRoom : futureRooms) {
-                    if (futureRoom.startTime <= now && futureRoom.endTime >= now) {
-                        repository.openRoomById(futureRoom.id);
-                        mqttService.sendRoom(futureRoom,false);
-                        Log.v(TAG, "opening room " + futureRoom.id);
+                for (RoomItem room : futureRooms) {
+                    if (room.startTime <= now && room.endTime >= now) {
+                        room.status = RoomItem.ROOMISOPEN;
+                        repository.updateRoomItem(room);
+                        mqttService.sendRoom(room,false);
+                        Log.v(TAG, "opening room " + room.id);
                     }
                 }
                 //raum schließen
-                for (RoomItem openroom : openrooms) {
-                    if (openroom.startTime >= now || openroom.endTime <= now) {
-                        repository.closeRoomById(openroom.id);
-                        mqttService.sendRoom(openroom, true);
-                        Log.v(TAG, "Closing room " + openroom.id);
+                for (RoomItem room : openrooms) {
+                    if (room.startTime >= now || room.endTime <= now) {
+                        room.status=RoomItem.ROOMISCLOSE;
+                        repository.updateRoomItem(room);
+                        mqttService.sendRoom(room, true);
+                        Log.v(TAG, "Closing room " + room.id);
                     }
                 }
 
                 //hinzufügen aller eigenen Raume auf welche gehört werden soll
-                futureOwnRooms = repository.getAllOwnNotClosedRoomsNow();
-                for (RoomItem room : futureOwnRooms) {
+                notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
+                notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
+                for (RoomItem room : notClosedOwnRooms) {
                     mqttService.addRoomToListen(room,false);
                 }
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
-                futureNotOwnRooms = repository.getAllNotOwnNotClosedRoomsNow();
-                for (RoomItem room : futureNotOwnRooms) {
+                notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
+                notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
+                for (RoomItem room : notClosedNotOwnRooms) {
                     mqttService.addRoomToListen(room,true);
                 }
 
