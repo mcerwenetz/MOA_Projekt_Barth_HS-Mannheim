@@ -91,19 +91,25 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     endtimeAtomic.set(item.endTime);
                     //der Timeoutrefresherthread wird nur gestartet wenn
                     //Der Raum offen ist.
-                    if (item.status != false) {
+                    if (item.status == 2) { //open = 2, willopen = 1, close= 3;
                         timeoutRefresherThread.initialStart();
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
-                    } else {
-                        //Tasten für Raum schließen disable
-                        btntimeout.setEnabled(false);
-//                        btntimeout.setAlpha(.5f); //transparent
+                        btntimeout.setEnabled(true);
+                        btnopen.setEnabled(true);
 
+                    }  else if (item.status == 1) {
+                        //Tasten für Raum schließen disable
+                        btntimeout.setEnabled(true);
+//                        btntimeout.setAlpha(.5f); //transparent
                         btnopen.setEnabled(false);
 //                        btnopen.setAlpha(.5f);
+                        }
+                        else{
                         if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
+                            btnopen.setEnabled(false);
+                            btntimeout.setEnabled(false);
                             //Textview setzen nicht vergessen
                             tvtimeout.setText("00:00:00");
                         }
@@ -139,16 +145,18 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        timeoutRefresherThread.stop();
+        if (timeoutRefresherThread.isAlive()) {
+            timeoutRefresherThread.stop();
+        }
         unbindMQTTService();
     }
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(item.roomName);
-            if (item.status) {
+            if (item.status == 1) {
                 tvstatus.setText("offen");
-            } else {
+            }  else if(item.status == 3) {
                 tvstatus.setText("geschlossen");
             }
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
@@ -164,7 +172,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             long now = DateTime.now().getMillis();
             timeoutRefresherThread.stop();
             item.endTime = now;
-            item.status = false;
+            item.status = 3; //3 == close
             repo.updateRoomItem(item);
             repo.setParticipantExitTime(item,System.currentTimeMillis());
             tvtimeout.setText("00:00:00");
