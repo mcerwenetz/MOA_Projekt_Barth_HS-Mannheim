@@ -10,8 +10,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import org.joda.time.DateTime;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,7 +31,8 @@ public class RoomLivecycleService extends Service {
     private List<RoomItem> notClosedOwnRooms;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
-
+    private List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
+    private List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
 
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
@@ -118,7 +119,8 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime <= now && room.endTime >= now) {
                         room.status = RoomItem.ROOMISOPEN;
                         repository.updateRoomItem(room);
-                        mqttService.sendRoom(room, false);
+                        toSend.add(room);
+//                        mqttService.sendRoom(room, false);
                         Log.v(TAG, "opening room " + room.id);
                     }
                 }
@@ -127,7 +129,8 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime >= now || room.endTime <= now) {
                         room.status = RoomItem.ROOMISCLOSE;
                         repository.updateRoomItem(room);
-                        mqttService.sendRoom(room, true);
+                        toSend.add(room);
+//                        mqttService.sendRoom(room, true);
                         Log.v(TAG, "Closing room " + room.id);
                     }
                 }
@@ -136,16 +139,19 @@ public class RoomLivecycleService extends Service {
                 notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedOwnRooms) {
-                    mqttService.addRoomToListen(room, false);
+                    toSubscribe.add(room);
+//                    mqttService.addRoomToListen(room, false);
                 }
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
                 notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 for (RoomItem room : notClosedNotOwnRooms) {
-                    mqttService.addRoomToListen(room, true);
+                    toSubscribe.add(room);
+//                    mqttService.addRoomToListen(room, true);
                 }
 
+                Room
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
