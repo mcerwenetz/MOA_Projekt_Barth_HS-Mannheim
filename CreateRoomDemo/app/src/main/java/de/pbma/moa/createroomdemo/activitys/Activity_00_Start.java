@@ -46,13 +46,11 @@ public class Activity_00_Start extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, RoomLivecycleService.class);
-        startService(intent);
-
+        //MqttService Immer vor einem starten!
         onStartMqttService();
+        startService(intent);
         //remove DB entries older two weeks
         deleteOldEntries();
-
-
     }
 
 

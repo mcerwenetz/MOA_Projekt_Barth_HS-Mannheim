@@ -98,9 +98,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         btnopen.setEnabled(true);
                     }  else if (item.status == RoomItem.ROOMWILLOPEN) {
                         btntimeout.setEnabled(true);
-//                        btntimeout.setAlpha(.5f); //transparent
                         btnopen.setEnabled(false);
-//                        btnopen.setAlpha(.5f);
                         }
                         else{
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt

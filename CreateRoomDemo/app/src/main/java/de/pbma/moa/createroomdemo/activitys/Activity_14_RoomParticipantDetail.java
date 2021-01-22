@@ -63,8 +63,6 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         } else {
             finish();
         }
-
-
     }
 
     @Override
