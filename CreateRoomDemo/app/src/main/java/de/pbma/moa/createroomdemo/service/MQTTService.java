@@ -162,7 +162,6 @@ public class MQTTService extends Service {
         @Override
         public void onMessage(String topic, String stringMsg) {
             Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
-
             JSONObject msg;
             try {
                 msg = new JSONObject(stringMsg);
@@ -171,9 +170,9 @@ public class MQTTService extends Service {
                 return;
             }
 //             Empfangen von Raum infos
-            if (msg.has(AdapterJsonMqtt.RAUM)) {
-                new Thread(() -> {
-                    Repository repository = new Repository(MQTTService.this);
+            new Thread(() -> {
+                Repository repository = new Repository(MQTTService.this);
+                if (msg.has(AdapterJsonMqtt.RAUM)) {
                     RoomItem roomItem = null;
                     try {
                         roomItem = AdapterJsonMqtt.createRoomItem(msg.getJSONObject(AdapterJsonMqtt.RAUM));
@@ -183,13 +182,9 @@ public class MQTTService extends Service {
                     }
                     roomItem.id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     repository.updateRoomItem(roomItem);
-                }).start();
-            }
-
-//           empfangen eines Teilnehmers welcher den raum betritt
-            if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
-                new Thread(() -> {
-                    Repository repository = new Repository(MQTTService.this);
+                }
+                //empfangen eines Teilnehmers welcher den raum betritt
+                if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
@@ -204,14 +199,9 @@ public class MQTTService extends Service {
                     RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
                     sendRoom(roomItem, false);
                     sendParticipants(repository.getParticipantsOfRoomNow(item.roomId), roomItem);
-                }).start();
-
-            }
-
-//           empfangen eines Teilnehmers welcher den raum verlässt
-            if (msg.has(AdapterJsonMqtt.EXITTIME)) {
-                new Thread(() -> {
-                    Repository repository = new Repository(MQTTService.this);
+                }
+                //empfangen eines Teilnehmers welcher den raum verlässt
+                if (msg.has(AdapterJsonMqtt.EXITTIME)) {
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
@@ -223,14 +213,9 @@ public class MQTTService extends Service {
                         return;
                     }
                     repository.updateParticipantItem(item);
-                }).start();
-            }
-
-
-//          empfangen einer liste mit allen teilnehmern aus einem raum
-            if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
-                new Thread(() -> {
-                    Repository repository = new Repository(MQTTService.this);
+                }
+                //empfangen einer liste mit allen teilnehmern aus einem raum
+                if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
                     ArrayList<ParticipantItem> list = null;
                     try {
                         list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
@@ -243,9 +228,8 @@ public class MQTTService extends Service {
                         item.roomId = id;
                         repository.addParticipantEntry(item);
                     }
-                }).start();
-            }
-
+                }
+            }).start();
             doOnRecieve(topic, stringMsg);
         }
     };
