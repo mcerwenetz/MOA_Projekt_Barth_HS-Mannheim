@@ -156,7 +156,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             tvroomname.setText(item.roomName);
             if (item.status == 1) {
                 tvstatus.setText("offen");
-            }  else if(item.status == 2) {
+            }  else if(item.status == 3) {
                 tvstatus.setText("geschlossen");
             }
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
