@@ -98,19 +98,16 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         btnopen.setEnabled(true);
                     } else if (item.status == RoomItem.ROOMWILLOPEN) {
                         btntimeout.setEnabled(true);
-//                        btntimeout.setAlpha(.5f); //transparent
                         btnopen.setEnabled(false);
-//                        btnopen.setAlpha(.5f);
                     } else {
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
                         if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
-                            //Tasten für Raum schließen disable
-                            btnopen.setEnabled(false);
-                            btntimeout.setEnabled(false);
-                            //Textview setzen nicht vergessen
                         }
+                        //Tasten für Raum schließen disable
+                        btnopen.setEnabled(false);
+                        btntimeout.setEnabled(false);
                     }
                 }
             });
@@ -176,7 +173,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.status = 3; //3 == close
         repo.updateRoomItem(item);
         repo.setParticipantExitTime(item, System.currentTimeMillis());
-        tvtimeout.setText("00:00:00");
         mqttService.sendRoom(item, true);
 //        }
 //        else {

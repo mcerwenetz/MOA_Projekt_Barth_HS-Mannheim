@@ -45,12 +45,15 @@ public class Activity_00_Start extends AppCompatActivity {
 //        test.addDBfremdRaum();
 
 
-        Intent intent = new Intent(this, RoomLivecycleService.class);
-        //MqttService Immer vor einem starten!
         onStartMqttService();
+
+        Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
+
         //remove DB entries older two weeks
         deleteOldEntries();
+
+
     }
 
 
