@@ -69,11 +69,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                         //werden. Aber nur wenn er läuft.
                         if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
-                            //Tasten für Raum schließen disable
-                            btnLeave.setEnabled(false);
-                            //Textview setzen nicht vergessen
-                            tvTimeout.setText("");
                         }
+                        //Tasten für Raum schließen disable
+                        btnLeave.setEnabled(false);
                     }
                 }
             });

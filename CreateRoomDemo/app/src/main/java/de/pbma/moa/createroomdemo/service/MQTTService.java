@@ -70,14 +70,7 @@ public class MQTTService extends Service {
         }
     };
 
-    public boolean registerPressListener(MyListener pressListener) {
-        return listeners.addIfAbsent(pressListener);
-    }
 
-
-    public boolean deregisterPressListener(MyListener pressListener) {
-        return listeners.remove(pressListener);
-    }
 
     @Override
     public void onCreate() {

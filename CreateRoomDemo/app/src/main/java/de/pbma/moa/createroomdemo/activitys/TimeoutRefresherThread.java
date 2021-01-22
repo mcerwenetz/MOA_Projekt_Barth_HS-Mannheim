@@ -32,6 +32,7 @@ public class TimeoutRefresherThread {
                     e.printStackTrace();
                 }
             }
+            tv.setText("");
         });
     }
 
