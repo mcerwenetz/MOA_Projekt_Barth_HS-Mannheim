@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 // Simple MQTT Messaging class using the synchronous client in a separate thread.
 // The user API is asynchronous handling all callbacks in yet another separate thread.
-// possibleTODO: reconnect and resubscribe
+// ToDo: reconnect and resubscribe
 public class MqttMessaging {
     final static String TAG = MqttMessage.class.getCanonicalName();
 

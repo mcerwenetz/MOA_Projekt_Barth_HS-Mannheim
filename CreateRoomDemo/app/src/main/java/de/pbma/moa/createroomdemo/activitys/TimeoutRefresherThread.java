@@ -15,17 +15,22 @@ public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
-    private AtomicLong endTime;
+    private AtomicLong endTime,statTime;
     private Thread refreshThread;
 
-    public TimeoutRefresherThread(Activity activity, TextView tv, AtomicLong endTime) {
+    public TimeoutRefresherThread(Activity activity, TextView tv, AtomicLong endTime, AtomicLong startTime) {
         this.endTime = endTime;
+        this.statTime = startTime;
         this.tvtimeout = tv;
         this.activity = activity;
         refreshThread = new Thread(() -> {
             while (keepRefreshing.get()) {
-                TimeoutRefresherThread.this.activity.runOnUiThread(() ->
-                        TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(endTime.get())));
+                if (startTime.get() > System.currentTimeMillis())
+                    TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToOpen(startTime.get())));
+                else
+                    TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToClose(endTime.get())));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -52,10 +57,24 @@ public class TimeoutRefresherThread {
         }
     }
 
-    private String formatTimeout(long endTime) {
+    private String formatTimeoutToClose(long endTime) {
         DateTime now = new DateTime();
         DateTime endTimeDateTime = new DateTime(endTime);
         Period period = new Period(now, endTimeDateTime);
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendDays().appendSuffix("d ")
+                .appendHours().appendSuffix("h ")
+                .appendMinutes().appendSuffix("m ")
+                .appendSeconds().appendSuffix("s ")
+                .printZeroNever()
+                .toFormatter();
+        return formatter.print(period);
+    }
+
+    private String formatTimeoutToOpen(long startTime) {
+        DateTime now = new DateTime();
+        DateTime startTimeDateTime = new DateTime(startTime);
+        Period period = new Period(now,startTimeDateTime);
         PeriodFormatter formatter = new PeriodFormatterBuilder()
                 .appendDays().appendSuffix("d ")
                 .appendHours().appendSuffix("h ")

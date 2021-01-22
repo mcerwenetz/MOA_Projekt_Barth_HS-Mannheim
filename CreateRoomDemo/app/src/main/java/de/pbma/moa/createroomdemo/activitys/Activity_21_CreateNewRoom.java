@@ -191,9 +191,9 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         long now = Calendar.getInstance().getTime().getTime();
-        calendar.set(year_start, month_start, day_start, hour_start, minute_start);
+        calendar.set(year_start, month_start, day_start, hour_start, minute_start,0);
         long start = calendar.getTime().getTime();
-        calendar.set(year_end, month_end, day_end, hour_end, minute_end);
+        calendar.set(year_end, month_end, day_end, hour_end, minute_end,0);
         long end = calendar.getTime().getTime();
 
         if (now > start) {
