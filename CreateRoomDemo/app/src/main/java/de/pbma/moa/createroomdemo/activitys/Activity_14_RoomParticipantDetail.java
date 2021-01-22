@@ -105,7 +105,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         tvHostPhone = findViewById(R.id.tv_14_kontakt_hosttelefon);
         tvRoom = findViewById(R.id.tv_14_roomname_value);
         tvOpenClose = findViewById(R.id.tv_14_status_value);
-        tvTimeout = findViewById(R.id.tv_14_timeout_value);
+        tvTimeout = findViewById(R.id.tv_14_status_timeout);
         endtimeAtomic = new AtomicLong(0);
         timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic);
 
