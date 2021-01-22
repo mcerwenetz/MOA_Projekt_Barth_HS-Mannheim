@@ -106,7 +106,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/tv_22_stats_timeout"
+                    android:id="@+id/tv_22_status_timeout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

@@ -89,25 +89,25 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     //Speichern für Nebenläufigkeit
                     //So profitieren alle von Livedata
                     endtimeAtomic.set(item.endTime);
+
                     //der Timeoutrefresherthread wird nur gestartet wenn
                     //Der Raum offen ist.
-                    if (item.status == 2) { //open = 2, willopen = 1, close= 3;
+                    if (item.status == RoomItem.ROOMISOPEN) {
                         timeoutRefresherThread.initialStart();
-                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
-                        //werden. Aber nur wenn er läuft.
                         btntimeout.setEnabled(true);
                         btnopen.setEnabled(true);
-
-                    }  else if (item.status == 1) {
-                        //Tasten für Raum schließen disable
+                    }  else if (item.status == RoomItem.ROOMWILLOPEN) {
                         btntimeout.setEnabled(true);
 //                        btntimeout.setAlpha(.5f); //transparent
                         btnopen.setEnabled(false);
 //                        btnopen.setAlpha(.5f);
                         }
                         else{
-                        if (timeoutRefresherThread.isAlive()) {
+                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
+                        //werden. Aber nur wenn er läuft.
+                            if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
+                            //Tasten für Raum schließen disable
                             btnopen.setEnabled(false);
                             btntimeout.setEnabled(false);
                             //Textview setzen nicht vergessen
@@ -127,10 +127,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     private void bindUI() {
         tvroomname = findViewById(R.id.tv_22_roomname_value);
-        tvstatus = findViewById(R.id.tv_22_roomstatus_value);
-        tvtimeout = findViewById(R.id.tv_22_timeout_value);
-        tvEndTime = findViewById(R.id.tv_22_endtime);
+        tvstatus = findViewById(R.id.tv_22_status_value);
+        tvtimeout = findViewById(R.id.tv_22_status_timeout);
         tvStartTime = findViewById(R.id.tv_22_starttime);
+        tvEndTime = findViewById(R.id.tv_22_endtime);
         tvLocation = findViewById(R.id.tv_22_location);
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
@@ -154,9 +154,12 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(item.roomName);
-            if (item.status == 1) {
+            if (item.status == RoomItem.ROOMISOPEN) {
                 tvstatus.setText("offen");
-            }  else if(item.status == 3) {
+            }  else if(item.status == RoomItem.ROOMWILLOPEN) {
+                tvstatus.setText("Der Raum wird bald geöffnet");
+            }
+            else{
                 tvstatus.setText("geschlossen");
             }
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
