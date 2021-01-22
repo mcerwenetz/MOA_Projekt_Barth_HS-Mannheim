@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.R;
@@ -29,7 +31,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     public final static String ID = "RoomID";
     long roomId;
     private Button btnLeave, btnPartic;
-    private TextView tvRoom, tvOpenClose, tvTimeout, tvHost,tvHosteMail,tvHostPhone;
+    private TextView tvRoom, tvStatus, tvTimeout, tvHost,tvHosteMail,tvHostPhone, tvEndTime,tvStartTime,tvPlace,tvAddress;
     private RoomItem roomItem;
     private Repository repo;
     private LiveData<RoomItem> liveDataRoomItem;
@@ -84,14 +86,24 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvRoom.setText(item.roomName);
-            if (item.status) {
-                tvOpenClose.setText("offen");
-            } else {
-                tvOpenClose.setText("geschlossen");
+            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
+            tvStartTime.setText("Von: " + df.format(item.startTime));
+            tvEndTime.setText("Bis: " + df.format(item.endTime));
+            if (item.status==RoomItem.ROOMWILLOPEN) {
+                tvStatus.setText("offen");
+            } else if(item.status == RoomItem.ROOMWILLOPEN) {
+                tvStatus.setText("Der Raum wird bald geöffnet");
+                tvTimeout.setText("");
+            }
+            else{
+                tvStatus.setText("geschlossen");
+                tvTimeout.setText("");
             }
             tvHost.setText(item.host);
             tvHosteMail.setText(item.eMail);
             tvHostPhone.setText(item.phone);
+            tvPlace.setText(item.place);
+            tvAddress.setText(item.address);
         }
     }
 
@@ -104,8 +116,12 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         tvHosteMail = findViewById(R.id.tv_14_kontakt_hostemail);
         tvHostPhone = findViewById(R.id.tv_14_kontakt_hosttelefon);
         tvRoom = findViewById(R.id.tv_14_roomname_value);
-        tvOpenClose = findViewById(R.id.tv_14_status_value);
+        tvStatus = findViewById(R.id.tv_14_status_value);
         tvTimeout = findViewById(R.id.tv_14_status_timeout);
+        tvStartTime = findViewById(R.id.tv_14_date_value_start);
+        tvEndTime = findViewById(R.id.tv_14_date_value_end);
+        tvPlace = findViewById(R.id.tv_14_location_place) ;
+        tvAddress = findViewById(R.id.tv_14_location_address);
         endtimeAtomic = new AtomicLong(0);
         timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic);
 
