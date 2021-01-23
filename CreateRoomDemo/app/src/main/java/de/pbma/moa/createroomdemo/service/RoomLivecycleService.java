@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
@@ -12,14 +13,12 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
-
 
 public class RoomLivecycleService extends Service {
 
@@ -35,6 +34,8 @@ public class RoomLivecycleService extends Service {
     private MQTTService mqttService;
     private List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
     private List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
+    private final NetworkStoppedStateReceiver networkStoppedStateReceiver = new NetworkStoppedStateReceiver();
+
 
     private Handler handler;
 
@@ -97,7 +98,14 @@ public class RoomLivecycleService extends Service {
         Log.v(TAG, "Started Service");
         keepRunning.set(true);
         startThread();
+        bindNetworkStopppedStateReceiver();
         return START_STICKY;
+    }
+
+    private void bindNetworkStopppedStateReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(networkStoppedStateReceiver, intentFilter);
     }
 
     @Override
