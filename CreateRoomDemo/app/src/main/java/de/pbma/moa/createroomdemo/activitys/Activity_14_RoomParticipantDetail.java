@@ -101,7 +101,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
             tvStartTime.setText("Von: " + df.format(item.startTime));
             tvEndTime.setText("Bis: " + df.format(item.endTime));
-            if (item.status == RoomItem.ROOMWILLOPEN) {
+            if (item.status == RoomItem.ROOMISOPEN) {
                 tvStatus.setText("schließt in");
             } else if (item.status == RoomItem.ROOMWILLOPEN) {
                 tvStatus.setText("öffnet in");
