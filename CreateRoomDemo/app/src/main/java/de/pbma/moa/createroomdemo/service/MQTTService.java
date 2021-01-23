@@ -173,7 +173,6 @@ public class MQTTService extends Service {
 
 //             Empfangen von Raum infos
             new Thread(() -> {
-
                 if (msg.has(AdapterJsonMqtt.RAUM)) {
                     RoomItem roomItem = null;
                     try {

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
@@ -24,13 +25,14 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".activitys.Activity_00_Start">
+        <activity android:name=".activitys.Activity_000_Welcome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".preferences.PreferenceActivity" />
+        <activity android:name=".activitys.Activity_00_Start"/>
         <activity android:name=".activitys.Activity_20_RoomListHost" />
         <activity android:name=".activitys.Activity_23_HostViewParticipant" />
         <activity android:name=".activitys.Activity_22_RoomHostDetail" />
