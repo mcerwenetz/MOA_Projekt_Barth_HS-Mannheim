@@ -37,7 +37,8 @@ public class TimeoutRefresherThread {
                     e.printStackTrace();
                 }
             }
-            tv.setText("");
+            TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                    TimeoutRefresherThread.this.tvtimeout.setText(""));
         });
     }
 
