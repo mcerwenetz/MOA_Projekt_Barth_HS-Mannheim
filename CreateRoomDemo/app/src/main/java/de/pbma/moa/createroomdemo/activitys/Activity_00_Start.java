@@ -1,6 +1,9 @@
 package de.pbma.moa.createroomdemo.activitys;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -44,8 +47,14 @@ public class Activity_00_Start extends AppCompatActivity {
 //        test.TestAdapterJsonMqtt();
 //        test.addDBfremdRaum();
 
-
-        onStartMqttService();
+        //Anfangscheck ob Internet vorhanden
+        if(!isConnected()){
+            Intent networkErrorIntent = new Intent(this, Activity_000_NetworkError.class);
+            networkErrorIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(networkErrorIntent);
+        }else {
+            onStartMqttService();
+        }
 
         Intent intent = new Intent(this, RoomLivecycleService.class);
         startService(intent);
@@ -54,6 +63,18 @@ public class Activity_00_Start extends AppCompatActivity {
         deleteOldEntries();
 
 
+
+    }
+
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            return true;
+        } else
+            return false;
     }
 
 
@@ -127,7 +148,6 @@ public class Activity_00_Start extends AppCompatActivity {
         Repository repository = new Repository(this);
         repository.DeleteRoomAndParticipantOlderTwoWeeks();
     }
-
 
     //MQTT Service
     public void onStartMqttService() {
