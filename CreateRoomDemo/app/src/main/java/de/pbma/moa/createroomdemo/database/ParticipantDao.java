@@ -38,6 +38,6 @@ public abstract class ParticipantDao {
     @Query("SELECT count(*) FROM  dbParticipant WHERE roomId=:roomId")
     public abstract int getCountOfExistingParticipantsInRoom(long roomId);
 
-    @Query("UPDATE dbParticipant SET exitTime=:currentTimeMillis WHERE id=:roomId")
+    @Query("UPDATE dbParticipant SET exitTime=:currentTimeMillis WHERE id=:roomId AND exitTime =0")
     public abstract void setParticipantExitTime(long roomId, long currentTimeMillis);
 }

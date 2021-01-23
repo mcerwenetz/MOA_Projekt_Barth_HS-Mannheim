@@ -41,6 +41,7 @@ import java.io.File;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -64,6 +65,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private RoomItem item;
     private Repository repo;
     private LiveData<RoomItem> liveData;
+    private ArrayList<RoomItem> toSend = new ArrayList<>();
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic, startTimeAtomic;
 
@@ -104,7 +106,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     } else {
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
-                            timeoutRefresherThread.stop();
+                        timeoutRefresherThread.stop();
 
                         //Tasten für Raum schließen disable
                         btnopen.setEnabled(false);
@@ -173,7 +175,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.endTime = now;
         item.status = 3; //3 == close
         repo.updateRoomItem(item);
-        mqttService.sendRoom(item, true);
+        if (mqttService == null)
+            toSend.add(item);
+        else
+            mqttService.sendRoom(item, true);
 //        }
 //        else {
 //            //Beendet die Uebersicht
@@ -196,7 +201,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                         now.dayOfMonth().get(), i, i1, 0);
                 item.endTime = timeout.getMillis();
                 repo.updateRoomItem(item);
-                mqttService.sendRoom(item, false);
+                if (mqttService == null)
+                    toSend.add(item);
+                else
+                    mqttService.sendRoom(item, true);
             }
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
@@ -337,6 +345,11 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            for(RoomItem room : toSend){
+                boolean status = room.status == RoomItem.ROOMISCLOSE;
+                mqttService.sendRoom(room, status);
+            }
+            toSend.clear();
         }
 
         @Override

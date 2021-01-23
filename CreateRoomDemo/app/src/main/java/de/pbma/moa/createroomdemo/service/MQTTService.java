@@ -62,6 +62,7 @@ public class MQTTService extends Service {
         @Override
         public void onConnect() {
             log("connected");
+
         }
 
         @Override
@@ -352,16 +353,21 @@ public class MQTTService extends Service {
     }
 
     private void disconnect() {
-        Log.v(TAG, "disconnect");
-        if (mqttMessaging != null) {
-            for (String topic : this.topicList)
-                mqttMessaging.unsubscribe(topic);
-            List<MqttMessaging.Pair<String, String>> pending = mqttMessaging.disconnect();
-            if (!pending.isEmpty()) {
-                Log.w(TAG, "pending messages: " + pending.size());
+        try {
+            Log.v(TAG, "disconnect");
+            if (mqttMessaging != null) {
+                for (String topic : this.topicList)
+                    mqttMessaging.unsubscribe(topic);
+                List<MqttMessaging.Pair<String, String>> pending = mqttMessaging.disconnect();
+                if (!pending.isEmpty()) {
+                    Log.w(TAG, "pending messages: " + pending.size());
+                }
             }
+            mqttMessaging = null;
         }
-        mqttMessaging = null;
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //BINDER

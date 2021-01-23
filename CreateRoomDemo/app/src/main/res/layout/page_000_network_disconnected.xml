@@ -25,7 +25,7 @@
             android:src="@mipmap/connection" />
 
         <TextView
-            android:id="@+id/tv_000_welcome_connect"
+            android:id="@+id/tv_000_error_msg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"

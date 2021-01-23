@@ -30,7 +30,7 @@ public class RoomLivecycleService extends Service {
     private List<RoomItem> openrooms;
     private List<RoomItem> notClosedNotOwnRooms;
     private List<RoomItem> notClosedOwnRooms;
-    private boolean mqttServiceBound;
+    private Boolean mqttServiceBound;
     private MQTTService mqttService;
     private List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
     private List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
@@ -66,7 +66,6 @@ public class RoomLivecycleService extends Service {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
             postPendingRooms();
-            mqttServiceBound = true;
         }
 
         @Override
@@ -89,7 +88,7 @@ public class RoomLivecycleService extends Service {
         handler = new Handler();
         repository = new Repository(this);
         keepRunning = new AtomicBoolean(false);
-        bindMQTTService();
+
         Log.v(TAG, "Service created");
     }
 
@@ -98,6 +97,7 @@ public class RoomLivecycleService extends Service {
         Log.v(TAG, "Started Service");
         keepRunning.set(true);
         startThread();
+        bindMQTTService();
         bindNetworkStopppedStateReceiver();
         return START_STICKY;
     }
@@ -112,8 +112,10 @@ public class RoomLivecycleService extends Service {
     public void onDestroy() {
         super.onDestroy();
         keepRunning.set(false);
+        unregisterReceiver(networkStoppedStateReceiver);
         unbindMQTTService();
     }
+
 
     void startThread() {
         checkingThread = new Thread(() -> {
@@ -138,7 +140,7 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime >= now || room.endTime <= now) {
                         room.status = RoomItem.ROOMISCLOSE;
                         repository.updateRoomItem(room);
-                        repository.kickOutParticipants(room,System.currentTimeMillis());
+                        repository.kickOutParticipants(room, System.currentTimeMillis());
                         toSend.add(room);
 //                        mqttService.sendRoom(room, true);
                         Log.v(TAG, "Closing room " + room.id);
@@ -161,7 +163,7 @@ public class RoomLivecycleService extends Service {
 
                 }
 
-                handler.post(()->{
+                handler.post(() -> {
                     RoomLivecycleService.this.postPendingRooms();
                 });
 
@@ -177,7 +179,7 @@ public class RoomLivecycleService extends Service {
 
 
     private void postPendingRooms() {
-        if (mqttService == null){
+        if (mqttService == null) {
             return;
         }
         ArrayList<RoomItem> localToSend = new ArrayList<>();
@@ -186,7 +188,7 @@ public class RoomLivecycleService extends Service {
             toSend.clear();
         }
 
-        for(RoomItem room : localToSend){
+        for (RoomItem room : localToSend) {
             boolean status = room.status == RoomItem.ROOMISCLOSE;
             mqttService.sendRoom(room, status);
         }
@@ -197,7 +199,7 @@ public class RoomLivecycleService extends Service {
             toSubscribe.clear();
         }
 
-        for(RoomItem room : localToSubscribe){
+        for (RoomItem room : localToSubscribe) {
             boolean status = room.fremdId != null;
             mqttService.addRoomToListen(room, status);
         }

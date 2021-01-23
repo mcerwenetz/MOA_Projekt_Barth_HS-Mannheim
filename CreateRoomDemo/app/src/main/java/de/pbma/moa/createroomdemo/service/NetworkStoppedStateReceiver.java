@@ -16,17 +16,25 @@ public class NetworkStoppedStateReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo == null || networkInfo.getState() != NetworkInfo.State.CONNECTED) {
-            Log.v(TAG, "Internet disconnected");
-            Intent stopIntent = new Intent(context, MQTTService.class);
-            intent.setAction(MQTTService.ACTION_STOP);
-            context.startService(stopIntent);
-
-            Intent startInternetLost = new Intent(context, Activity_000_NetworkError.class);
-            startInternetLost.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            context.startActivity(startInternetLost);
+        if (networkInfo == null)
+            errorIntents(context);
+        else if (networkInfo.getState() != NetworkInfo.State.CONNECTED)
+            errorIntents(context);
 
 
-        }
+    }
+
+    private void errorIntents(Context context) {
+        Log.v(TAG, "Internet disconnected");
+        Intent stopIntent = new Intent(context, MQTTService.class);
+        context.stopService(stopIntent);
+
+        stopIntent = new Intent(context, RoomLivecycleService.class);
+        context.stopService(stopIntent);
+
+        Intent startInternetLost = new Intent(context, Activity_000_NetworkError.class);
+        startInternetLost.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(startInternetLost);
     }
 }
+

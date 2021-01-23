@@ -50,14 +50,15 @@ public class Activity_00_Start extends AppCompatActivity {
         //Anfangscheck ob Internet vorhanden
         if(!isConnected()){
             Intent networkErrorIntent = new Intent(this, Activity_000_NetworkError.class);
-            networkErrorIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            networkErrorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(networkErrorIntent);
         }else {
             onStartMqttService();
+            Intent intent = new Intent(this, RoomLivecycleService.class);
+            startService(intent);
         }
 
-        Intent intent = new Intent(this, RoomLivecycleService.class);
-        startService(intent);
+
 
         //remove DB entries older two weeks
         deleteOldEntries();
