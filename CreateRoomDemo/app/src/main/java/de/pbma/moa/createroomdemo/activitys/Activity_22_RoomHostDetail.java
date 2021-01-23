@@ -104,9 +104,8 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                     } else {
                         //Wenn der Raum nicht offen ist soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
-                        if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
-                        }
+
                         //Tasten für Raum schließen disable
                         btnopen.setEnabled(false);
                         btntimeout.setEnabled(false);
@@ -117,8 +116,17 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        timeoutRefresherThread.stop();
+        unbindMQTTService();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout, endtimeAtomic, startTimeAtomic);
+        timeoutRefresherThread.initialStart();
         bindMQTTService();
     }
 
@@ -135,18 +143,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
         btntimeout.setOnClickListener(this::onChangeTimeout);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvtimeout, endtimeAtomic,startTimeAtomic);
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (timeoutRefresherThread.isAlive()) {
-            timeoutRefresherThread.stop();
-        }
-        unbindMQTTService();
-    }
 
     private void updateRoom(RoomItem item) {
         if (item != null) {
@@ -174,7 +173,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.endTime = now;
         item.status = 3; //3 == close
         repo.updateRoomItem(item);
-        repo.setParticipantExitTime(item, System.currentTimeMillis());
         mqttService.sendRoom(item, true);
 //        }
 //        else {

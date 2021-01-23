@@ -20,9 +20,10 @@ public class Repository {
         return participantDao.getCountOfExistingParticipantsInRoom(roomId);
     }
 
-    public void setParticipantExitTime(RoomItem item, long currentTimeMillis) {
+
+    public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
         new Thread(() -> {
-            participantDao.setParticipantExitTime(item.id, currentTimeMillis);
+            participantDao.setParticipantExitTime(room.id, currentTimeMillis);
         }).start();
     }
 

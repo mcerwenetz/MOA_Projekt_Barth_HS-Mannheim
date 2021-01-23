@@ -71,7 +71,6 @@ public class MQTTService extends Service {
     };
 
 
-
     @Override
     public void onCreate() {
         Log.v(TAG, "onCreate");
@@ -161,17 +160,20 @@ public class MQTTService extends Service {
     final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
         @Override
         public void onMessage(String topic, String stringMsg) {
+            Repository repository = new Repository(MQTTService.this);
             Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
             JSONObject msg;
+
             try {
                 msg = new JSONObject(stringMsg);
             } catch (JSONException e) {
                 Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
                 return;
             }
+
 //             Empfangen von Raum infos
             new Thread(() -> {
-                Repository repository = new Repository(MQTTService.this);
+
                 if (msg.has(AdapterJsonMqtt.RAUM)) {
                     RoomItem roomItem = null;
                     try {
@@ -205,7 +207,7 @@ public class MQTTService extends Service {
                     ParticipantItem item = null;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
-                        item.roomId= repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
+                        item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                         item = repository.getPaticipantItemNow(item.roomId, item.eMail);
                         item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
                     } catch (JSONException e) {
@@ -230,6 +232,7 @@ public class MQTTService extends Service {
                     }
                 }
             }).start();
+
             doOnRecieve(topic, stringMsg);
         }
     };
@@ -240,7 +243,7 @@ public class MQTTService extends Service {
      *
      * @param item RoomItem
      */
-    public void addRoomToListen(RoomItem item,boolean imGuest) {
+    public void addRoomToListen(RoomItem item, boolean imGuest) {
         String topic = getTopic(item.getRoomTag(), imGuest);
         this.addTopic(topic);
     }

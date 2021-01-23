@@ -55,7 +55,4 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom WHERE fremdId IS NOT NULL")
     abstract LiveData<List<RoomItem>> getAllFromExceptMeAsHost();
 
-
-
-
 }

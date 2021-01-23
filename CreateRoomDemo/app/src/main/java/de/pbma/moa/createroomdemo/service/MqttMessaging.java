@@ -215,7 +215,7 @@ public class MqttMessaging {
         subscriptions.add(topicFilter);
         mqttExecutor.execute(() -> {
             try {
-                Log.v(TAG, "subscribe: " + topicFilter + ready.get());
+                Log.v(TAG, "subscribe: " + topicFilter +" "+ ready.get());
                 MqttClient c = client;
                 if (c != null && ready.get()) {
                     c.subscribe(topicFilter);

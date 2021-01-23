@@ -32,7 +32,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     long roomId;
     private Button btnLeave, btnPartic;
     private TextView tvRoom, tvStatus, tvTimeout, tvHost, tvHosteMail, tvHostPhone, tvEndTime, tvStartTime, tvPlace, tvAddress;
-    private RoomItem roomItem;
+    private RoomItem classRoomItem;
     private Repository repo;
     private LiveData<RoomItem> liveDataRoomItem;
     private TimeoutRefresherThread timeoutRefresherThread;
@@ -55,9 +55,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                 @Override
                 public void onChanged(RoomItem roomItem) {
                     updateRoom(roomItem);
-                    Activity_14_RoomParticipantDetail.this.roomItem = roomItem;
-                    endtimeAtomic.set(roomItem.endTime);
-                    startTimeAtomic.set(roomItem.startTime);
+                    classRoomItem = roomItem;
+                    endtimeAtomic.set(classRoomItem.endTime);
+                    startTimeAtomic.set(classRoomItem.startTime);
                     if (roomItem.status == RoomItem.ROOMISOPEN) {
                         timeoutRefresherThread.initialStart();
                         btnLeave.setEnabled(true);
@@ -82,9 +82,10 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        mqttServiceBound = false;
-        bindMQTTService();
         super.onResume();
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic, startTimeAtomic);
+        timeoutRefresherThread.initialStart();
+        bindMQTTService();
     }
 
     @Override
@@ -132,7 +133,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         tvAddress = findViewById(R.id.tv_14_location_address);
         endtimeAtomic = new AtomicLong(0);
         startTimeAtomic = new AtomicLong(0);
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic, startTimeAtomic);
+
 
         btnLeave.setOnClickListener(this::onClickBtnLeave);
         btnPartic.setOnClickListener(this::onClickBtnPartic);
@@ -143,7 +144,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void onClickBtnLeave(View view) {
         if (!mqttServiceBound)
             return;
-        mqttService.sendExitFromRoom(new MySelf(this), roomItem.getRoomTag());
+        mqttService.sendExitFromRoom(new MySelf(this), classRoomItem.getRoomTag());
         finish();
     }
 

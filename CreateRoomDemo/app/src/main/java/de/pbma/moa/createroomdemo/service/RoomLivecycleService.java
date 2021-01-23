@@ -130,6 +130,7 @@ public class RoomLivecycleService extends Service {
                     if (room.startTime >= now || room.endTime <= now) {
                         room.status = RoomItem.ROOMISCLOSE;
                         repository.updateRoomItem(room);
+                        repository.kickOutParticipants(room,System.currentTimeMillis());
                         toSend.add(room);
 //                        mqttService.sendRoom(room, true);
                         Log.v(TAG, "Closing room " + room.id);

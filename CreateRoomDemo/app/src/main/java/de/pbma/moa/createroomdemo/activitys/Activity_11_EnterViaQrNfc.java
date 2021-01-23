@@ -26,7 +26,7 @@ import de.pbma.moa.createroomdemo.service.MQTTService;
 public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
     private Button btnNfc, btnQr;
-    private String uri;
+    private String toSend;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +40,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
         mqttServiceBound = false;
+        toSend = null;
     }
 
     @Override
@@ -60,9 +61,12 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanningResult != null) {
             bindMQTTService();
-            uri = scanningResult.getContents();
-            enterRoom(uri);
-            Log.v(TAG, "Scan successfully " + uri);
+            String scanResult = scanningResult.getContents();
+            if (mqttService == null)
+                toSend = scanResult;
+            else
+                enterRoom(scanResult);
+            Log.v(TAG, "Scan successfully " + scanResult);
         } else {
             Log.v(TAG, "Scan failed");
         }
@@ -81,9 +85,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
     private void enterRoom(String uri) {
         //enter room via mqtt
-        if(! mqttServiceBound)
-            return;
-        mqttService.sendEnterRoom(new MySelf(this),uri);
+        mqttService.sendEnterRoom(new MySelf(this), uri);
         //add room to repo and enter details page
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
         String[] lis = uri.split("/");
@@ -92,7 +94,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         repository.addRoomEntry(roomItem, (newItem) -> {
             Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
                 Intent intent = new Intent(Activity_11_EnterViaQrNfc.this, Activity_14_RoomParticipantDetail.class);
-                intent.putExtra(Activity_14_RoomParticipantDetail.ID,newItem.id);
+                intent.putExtra(Activity_14_RoomParticipantDetail.ID, newItem.id);
                 startActivity(intent);
                 finish();
             });
@@ -129,6 +131,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            if (toSend != null)
+                enterRoom(toSend);
         }
 
         @Override
