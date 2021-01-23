@@ -6,19 +6,15 @@
     >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Willkommen in der Kontaktverfolgungs App"
+        android:text="Verbindungsproblem!"
         android:textStyle="bold"
         android:textSize="24sp"
         android:gravity="center_horizontal"
+        android:layout_weight="0.3"
         />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:orientation="vertical">
 
         <ImageView
             android:layout_width="match_parent"
@@ -26,19 +22,19 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:background="@color/white"
-            android:src="@mipmap/gps" />
+            android:src="@mipmap/connection" />
 
         <TextView
             android:id="@+id/tv_000_welcome_connect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textSize="16sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/red"
-            android:layout_weight="0.8"
+            android:layout_weight="0.5"
             />
-    </LinearLayout>
+
 
 
 
