@@ -17,7 +17,6 @@ import de.pbma.moa.createroomdemo.R;
 public class Activity_000_Welcome extends AppCompatActivity {
     final static String TAG = Activity_000_Welcome.class.getCanonicalName();
     private TextView tvConnection;
-    private boolean connected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,9 +32,9 @@ public class Activity_000_Welcome extends AppCompatActivity {
         if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             //we are connected to a network
-            return this.connected = true;
+            return true;
         } else
-            return this.connected = false;
+            return false;
     }
 
     private void connectionInfo() {
