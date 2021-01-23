@@ -119,9 +119,28 @@ public class RoomLivecycleService extends Service {
 
     void startThread() {
         checkingThread = new Thread(() -> {
+            // falls nachrichten nicht empfangen wurde wird der Raumstatus lokal aktualisiert
+            long now = System.currentTimeMillis();
+            openrooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
+            futureRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
+            for (RoomItem room : futureRooms) {
+                if (room.startTime <= now && room.endTime >= now) {
+                    room.status = RoomItem.ROOMISOPEN;
+                    repository.updateRoomItem(room);
+                    Log.v(TAG, "opening room " + room.id);
+                }
+            }
+            for (RoomItem room : openrooms) {
+                if (room.startTime >= now || room.endTime <= now) {
+                    room.status = RoomItem.ROOMISCLOSE;
+                    repository.updateRoomItem(room);
+                    Log.v(TAG, "Closing room " + room.id);
+                }
+            }
+
+            // check rooms periodisch
             while (keepRunning.get()) {
-                //60000 weil + 1 Minute
-                long now = System.currentTimeMillis();
+                now = System.currentTimeMillis();
                 openrooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
                 futureRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
 
@@ -131,7 +150,6 @@ public class RoomLivecycleService extends Service {
                         room.status = RoomItem.ROOMISOPEN;
                         repository.updateRoomItem(room);
                         toSend.add(room);
-//                        mqttService.sendRoom(room, false);
                         Log.v(TAG, "opening room " + room.id);
                     }
                 }
@@ -142,7 +160,6 @@ public class RoomLivecycleService extends Service {
                         repository.updateRoomItem(room);
                         repository.kickOutParticipants(room, System.currentTimeMillis());
                         toSend.add(room);
-//                        mqttService.sendRoom(room, true);
                         Log.v(TAG, "Closing room " + room.id);
                     }
                 }
