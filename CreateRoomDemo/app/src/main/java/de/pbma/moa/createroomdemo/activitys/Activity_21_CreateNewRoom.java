@@ -15,15 +15,14 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.joda.time.DateTime;
-
 import java.util.Calendar;
+import java.util.Locale;
 
+import de.pbma.moa.createroomdemo.R;
+import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
-import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.database.RoomItem;
-import de.pbma.moa.createroomdemo.database.Repository;
 
 public class Activity_21_CreateNewRoom extends AppCompatActivity {
     final static String TAG = Activity_21_CreateNewRoom.class.getCanonicalName();
@@ -39,7 +38,6 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
     Calendar calendar;
     int minute_start, hour_start, day_start, month_start, year_start;
     int minute_end, hour_end, day_end, month_end, year_end;
-    long dataid;
     Repository repo;
 
 
@@ -70,10 +68,10 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         btnStartDate = findViewById(R.id.btn_21_startdate);
         btnStartTime = findViewById(R.id.btn_21_starttime);
 
-        btnEndDate.setText(String.format("%02d.%02d.%02d", day_end, (month_end + 1), year_end));
-        btnStartDate.setText(String.format("%02d.%02d.%02d", day_start, (month_start + 1), year_start));
-        btnEndTime.setText(String.format("%02d:%02d", hour_end, minute_end));
-        btnStartTime.setText(String.format("%02d:%02d", hour_start, minute_start));
+        btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_end, (month_end + 1), year_end));
+        btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_start, (month_start + 1), year_start));
+        btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_end, minute_end));
+        btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_start, minute_start));
 
 
         etAdresse = findViewById(R.id.et_21_raumaddress);
@@ -116,7 +114,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Log.v(TAG, "setBtnEndTimeClicked " + hourOfDay + " " + minute);
-                btnStartTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+                btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hourOfDay, minute));
                 hour_start = hourOfDay;
                 minute_start = minute;
             }
@@ -131,7 +129,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Log.v(TAG, "setBtnEndTimeClicked " + hourOfDay + " " + minute);
-                btnEndTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+                btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hourOfDay, minute));
                 hour_end = hourOfDay;
                 minute_end = minute;
             }
@@ -145,7 +143,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Log.v(TAG, "setBtnStartDateClicked " + dayOfMonth + " " + monthOfYear + " " + year);
-                btnStartDate.setText(String.format("%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
+                btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
                 year_start = year;
                 day_start = dayOfMonth;
                 month_start = monthOfYear;
@@ -161,7 +159,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Log.v(TAG, "setBtnEndDateClicked " + dayOfMonth + " " + monthOfYear + " " + year);
-                btnEndDate.setText(String.format("%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
+                btnEndDate.setText(String.format(Locale.GERMAN,"%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
                 year_end = year;
                 day_end = dayOfMonth;
                 month_end = monthOfYear;
@@ -191,9 +189,9 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         long now = Calendar.getInstance().getTime().getTime();
-        calendar.set(year_start, month_start, day_start, hour_start, minute_start,0);
+        calendar.set(year_start, month_start, day_start, hour_start, minute_start, 0);
         long start = calendar.getTime().getTime();
-        calendar.set(year_end, month_end, day_end, hour_end, minute_end,0);
+        calendar.set(year_end, month_end, day_end, hour_end, minute_end, 0);
         long end = calendar.getTime().getTime();
 
         if (now > start) {
@@ -238,15 +236,5 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         });
     }
 
-    private boolean checkRoomOpen(long start, long end) {
-        long now = new DateTime().now().getMillis();
-        if (start <= now && end >= now) {
-            return true;
-        } else if (start >= now || end <= now) {
-            return false;
-        } else {
-            return false;
-        }
-    }
 
 }

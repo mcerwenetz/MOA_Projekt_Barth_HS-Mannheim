@@ -36,8 +36,6 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
     private RoomItem roomItem = null;
 
     private ArrayList<ParticipantItem> participantItemArrayList;
-    private Repository repository;
-    private ListView lv;
     private ListAdapter_23_HostParticipant adapter;
 
 
@@ -49,12 +47,12 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
 
         participantItemArrayList = new ArrayList<>();
         adapter = new ListAdapter_23_HostParticipant(Activity_23_HostViewParticipant.this, participantItemArrayList);
-        lv = findViewById(R.id.lv_23_participant);
+        ListView lv = findViewById(R.id.lv_23_participant);
         lv.setAdapter(adapter);
 
-        repository = new Repository(Activity_23_HostViewParticipant.this);
+        Repository repository = new Repository(Activity_23_HostViewParticipant.this);
 
-        Long roomId = (long) 0;
+        long roomId = 0;
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
@@ -86,9 +84,9 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.export_participant_list:
-                shareParticipants();
+        int itemId = item.getItemId();
+        if(itemId == R.id.export_participant_list ){
+            shareParticipants();
         }
         return super.onOptionsItemSelected(item);
     }

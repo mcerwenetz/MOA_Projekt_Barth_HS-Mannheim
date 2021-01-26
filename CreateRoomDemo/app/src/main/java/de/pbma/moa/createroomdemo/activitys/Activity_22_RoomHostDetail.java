@@ -43,6 +43,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.BuildConfig;
@@ -61,11 +62,11 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     final static String ID = "RoomID";
     long roomid;
     private TextView tvtimeout, tvstatus, tvroomname, tvStartTime, tvEndTime, tvLocation;
-    private Button btnopen, btntimeout, btnpartic;
+    private Button btnopen;
+    private Button btntimeout;
     private RoomItem item;
     private Repository repo;
-    private LiveData<RoomItem> liveData;
-    private ArrayList<RoomItem> toSend = new ArrayList<>();
+    private final ArrayList<RoomItem> toSend = new ArrayList<>();
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic, startTimeAtomic;
 
@@ -83,7 +84,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         repo = new Repository(this);
         roomid = getIntent().getExtras().getLong(ID, -1);
         if (roomid != -1) {
-            liveData = repo.getRoomByID(roomid);
+            LiveData<RoomItem> liveData = repo.getRoomByID(roomid);
             liveData.observe(this, new Observer<RoomItem>() {
                 @Override
                 public void onChanged(RoomItem roomItem) {
@@ -141,7 +142,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         tvLocation = findViewById(R.id.tv_22_location);
         btnopen = findViewById(R.id.btn_22_closeroom);
         btntimeout = findViewById(R.id.btn_22_changetimeout);
-        btnpartic = findViewById(R.id.btn_22_partiicipantlist);
+        Button btnpartic = findViewById(R.id.btn_22_partiicipantlist);
         btnpartic.setOnClickListener(this::onViewParticipants);
         btnopen.setOnClickListener(this::onCloseRoom);
         btntimeout.setOnClickListener(this::onChangeTimeout);
@@ -159,7 +160,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             } else {
                 tvstatus.setText("geschlossen");
             }
-            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
+            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm",Locale.GERMAN);
             tvStartTime.setText("Von: " + df.format(item.startTime));
             tvEndTime.setText("Bis: " + df.format(item.endTime));
             tvLocation.setText(item.place + "\n" + item.address);
@@ -233,21 +234,21 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuitem) {
-        switch (menuitem.getItemId()) {
-            case R.id.menu_partic_share:
-                shareRoom(this.item);
-                return true;
-            case R.id.menu_partic_qr:
-                Display display = getWindowManager().getDefaultDisplay();
-                int breite = display.getWidth();
-                Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(), (breite / 2), (breite / 2)));
-                callAlertDialog_QR(draw);
-                return true;
-            case R.id.menu_partic_uri:
-                callAlertDialog_URI();
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuitem);
+        int menuitemId = menuitem.getItemId();
+        if (menuitemId == R.id.menu_partic_share){
+            shareRoom(this.item);
+            return true;
+        }else if(menuitemId == R.id.menu_partic_qr) {
+            Display display = getWindowManager().getDefaultDisplay();
+            int breite = display.getWidth();
+            Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(), (breite / 2), (breite / 2)));
+            callAlertDialog_QR(draw);
+            return true;
+        }else if(menuitemId == R.id.menu_partic_uri) {
+            callAlertDialog_URI();
+            return true;
+        }else{
+            return super.onOptionsItemSelected(menuitem);
         }
     }
 
@@ -332,9 +333,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     private void unbindMQTTService() {
         Log.v(TAG, "unbindMQTTService");
         if (mqttServiceBound) {
-            if (mqttService != null) {
-                // deregister listeners, if there are any
-            }
             mqttServiceBound = false;
             unbindService(serviceConnection);
         }
