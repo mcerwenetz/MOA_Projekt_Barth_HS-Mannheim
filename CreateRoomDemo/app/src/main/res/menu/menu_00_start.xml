@@ -4,11 +4,11 @@
     <item
         android:id="@+id/menu_start_pref"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Export List"
+        android:title="@string/einstellungen"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_start_history"
         android:icon="@android:drawable/ic_menu_recent_history"
-        android:title="Export List"
+        android:title="@string/besuchte_raume"
         app:showAsAction="ifRoom" />
 </menu>

@@ -5,27 +5,39 @@
     <string name="key_pref_extra">pref_key_extra</string>
     <string name="key_pref_email">pref_key_email</string>
     <string name="key_pref_phone">pref_key_phone</string>
+
     <string name="raumname">Raumname</string>
     <string name="raumextra">Sonstiges (optional)</string>
-    <string name="raum_name">Name</string>
     <string name="raum_titel">Titel</string>
     <string name="raum_extra_optional">Extra (optional)</string>
     <string name="raum_ort"><![CDATA[Postleitzahl & Ort]]></string>
     <string name="raum_adresse">Adresse</string>
-    <string name="start">Start:</string>
+    <string name="start">Start</string>
     <string name="datum">Datum</string>
     <string name="uhrzeit">Uhrzeit</string>
-    <string name="ende">Ende:</string>
+    <string name="ende">Ende</string>
     <string name="room_create_room">Erstellen und Fortfahren</string>
-    <string name="room_continue_room">Continue </string>
 
     <string name="host_room_close">Raum schließen</string>
     <string name="participant_room_leave">Raum verlassen</string>
     <string name="host_timeout_change">Timeout ändern</string>
     <string name="participant">Teilnehmer</string>
     
-    <string name="participant_menu_share">Teilen</string>
-    <string name="participant_menu_qr">QR</string>
-    <string name="participant_menu_uri">URI</string>
+    <string name="teilen">Teilen</string>
+    <string name="qr_code">QR-CODE</string>
+    <string name="room_tag">Room Tag</string>
+    <string name="verbindungsproblem">Verbindungsproblem!</string>
+    <string name="host">Host</string>
+    <string name="besuchte_raume">Besuchte Räume</string>
+    <string name="name">Name</string>
+    <string name="nfc">NFC</string>
+    <string name="raum">Raum</string>
+    <string name="status">Status</string>
+    <string name="kontaktdaten">Kontaktdaten</string>
+    <string name="ort">Ort</string>
+    <string name="beigetreten_verlassen">Beigetreten/Verlassen</string>
+    <string name="einstellungen">Einstellungen</string>
+    <string name="raum_erstellen">Raum erstellen</string>
+
 
 </resources>

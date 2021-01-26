@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:id="@+id/menu_partic_group_data">
         <item android:id="@+id/menu_partic_share"
-            android:title="@string/participant_menu_share"
+            android:title="@string/teilen"
             android:icon="@android:drawable/ic_menu_share"
             app:showAsAction="never"
             />
         <item android:id="@+id/menu_partic_qr"
-            android:title="@string/participant_menu_qr"
+            android:title="@string/qr_code"
             android:icon="@android:drawable/ic_menu_share"
             app:showAsAction="never"
             />
         <item android:id="@+id/menu_partic_uri"
-            android:title="@string/participant_menu_uri"
+            android:title="@string/room_tag"
             android:icon="@android:drawable/ic_menu_share"
             app:showAsAction="never"
             />

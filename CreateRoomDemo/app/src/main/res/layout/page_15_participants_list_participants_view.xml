@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Namen der Teilnehmer"
+            android:text="@string/name"
             android:textSize="10sp" />
     </LinearLayout>
     <ListView

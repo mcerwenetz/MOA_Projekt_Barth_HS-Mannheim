@@ -4,6 +4,6 @@
     <item
         android:id="@+id/export_participant_list"
         android:icon="@android:drawable/ic_menu_share"
-        android:title="Export List"
+        android:title="@string/teilen"
         app:showAsAction="always" />
 </menu>

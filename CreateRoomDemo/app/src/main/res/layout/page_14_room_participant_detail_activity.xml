@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Raum:"
+                android:text="@string/raum"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Datum:"
+                android:text="@string/datum"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -87,7 +87,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Status:"
+                android:text="@string/status"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -128,7 +128,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Gastgeber:"
+                android:text="@string/host"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -153,7 +153,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Kontaktdaten:"
+                android:text="@string/kontaktdaten"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -193,7 +193,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
                 android:gravity="center"
-                android:text="Location:"
+                android:text="@string/ort"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

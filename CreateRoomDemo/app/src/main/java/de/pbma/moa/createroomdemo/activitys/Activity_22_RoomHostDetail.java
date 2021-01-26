@@ -298,7 +298,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
         ivQr.setImageDrawable(draw);
-        tvQrUri.setText("RoomTag: " + item.getRoomTag());
+        tvQrUri.setText(item.getRoomTag());
 
         AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
         alertDialogQR.show();
@@ -309,7 +309,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         View view = uriDialogInflater.inflate(R.layout.pop_up_22_uri, null);
 
         TextView tvUri = view.findViewById(R.id.tv_show_uri);
-        tvUri.setText("RoomTag: " + item.getRoomTag());
+        tvUri.setText(item.getRoomTag());
 
         AlertDialog alertDialogUri = new AlertDialog.Builder(this).setView(view).create();
         alertDialogUri.show();

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fehlerhafte_settings">Eigenangaben sind nicht vollständig</string>
+    <string name="fehlerhafter_titel">Titel fehlt</string>
+    <string name="fehlerhafter_ort">Ort fehlt</string>
+    <string name="fehlerhafte_adresse">Adresse fehlt</string>
+    <string name="fehlerhafte_startzeit">Startzeitpunkt liegt in der Vergangenheit</string>
+    <string name="fehlerhafte_endzeit">Endzeitpunkt liegt vor Startzeitpunkt</string>
+</resources>

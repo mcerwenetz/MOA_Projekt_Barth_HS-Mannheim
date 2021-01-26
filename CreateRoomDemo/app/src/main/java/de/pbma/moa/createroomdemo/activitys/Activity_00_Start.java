@@ -135,7 +135,7 @@ public class Activity_00_Start extends AppCompatActivity {
         Log.v(TAG, "Check mySelfe()");
         MySelf me = new MySelf(Activity_00_Start.this);
         if (!me.isValide()) {
-            Toast.makeText(this, "Eigenangaben sind nicht vollständig", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_settings, Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Activity_00_Start.this, PreferenceActivity.class);
             startActivity(intent);
             Log.v(TAG, "Check mySelfe(): false");

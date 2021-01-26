@@ -175,17 +175,17 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         Log.v(TAG, "setBtnCreateClicked");
         if (etTitel.getText().toString().equals("")) {
             Log.v(TAG, "Titel empty");
-            Toast.makeText(this, "Titel fehlt", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafter_titel, Toast.LENGTH_LONG).show();
             return;
         }
         if (etOrt.getText().toString().equals("")) {
             Log.v(TAG, "Ort empty");
-            Toast.makeText(this, "Ort fehlt", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafter_ort, Toast.LENGTH_LONG).show();
             return;
         }
         if (etAdresse.getText().toString().equals("")) {
             Log.v(TAG, "Address empty");
-            Toast.makeText(this, "Adresse fehlt", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_adresse, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -198,18 +198,18 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
         if (now > start) {
             Log.v(TAG, "start time is in the past");
-            Toast.makeText(this, "Startzeitpunkt liegt in der Vergangenheit", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_startzeit, Toast.LENGTH_LONG).show();
             return;
         }
         if (start >= end) {
             Log.v(TAG, "endtime is earlier then starttime");
-            Toast.makeText(this, "Endzeitpunkt liegt vor Startzeitpunkt", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
             return;
         }
 
         MySelf me = new MySelf(Activity_21_CreateNewRoom.this);
         if (!me.isValide()) {
-            Toast.makeText(this, "Gastgeberdaten sind nicht vollständig", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_settings, Toast.LENGTH_LONG).show();
             Log.v(TAG, "prefs not valide");
             Intent intent = new Intent(Activity_21_CreateNewRoom.this, PreferenceActivity.class);
             startActivity(intent);

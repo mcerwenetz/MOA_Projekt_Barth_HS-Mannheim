@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Name"
+            android:text="@string/name"
             android:textSize="10sp" />
 
         <TextView
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Beigetreten/Verlassen"
+            android:text="@string/beigetreten_verlassen"
             android:textSize="10sp" />
 
     </LinearLayout>
