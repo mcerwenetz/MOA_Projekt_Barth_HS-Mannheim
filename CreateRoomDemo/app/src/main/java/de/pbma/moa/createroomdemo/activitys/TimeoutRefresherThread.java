@@ -28,6 +28,9 @@ public class TimeoutRefresherThread {
                 if (this.startTime.get() == 0)
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                             TimeoutRefresherThread.this.tvtimeout.setText(""));
+                else if(this.endTime.get()<= System.currentTimeMillis())
+                    TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                            TimeoutRefresherThread.this.tvtimeout.setText(""));
                 else if (startTime.get() > System.currentTimeMillis())
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                             TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToOpen(startTime.get())));
