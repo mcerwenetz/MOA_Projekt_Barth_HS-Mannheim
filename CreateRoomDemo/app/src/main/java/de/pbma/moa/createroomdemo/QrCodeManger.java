@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.view.View;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -14,7 +13,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class QrCodeManger {
 
     final static String TAG = QrCodeManger.class.getCanonicalName();
-    private Context context;
+    private final Context context;
 
     public QrCodeManger(Context context) {
         this.context = context;
@@ -23,7 +22,7 @@ public class QrCodeManger {
     public void callScanner() {
         Log.v(TAG, "callScanner()");
         try {
-            IntentIntegrator scanIntegrator = new IntentIntegrator((Activity)context);
+            IntentIntegrator scanIntegrator = new IntentIntegrator((Activity) context);
             scanIntegrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
             scanIntegrator.setPrompt("");
 //            scanIntegrator.setTorchEnabled(true); //Flashlight
@@ -52,7 +51,7 @@ public class QrCodeManger {
 //        }
 //    }
 
-    public Bitmap createQrCode(String message,int width,int hight) throws WriterException {
+    public Bitmap createQrCode(String message, int width, int hight) throws WriterException {
         Log.v(TAG, "createQrCode()");
         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
         return barcodeEncoder.encodeBitmap(message, BarcodeFormat.QR_CODE, width, hight);

@@ -164,7 +164,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             tvStartTime.setText("Von: " + df.format(item.startTime));
             tvEndTime.setText("Bis: " + df.format(item.endTime));
             tvLocation.setText(item.place + "\n" + item.address);
-            //Todo vielleicht fehlt noch etwas
         }
     }
 

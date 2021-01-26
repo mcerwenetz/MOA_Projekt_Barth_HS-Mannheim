@@ -50,9 +50,8 @@ public class AdapterJsonMqtt {
     //Funktion holt sich die Inhalte eines Teilnehmers aus den Myself Angaben
     private static JSONObject getJSONMySelf(MySelf teilnehmer) {
         JSONObject ret = new JSONObject();
-        String name = teilnehmer.getFirstName() + " " + teilnehmer.getName();
         try {
-            ret.put(JSONItemTypes.NAME.label, teilnehmer.getFirstName()+" "+teilnehmer.getName());
+            ret.put(JSONItemTypes.NAME.label, teilnehmer.getFirstName() + " " + teilnehmer.getName());
             ret.put(JSONItemTypes.EXTRA.label, teilnehmer.getExtra());
             ret.put(JSONItemTypes.EMAIL.label, teilnehmer.getEmail());
             ret.put(JSONItemTypes.PHONE.label, teilnehmer.getPhone());
@@ -143,8 +142,8 @@ public class AdapterJsonMqtt {
             long startTime = (long) jsonObject.get(JSONItemTypes.ROOMSTARTTIME.label);
             long endTime = (long) jsonObject.get(JSONItemTypes.ROOMENDTIME.label);
 
-            roomItem = roomItem.createRoom(roomName,  host, eMail, phone, place, address, extra, startTime, endTime);
-            roomItem.fremdId = new Long (jsonObject.getLong(JSONItemTypes.ID.label));
+            roomItem = RoomItem.createRoom(roomName, host, eMail, phone, place, address, extra, startTime, endTime);
+            roomItem.fremdId = jsonObject.getLong(JSONItemTypes.ID.label);
             roomItem.status = status;
         } catch (JSONException e) {
             e.printStackTrace();
