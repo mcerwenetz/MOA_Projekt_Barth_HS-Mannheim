@@ -39,35 +39,34 @@ public class MQTTService extends Service {
     private MqttMessaging mqttMessaging;
     private final ArrayList<String> topicList = new ArrayList<String>();
 
-    final private CopyOnWriteArrayList<MyListener> listeners = new CopyOnWriteArrayList<>();
 
     final private MqttMessaging.FailureListener failureListener = new MqttMessaging.FailureListener() {
         @Override
         public void onConnectionError(Throwable throwable) {
-            log("ConnectionError: " + throwable.getMessage());
+            Log.e(TAG,"ConnectionError: " + throwable.getMessage());
         }
 
         @Override
         public void onMessageError(Throwable throwable, String msg) {
-            log("MessageError: " + throwable.getMessage());
+            Log.e(TAG,"MessageError: " + throwable.getMessage());
         }
 
         @Override
         public void onSubscriptionError(Throwable throwable, String topic) {
-            log("SubscriptionError:" + throwable.getMessage());
+            Log.e(TAG,"SubscriptionError:" + throwable.getMessage());
         }
     };
 
     final private MqttMessaging.ConnectionListener connectionListener = new MqttMessaging.ConnectionListener() {
         @Override
         public void onConnect() {
-            log("connected");
+            Log.v(TAG,"connected");
 
         }
 
         @Override
         public void onDisconnect() {
-            log("disconnected");
+            Log.v(TAG,"disconnected");
         }
     };
 
@@ -102,13 +101,13 @@ public class MQTTService extends Service {
         switch (action) {
             case ACTION_START:
                 Log.v(TAG, "onStartCommand: starting MQTT");
-                log("starting");
+
                 connect();
                 // whatever else needs to be done on start may be done  here
                 return START_STICKY;
             case ACTION_STOP:
                 Log.v(TAG, "onStartCommand: stopping MQTT");
-                log("stopping");
+
                 disconnect();
                 // whatever else needs to be done on stop may be done  here
                 return START_NOT_STICKY;
@@ -119,18 +118,7 @@ public class MQTTService extends Service {
     }
 
 
-    private void log(String msg) {
-        Log.v(TAG, "remoteLog: " + msg);
-        for (MyListener listener : listeners) {
-            listener.log(msg);
-        }
-    }
 
-    private void doOnRecieve(String topic, String msg) {
-        for (MyListener listener : listeners) {
-            listener.onRecieve(topic, msg);
-        }
-    }
 
     private String getRoomTagFromTopic(String topic) {
         String[] ele = topic.split("/");
@@ -175,7 +163,8 @@ public class MQTTService extends Service {
 //             Empfangen von Raum infos
             //new Thread(() -> {
                 if (msg.has(AdapterJsonMqtt.RAUM)) {
-                    RoomItem roomItem = null;
+                    Log.v(TAG,"Raum");
+                    RoomItem roomItem;
                     try {
                         roomItem = AdapterJsonMqtt.createRoomItem(msg.getJSONObject(AdapterJsonMqtt.RAUM));
                     } catch (JSONException e) {
@@ -187,7 +176,8 @@ public class MQTTService extends Service {
                 }
                 //empfangen eines Teilnehmers welcher den raum betritt
                 if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
-                    ParticipantItem item = null;
+                    Log.v(TAG,"Entertime");
+                    ParticipantItem item;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
                         item.enterTime = msg.getLong(AdapterJsonMqtt.ENTERTIME);
@@ -204,7 +194,8 @@ public class MQTTService extends Service {
                 }
                 //empfangen eines Teilnehmers welcher den raum verlässt
                 if (msg.has(AdapterJsonMqtt.EXITTIME)) {
-                    ParticipantItem item = null;
+                    Log.v(TAG,"Exittime");
+                    ParticipantItem item;
                     try {
                         item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
                         item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
@@ -218,6 +209,7 @@ public class MQTTService extends Service {
                 }
                 //empfangen einer liste mit allen teilnehmern aus einem raum
                 if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
+                    Log.v(TAG,"Teilnehmerliste");
                     ArrayList<ParticipantItem> list = null;
                     try {
                         list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
@@ -232,8 +224,6 @@ public class MQTTService extends Service {
                     }
                 }
           //  }).start();
-
-            doOnRecieve(topic, stringMsg);
         }
     };
 
@@ -260,13 +250,13 @@ public class MQTTService extends Service {
     public boolean sendEnterRoom(MySelf me, String uri) {
         Log.v(TAG, "sendEnterRoom()");
         String msg = AdapterJsonMqtt.getAnmeldungJSON(me, System.currentTimeMillis()).toString();
+        addTopic(getTopic(uri, true));
         try {
             mqttMessaging.send(getTopic(uri, false), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
             return false;
         }
-        addTopic(getTopic(uri, true));
         return true;
     }
 
