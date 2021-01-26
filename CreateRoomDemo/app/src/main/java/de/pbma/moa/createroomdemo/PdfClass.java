@@ -127,10 +127,8 @@ public class PdfClass {
         for (ParticipantItem ele : list) {
             canvas.drawText(ele.name, margin, currentY, paint);
             canvas.drawText(ele.extra, margin, (currentY + zeilenAbstand), paint);
-
             canvas.drawText(ele.eMail, x_kontaktDaten, currentY, paint);
             canvas.drawText(ele.phone, x_kontaktDaten, (currentY + zeilenAbstand), paint);
-
             canvas.drawText(df.format(ele.enterTime), x_enterTime, currentY, paint);
             if(ele.exitTime == 0)
                 canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
