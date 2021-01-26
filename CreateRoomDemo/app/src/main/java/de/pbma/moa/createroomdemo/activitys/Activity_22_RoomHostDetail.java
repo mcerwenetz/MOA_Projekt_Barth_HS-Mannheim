@@ -160,7 +160,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             } else {
                 tvstatus.setText("geschlossen");
             }
-            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm",Locale.GERMAN);
+            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
             tvStartTime.setText("Von: " + df.format(item.startTime));
             tvEndTime.setText("Bis: " + df.format(item.endTime));
             tvLocation.setText(item.place + "\n" + item.address);
@@ -200,6 +200,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
                 DateTime now = new DateTime();
                 DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
                         now.dayOfMonth().get(), i, i1, 0);
+                if (timeout.getMillis() <= item.startTime) {
+                    Toast.makeText(Activity_22_RoomHostDetail.this, R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
+                    return;
+                }
                 item.endTime = timeout.getMillis();
                 repo.updateRoomItem(item);
                 if (mqttService == null)
@@ -235,19 +239,19 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem menuitem) {
         int menuitemId = menuitem.getItemId();
-        if (menuitemId == R.id.menu_partic_share){
+        if (menuitemId == R.id.menu_partic_share) {
             shareRoom(this.item);
             return true;
-        }else if(menuitemId == R.id.menu_partic_qr) {
+        } else if (menuitemId == R.id.menu_partic_qr) {
             Display display = getWindowManager().getDefaultDisplay();
             int breite = display.getWidth();
             Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(), (breite / 2), (breite / 2)));
             callAlertDialog_QR(draw);
             return true;
-        }else if(menuitemId == R.id.menu_partic_uri) {
+        } else if (menuitemId == R.id.menu_partic_uri) {
             callAlertDialog_URI();
             return true;
-        }else{
+        } else {
             return super.onOptionsItemSelected(menuitem);
         }
     }
@@ -343,7 +347,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            for(RoomItem room : toSend){
+            for (RoomItem room : toSend) {
                 boolean status = room.status == RoomItem.ROOMISCLOSE;
                 mqttService.sendRoom(room, status);
             }
