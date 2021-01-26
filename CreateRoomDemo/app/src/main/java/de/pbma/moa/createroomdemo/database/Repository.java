@@ -13,8 +13,6 @@ public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
 
     private final ParticipantDao participantDao;
-    private LiveData<List<RoomItem>> roomList;
-    private final Context context;
 
     public int getCountOfExistingParticipantsInRoomNow(long roomId) {
         return participantDao.getCountOfExistingParticipantsInRoom(roomId);
@@ -22,9 +20,7 @@ public class Repository {
 
 
     public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
-        new Thread(() -> {
-            participantDao.setParticipantExitTime(room.id, currentTimeMillis);
-        }).start();
+        new Thread(() -> participantDao.setParticipantExitTime(room.id, currentTimeMillis)).start();
     }
 
     public long addParticipantEntryNow(ParticipantItem item) {
@@ -32,16 +28,14 @@ public class Repository {
     }
 
 
-    public static interface AfterInsert {
-        public void inserted(RoomItem item);
+    public interface AfterInsert {
+        void inserted(RoomItem item);
     }
 
     public Repository(Context context) {
-        this.context = context;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
         roomDao = appDatabase.roomDao();
         participantDao = appDatabase.participantDao();
-        roomList = roomDao.getAll();
     }
 
 
@@ -68,20 +62,14 @@ public class Repository {
         }).start();
     }
 
-    public long addRoomEntryNow(RoomItem roomItem) {
-        return roomDao.insert(roomItem);
-    }
+
 
     public void updateRoomItem(RoomItem item) {
-        new Thread(() -> {
-            roomDao.update(item);
-        }).start();
+        new Thread(() -> roomDao.update(item)).start();
     }
 
     public void updateParticipantItem(ParticipantItem item) {
-        new Thread(() -> {
-            participantDao.update(item);
-        }).start();
+        new Thread(() -> participantDao.update(item)).start();
     }
 
     public long getIdOfRoomByRoomTagNow(String roomTag) {
@@ -102,9 +90,6 @@ public class Repository {
         return roomDao.getItemByIdNow(searchid);
     }
 
-    public LiveData<List<RoomItem>> getAllRooms() {
-        return roomList;
-    }
 
     //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
     //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
@@ -135,14 +120,8 @@ public class Repository {
         return participantDao.getParticipantsOfRoomNow(roomId);
     }
 
-    public LiveData<List<ParticipantItem>> getAllParticipants() {
-        return participantDao.getAll();
-    }
-
     public void addParticipantEntry(ParticipantItem item) {
-        new Thread(() -> {
-            participantDao.insert(item);
-        }).start();
+        new Thread(() -> participantDao.insert(item)).start();
     }
 
 

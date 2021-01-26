@@ -12,7 +12,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
 import de.pbma.moa.createroomdemo.AdapterJsonMqtt;
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
@@ -32,12 +33,12 @@ public class MQTTService extends Service {
     //    final public static String PROTOCOL_TCP = "tcp";
     final public static String URL = "pma.inftech.hs-mannheim.de";
     final public static int PORT = 8883;
-    final public static String CONNECTION_URL = String.format("%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
+    final public static String CONNECTION_URL = String.format(Locale.GERMAN,"%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
     final public static String USER = "20moagm";
     final public static String PASSWORT = "1a748f9e";
 
     private MqttMessaging mqttMessaging;
-    private final ArrayList<String> topicList = new ArrayList<String>();
+    private final ArrayList<String> topicList = new ArrayList<>();
 
 
     final private MqttMessaging.FailureListener failureListener = new MqttMessaging.FailureListener() {
@@ -146,83 +147,80 @@ public class MQTTService extends Service {
 
 
     //Send and Receive
-    final private MqttMessaging.MessageListener messageListener = new MqttMessaging.MessageListener() {
-        @Override
-        public void onMessage(String topic, String stringMsg) {
-            Repository repository = new Repository(MQTTService.this);
-            Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
-            JSONObject msg;
+    final private MqttMessaging.MessageListener messageListener = (topic, stringMsg) -> {
+        Repository repository = new Repository(MQTTService.this);
+        Log.v(TAG, "  mqttService receives: " + stringMsg + " @ " + topic);
+        JSONObject msg;
 
-            try {
-                msg = new JSONObject(stringMsg);
-            } catch (JSONException e) {
-                Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
-                return;
-            }
+        try {
+            msg = new JSONObject(stringMsg);
+        } catch (JSONException e) {
+            Log.e(TAG, "mqtt receiver, JSONException while receiving" + e.getMessage());
+            return;
+        }
 
 //             Empfangen von Raum infos
-                if (msg.has(AdapterJsonMqtt.RAUM)) {
-                    Log.v(TAG,"Raum");
-                    RoomItem roomItem;
-                    try {
-                        roomItem = AdapterJsonMqtt.createRoomItem(msg.getJSONObject(AdapterJsonMqtt.RAUM));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    roomItem.id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    repository.updateRoomItem(roomItem);
+            if (msg.has(AdapterJsonMqtt.RAUM)) {
+                Log.v(TAG,"Raum");
+                RoomItem roomItem;
+                try {
+                    roomItem = AdapterJsonMqtt.createRoomItem(msg.getJSONObject(AdapterJsonMqtt.RAUM));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return;
                 }
-                //empfangen eines Teilnehmers welcher den raum betritt
-                if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
-                    Log.v(TAG,"Entertime");
-                    ParticipantItem item;
-                    try {
-                        item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
-                        item.enterTime = msg.getLong(AdapterJsonMqtt.ENTERTIME);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+                roomItem.id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
+                repository.updateRoomItem(roomItem);
+            }
+            //empfangen eines Teilnehmers welcher den raum betritt
+            if (msg.has(AdapterJsonMqtt.ENTERTIME)) {
+                Log.v(TAG,"Entertime");
+                ParticipantItem item;
+                try {
+                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                    item.enterTime = msg.getLong(AdapterJsonMqtt.ENTERTIME);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
+                repository.addParticipantEntryNow(item);
+                //send infos to participants
+                RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
+                sendRoom(roomItem, false);
+                sendParticipants(repository.getParticipantsOfRoomNow(item.roomId), roomItem);
+            }
+            //empfangen eines Teilnehmers welcher den raum verlässt
+            if (msg.has(AdapterJsonMqtt.EXITTIME)) {
+                Log.v(TAG,"Exittime");
+                ParticipantItem item;
+                try {
+                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
                     item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    repository.addParticipantEntryNow(item);
-                    //send infos to participants
-                    RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
-                    sendRoom(roomItem, false);
-                    sendParticipants(repository.getParticipantsOfRoomNow(item.roomId), roomItem);
+                    item = repository.getPaticipantItemNow(item.roomId, item.eMail);
+                    item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return;
                 }
-                //empfangen eines Teilnehmers welcher den raum verlässt
-                if (msg.has(AdapterJsonMqtt.EXITTIME)) {
-                    Log.v(TAG,"Exittime");
-                    ParticipantItem item;
-                    try {
-                        item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
-                        item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                        item = repository.getPaticipantItemNow(item.roomId, item.eMail);
-                        item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    repository.updateParticipantItem(item);
+                repository.updateParticipantItem(item);
+            }
+            //empfangen einer liste mit allen teilnehmern aus einem raum
+            if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
+                Log.v(TAG,"Teilnehmerliste");
+                ArrayList<ParticipantItem> list = null;
+                try {
+                    list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                //empfangen einer liste mit allen teilnehmern aus einem raum
-                if (msg.has(AdapterJsonMqtt.TEILNEHMERLIST)) {
-                    Log.v(TAG,"Teilnehmerliste");
-                    ArrayList<ParticipantItem> list = null;
-                    try {
-                        list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    long id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    int count = repository.getCountOfExistingParticipantsInRoomNow(id);
-                    for (ParticipantItem item : list.subList(count, list.size())) {
-                        item.roomId = id;
-                        repository.addParticipantEntry(item);
-                    }
+                long id = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
+                int count = repository.getCountOfExistingParticipantsInRoomNow(id);
+                for (ParticipantItem item : Objects.requireNonNull(list).subList(count, list.size())) {
+                    item.roomId = id;
+                    repository.addParticipantEntry(item);
                 }
-        }
+            }
     };
 
     /**
@@ -243,9 +241,8 @@ public class MQTTService extends Service {
      *
      * @param me  meine eignen Daten instanz von MySelf
      * @param uri die erhaltene RaumUri
-     * @return boolean mit erfolgreich oder fehler
      */
-    public boolean sendEnterRoom(MySelf me, String uri) {
+    public void sendEnterRoom(MySelf me, String uri) {
         Log.v(TAG, "sendEnterRoom()");
         String msg = AdapterJsonMqtt.getAnmeldungJSON(me, System.currentTimeMillis()).toString();
         addTopic(getTopic(uri, true));
@@ -253,9 +250,7 @@ public class MQTTService extends Service {
             mqttMessaging.send(getTopic(uri, false), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     /**
@@ -264,19 +259,17 @@ public class MQTTService extends Service {
      *
      * @param me  meine eignen Daten instanz von MySelf
      * @param uri die erhaltene RaumUri
-     * @return boolean mit erfolgreich oder fehler
      */
-    public boolean sendExitFromRoom(MySelf me, String uri) { // called by activity after binding
+    public void sendExitFromRoom(MySelf me, String uri) { // called by activity after binding
         Log.v(TAG, "sendExitRoom()");
         String msg = AdapterJsonMqtt.getAbmeldungJSON(me, System.currentTimeMillis()).toString();
         try {
             mqttMessaging.send(getTopic(uri, false), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return false;
+            return;
         }
         removeTopic(getTopic(uri, true));
-        return true;
     }
 
     /**
@@ -284,20 +277,18 @@ public class MQTTService extends Service {
      * senden der Rauminfos an alle teilnehmer
      *
      * @param room eine Instanz von RaumInfo
-     * @return boolean mit erfolgreich oder fehler
      */
-    public boolean sendRoom(RoomItem room, boolean closeRoom) { // called by activity after binding
+    public void sendRoom(RoomItem room, boolean closeRoom) { // called by activity after binding
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getRauminfoJSON(room).toString();
         try {
             mqttMessaging.send(getTopic(room.getRoomTag(), true), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return false;
+            return;
         }
         if (closeRoom)
             removeTopic(getTopic(room.getRoomTag(), false));
-        return true;
     }
 
     /**
@@ -306,18 +297,15 @@ public class MQTTService extends Service {
      *
      * @param participantItems liste aller teilnehmer in einem raum
      * @param room             eine Instanz von RaumInfo
-     * @return boolean mit erfolgreich oder fehler
      */
-    public boolean sendParticipants(List<ParticipantItem> participantItems, RoomItem room) { // called by activity after binding
+    public void sendParticipants(List<ParticipantItem> participantItems, RoomItem room) { // called by activity after binding
         Log.v(TAG, "sendRoom()");
         String msg = AdapterJsonMqtt.getTeilnehmerListJSON(participantItems).toString();
         try {
             mqttMessaging.send(getTopic(room.getRoomTag(), true), msg);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
 
