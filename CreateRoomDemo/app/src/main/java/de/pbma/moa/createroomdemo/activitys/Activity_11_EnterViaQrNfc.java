@@ -25,8 +25,25 @@ import de.pbma.moa.createroomdemo.service.MQTTService;
 
 public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
-    private Button btnNfc, btnQr;
     private String toSend;
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            if (toSend != null)
+                enterRoom(toSend);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,8 +51,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
 
         setContentView(R.layout.page_11_qr_nfc);
-        btnNfc = findViewById(R.id.btn_11_nfc);
-        btnQr = findViewById(R.id.btn_11_qr);
+        Button btnNfc = findViewById(R.id.btn_11_nfc);
+        Button btnQr = findViewById(R.id.btn_11_qr);
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
@@ -101,10 +118,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         });
     }
 
-
-    private boolean mqttServiceBound;
-    private MQTTService mqttService;
-
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
         Intent intent = new Intent(this, MQTTService.class);
@@ -118,28 +131,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     private void unbindMQTTService() {
         Log.v(TAG, "unbindMQTTService");
         if (mqttServiceBound) {
-            if (mqttService != null) {
-                // deregister listeners, if there are any
-            }
             mqttServiceBound = false;
             unbindService(serviceConnection);
         }
     }
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.v(TAG, "onServiceConnected");
-            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            if (toSend != null)
-                enterRoom(toSend);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // unintentionally disconnected
-            Log.v(TAG, "onServiceDisconnected");
-            unbindMQTTService(); // cleanup
-        }
-    };
 }

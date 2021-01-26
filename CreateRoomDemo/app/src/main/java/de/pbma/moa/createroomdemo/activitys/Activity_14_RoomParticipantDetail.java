@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.R;
@@ -27,17 +28,35 @@ import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
 public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
-    final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();
     public final static String ID = "RoomID";
+    final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();
     long roomId;
-    private Button btnLeave, btnPartic;
+    private Button btnLeave;
     private TextView tvRoom, tvStatus, tvTimeout, tvHost, tvHosteMail, tvHostPhone, tvEndTime, tvStartTime, tvPlace, tvAddress;
     private RoomItem classRoomItem;
-    private Repository repo;
-    private LiveData<RoomItem> liveDataRoomItem;
     private Boolean toSend = false;
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic, startTimeAtomic;
+    //MQTT gedönz
+    private boolean mqttServiceBound;
+    private MQTTService mqttService;
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            if (toSend)
+                mqttService.sendExitFromRoom(new MySelf(Activity_14_RoomParticipantDetail.this), classRoomItem.getRoomTag());
+            toSend = false;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,8 +69,8 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         roomId = getIntent().getExtras().getLong(ID, -1);
 
         if (roomId != -1) {
-            repo = new Repository(this);
-            liveDataRoomItem = repo.getRoomByID(roomId);
+            Repository repo = new Repository(this);
+            LiveData<RoomItem> liveDataRoomItem = repo.getRoomByID(roomId);
             liveDataRoomItem.observe(this, new Observer<RoomItem>() {
                 @Override
                 public void onChanged(RoomItem roomItem) {
@@ -99,7 +118,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvRoom.setText(item.roomName);
-            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
+            DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
             if (item.startTime != 0 && item.endTime != 0) {
                 tvStartTime.setText("Von: " + df.format(item.startTime));
                 tvEndTime.setText("Bis: " + df.format(item.endTime));
@@ -123,6 +142,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     }
 
     private void bindUI() {
+        Button btnPartic;
         //Button und Textview zuweisen
         btnLeave = findViewById(R.id.btn_14_leave);
         btnPartic = findViewById(R.id.btn_14_particpantlist);
@@ -146,7 +166,6 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     }
 
-
     private void onClickBtnLeave(View view) {
         if (mqttService == null)
             toSend = true;
@@ -162,10 +181,6 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //MQTT gedönz
-    private boolean mqttServiceBound;
-    private MQTTService mqttService;
-
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
         Intent intent = new Intent(this, MQTTService.class);
@@ -179,29 +194,8 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     private void unbindMQTTService() {
         Log.v(TAG, "unbindMQTTService");
         if (mqttServiceBound) {
-            if (mqttService != null) {
-                // deregister listeners, if there are any
-            }
             mqttServiceBound = false;
             unbindService(serviceConnection);
         }
     }
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.v(TAG, "onServiceConnected");
-            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            if (toSend)
-                mqttService.sendExitFromRoom(new MySelf(Activity_14_RoomParticipantDetail.this), classRoomItem.getRoomTag());
-            toSend = false;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // unintentionally disconnected
-            Log.v(TAG, "onServiceDisconnected");
-            unbindMQTTService(); // cleanup
-        }
-    };
 }

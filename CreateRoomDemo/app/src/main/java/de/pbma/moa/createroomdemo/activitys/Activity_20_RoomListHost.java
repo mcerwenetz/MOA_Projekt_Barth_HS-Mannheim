@@ -27,8 +27,6 @@ import de.pbma.moa.createroomdemo.database.Repository;
 public class Activity_20_RoomListHost extends AppCompatActivity {
     final static String TAG = Activity_20_RoomListHost.class.getCanonicalName();
     private ArrayList<RoomItem> roomList;
-    private ListView lv;
-    private Repository roomRepo;
     private ListAdapter_20_HostRoom adapter;
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
@@ -56,10 +54,9 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
         roomList = new ArrayList<>();
         setContentView(R.layout.page_20_roomlist);
         adapter = new ListAdapter_20_HostRoom(this, roomList);
-        lv = findViewById(R.id.lv_20_room);
+        ListView lv = findViewById(R.id.lv_20_room);
         lv.setAdapter(adapter);
-        roomRepo = new Repository(this);
-        MySelf me = new MySelf(this);
+        Repository roomRepo = new Repository(this);
         roomRepo.getAllRoomsWithMeAsHost().observe(this, observer);
         lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
     }
@@ -74,12 +71,12 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.create_newRoom:
-                Log.v(TAG, "onOptionsItemSelected() create new Room");
-                Intent intent = new Intent(this, Activity_21_CreateNewRoom.class);
-                startActivity(intent);
-                return true;
+        int itemId = item.getItemId();
+        if(itemId == R.id.create_newRoom){
+            Log.v(TAG, "onOptionsItemSelected() create new Room");
+            Intent intent = new Intent(this, Activity_21_CreateNewRoom.class);
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
