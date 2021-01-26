@@ -23,20 +23,32 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 public class RoomLivecycleService extends Service {
 
     private static final String TAG = "HostRoomCloserService";
+    private final List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
+    private final List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
+    private final NetworkStoppedStateReceiver networkStoppedStateReceiver = new NetworkStoppedStateReceiver();
     private Repository repository;
     private AtomicBoolean keepRunning;
-    private Thread checkingThread;
     private List<RoomItem> futureRooms;
     private List<RoomItem> openrooms;
     private List<RoomItem> notClosedNotOwnRooms;
     private List<RoomItem> notClosedOwnRooms;
     private Boolean mqttServiceBound;
     private MQTTService mqttService;
-    private List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
-    private List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
-    private final NetworkStoppedStateReceiver networkStoppedStateReceiver = new NetworkStoppedStateReceiver();
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.v(TAG, "onServiceConnected");
+            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            postPendingRooms();
+        }
 
-
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // unintentionally disconnected
+            Log.v(TAG, "onServiceDisconnected");
+            unbindMQTTService(); // cleanup
+        }
+    };
     private Handler handler;
 
     private void bindMQTTService() {
@@ -59,22 +71,6 @@ public class RoomLivecycleService extends Service {
             unbindService(serviceConnection);
         }
     }
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.v(TAG, "onServiceConnected");
-            mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            postPendingRooms();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // unintentionally disconnected
-            Log.v(TAG, "onServiceDisconnected");
-            unbindMQTTService(); // cleanup
-        }
-    };
 
     @Nullable
     @Override
@@ -118,7 +114,14 @@ public class RoomLivecycleService extends Service {
 
 
     void startThread() {
-        checkingThread = new Thread(() -> {
+        // falls nachrichten nicht empfangen wurde wird der Raumstatus lokal aktualisiert
+        // check rooms periodisch
+        //raum öffnen
+        //raum schließen
+        //hinzufügen aller eigenen Raume auf welche gehört werden soll
+        //                    mqttService.addRoomToListen(room, false);
+        //hinzufügen aller fremd Raume auf welche gehört werden soll
+        Thread checkingThread = new Thread(() -> {
             // falls nachrichten nicht empfangen wurde wird der Raumstatus lokal aktualisiert
             long now = System.currentTimeMillis();
             openrooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
@@ -167,18 +170,13 @@ public class RoomLivecycleService extends Service {
                 //hinzufügen aller eigenen Raume auf welche gehört werden soll
                 notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
-                for (RoomItem room : notClosedOwnRooms) {
-                    toSubscribe.add(room);
-//                    mqttService.addRoomToListen(room, false);
-                }
+                //                    mqttService.addRoomToListen(room, false);
+                toSubscribe.addAll(notClosedOwnRooms);
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
                 notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
-                for (RoomItem room : notClosedNotOwnRooms) {
-                    toSubscribe.add(room);
-
-                }
+                toSubscribe.addAll(notClosedNotOwnRooms);
 
                 handler.post(() -> {
                     RoomLivecycleService.this.postPendingRooms();

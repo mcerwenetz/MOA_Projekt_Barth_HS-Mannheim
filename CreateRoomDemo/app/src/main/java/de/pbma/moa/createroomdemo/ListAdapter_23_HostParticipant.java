@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 
@@ -46,7 +47,7 @@ public class ListAdapter_23_HostParticipant extends ArrayAdapter<ParticipantItem
         view1.setText(item.name);
         view2.setText(item.extra);
 
-        DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
+        DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
         view3.setText(df.format(item.enterTime));
         if (item.exitTime < item.enterTime)
             view4.setText("");

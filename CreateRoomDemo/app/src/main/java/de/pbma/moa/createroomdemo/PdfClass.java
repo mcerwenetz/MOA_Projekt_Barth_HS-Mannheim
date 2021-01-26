@@ -1,6 +1,5 @@
 package de.pbma.moa.createroomdemo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,15 +16,16 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 
 public class PdfClass {
-    final static String TAG = PdfClass.class.getCanonicalName();
     public final static int A4_HEIGHT = 846;//11.75in * 72
     public final static int A4_WIDTH = 594; //8.25in * 72
-    private Context context;
+    final static String TAG = PdfClass.class.getCanonicalName();
+    private final Context context;
 
     public PdfClass(Context context) {
         this.context = context;
@@ -55,7 +55,7 @@ public class PdfClass {
         canvas.drawText("E-Mail", leftborder, 9 * y_spacing, paint);
         canvas.drawText("Telephon", leftborder, 10 * y_spacing, paint);
         canvas.drawText("NFC-RoomTag", leftborder, 11 * y_spacing, paint);
-        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
         paint.setColor(Color.GRAY);
         canvas.drawText(item.roomName, infosleftborder, 2 * y_spacing, paint);
         canvas.drawText(df.format(item.startTime), infosleftborder, 3 * y_spacing, paint);
@@ -92,7 +92,7 @@ public class PdfClass {
         PdfDocument.Page page = document.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
         Paint paint = new Paint();
-        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
 
         Log.v(TAG, "createPdfParticipantInfos() draw Text");
         paint.setColor(Color.BLACK);
@@ -143,7 +143,7 @@ public class PdfClass {
             canvas.drawText(ele.eMail, x_kontaktDaten, currentY, paint);
             canvas.drawText(ele.phone, x_kontaktDaten, (currentY + zeilenAbstand), paint);
             canvas.drawText(df.format(ele.enterTime), x_enterTime, currentY, paint);
-            if(ele.exitTime > 0 )
+            if (ele.exitTime > 0)
                 canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
             else
                 canvas.drawText("", x_exitTime, currentY, paint);
@@ -159,7 +159,7 @@ public class PdfClass {
             }
         }
         document.finishPage(page);
-        File file = savePDF(document, "Participants_Room"+item.id + ".pdf");
+        File file = savePDF(document, "Participants_Room" + item.id + ".pdf");
         document.close();
         return file;
     }
@@ -175,7 +175,7 @@ public class PdfClass {
             Log.v(TAG, "savePDF(" + filename + ") faild -> Environment.MEDIA_MOUNTED");
             return null;
         }
-        File file = new File(((Activity) context).getExternalFilesDir(null), filename);
+        File file = new File(context.getExternalFilesDir(null), filename);
         FileOutputStream fos;
         try {
             file.createNewFile();

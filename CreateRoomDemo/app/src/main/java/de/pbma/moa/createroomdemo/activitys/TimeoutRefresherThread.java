@@ -15,8 +15,8 @@ public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
-    private AtomicLong endTime, startTime;
-    private Thread refreshThread;
+    private final AtomicLong endTime, startTime;
+    private final Thread refreshThread;
 
     public TimeoutRefresherThread(Activity activity, TextView tv, AtomicLong endTime, AtomicLong startTime) {
         this.endTime = endTime;
@@ -28,7 +28,7 @@ public class TimeoutRefresherThread {
                 if (this.startTime.get() == 0)
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                             TimeoutRefresherThread.this.tvtimeout.setText(""));
-                else if(this.endTime.get()<= System.currentTimeMillis())
+                else if (this.endTime.get() <= System.currentTimeMillis())
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                             TimeoutRefresherThread.this.tvtimeout.setText(""));
                 else if (startTime.get() > System.currentTimeMillis())
