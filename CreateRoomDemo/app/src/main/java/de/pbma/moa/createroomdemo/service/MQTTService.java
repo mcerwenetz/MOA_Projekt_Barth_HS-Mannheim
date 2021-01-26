@@ -161,7 +161,6 @@ public class MQTTService extends Service {
             }
 
 //             Empfangen von Raum infos
-            //new Thread(() -> {
                 if (msg.has(AdapterJsonMqtt.RAUM)) {
                     Log.v(TAG,"Raum");
                     RoomItem roomItem;
@@ -223,7 +222,6 @@ public class MQTTService extends Service {
                         repository.addParticipantEntry(item);
                     }
                 }
-          //  }).start();
         }
     };
 
