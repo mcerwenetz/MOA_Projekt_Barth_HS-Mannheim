@@ -175,6 +175,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         item.endTime = now;
         item.status = 3; //3 == close
         repo.updateRoomItem(item);
+        repo.kickOutParticipants(item, System.currentTimeMillis());
         if (mqttService == null)
             toSend.add(item);
         else
