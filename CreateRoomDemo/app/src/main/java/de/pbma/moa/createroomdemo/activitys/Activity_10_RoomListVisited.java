@@ -15,16 +15,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.ListAdapter_20_HostRoom;
-import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.R;
-import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
+import de.pbma.moa.createroomdemo.database.RoomItem;
 
 public class Activity_10_RoomListVisited extends AppCompatActivity {
     final static String TAG = Activity_10_RoomListVisited.class.getCanonicalName();
+    private final AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Long roomid = (Long) view.getTag();
+            Intent intent = new Intent(Activity_10_RoomListVisited.this,
+                    Activity_14_RoomParticipantDetail.class);
+            intent.putExtra(Activity_14_RoomParticipantDetail.ID, roomid);
+            startActivity(intent);
+        }
+    };
     private ArrayList<RoomItem> roomList;
-    private ListView lv;
-    private Repository roomRepo;
     private ListAdapter_20_HostRoom adapter;
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
@@ -35,28 +42,16 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
         }
     };
 
-    private AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Long roomid = (Long) view.getTag();
-            Intent intent = new Intent(Activity_10_RoomListVisited.this,
-                    Activity_14_RoomParticipantDetail.class);
-            intent.putExtra(Activity_14_RoomParticipantDetail.ID, roomid);
-            startActivity(intent);
-        }
-    };
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreated RoomVisitedListActivity");
         setContentView(R.layout.page_10_visited_roomlist);
-
         roomList = new ArrayList<>();
         adapter = new ListAdapter_20_HostRoom(this, roomList);
-        lv = findViewById(R.id.lv_10_rooms);
+        ListView lv = findViewById(R.id.lv_10_rooms);
         lv.setAdapter(adapter);
-        roomRepo = new Repository(this);
-        MySelf me = new MySelf(this);
+        Repository roomRepo = new Repository(this);
         roomRepo.getAllRoomsWithoutMeAsHost().observe(this, observer);
         lv.setOnItemClickListener(oicl);
     }

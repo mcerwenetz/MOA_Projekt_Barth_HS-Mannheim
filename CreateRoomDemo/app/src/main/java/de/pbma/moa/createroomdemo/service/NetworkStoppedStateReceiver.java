@@ -9,6 +9,20 @@ import android.util.Log;
 
 import de.pbma.moa.createroomdemo.activitys.Activity_000_NetworkError;
 
+/**
+ * Dieser Broadcastreceiver started die NetworkError Activity, wenn die Internetconnection beendet wird<br>
+ * Der allgemeine Ablauf ist so:<br>
+ * <ol>
+ *     <li>Initialer check ob Internetconnection steht in der StartActivity.</li>
+ *     <li>Register StateStoppedReceiver im LiveCycleService<br>
+ *         Fällt das Internet aus dann stoppt dieser BroadcastReceiver hier den MQTT Service
+ *         und started die NetworkError Activity.
+ *     </li>
+ *     <li>Register StateStartReceiver in der NetworkError Activity.<br>
+ * </ol>
+ */
+
+
 public class NetworkStoppedStateReceiver extends BroadcastReceiver {
     private final String TAG = NetworkStoppedStateReceiver.class.getCanonicalName();
 

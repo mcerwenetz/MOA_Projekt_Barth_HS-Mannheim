@@ -11,19 +11,15 @@ import de.pbma.moa.createroomdemo.R;
 
 public class Activity_000_NetworkError extends AppCompatActivity {
     final static String TAG = Activity_000_NetworkError.class.getCanonicalName();
-    private TextView tv;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.v(TAG, "OnCreate");
+        Log.v(TAG, "displaying network error message");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_000_network_disconnected);
-        tv = findViewById(R.id.tv_000_error_msg);
+        TextView tv = findViewById(R.id.tv_000_error_msg);
         tv.setText("Bitte stellen Sie eine Internetverbindung her und starten Sie die App neu");
-
     }
-
 }
 
 
