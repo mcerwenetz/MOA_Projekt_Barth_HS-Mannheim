@@ -18,7 +18,6 @@ import androidx.lifecycle.Observer;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.pbma.moa.createroomdemo.R;
@@ -101,8 +100,13 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         if (item != null) {
             tvRoom.setText(item.roomName);
             DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm");
-            tvStartTime.setText("Von: " + df.format(item.startTime));
-            tvEndTime.setText("Bis: " + df.format(item.endTime));
+            if (item.startTime != 0 && item.endTime != 0) {
+                tvStartTime.setText("Von: " + df.format(item.startTime));
+                tvEndTime.setText("Bis: " + df.format(item.endTime));
+            } else {
+                tvStartTime.setText("");
+                tvEndTime.setText("");
+            }
             if (item.status == RoomItem.ROOMISOPEN) {
                 tvStatus.setText("schließt in");
             } else if (item.status == RoomItem.ROOMWILLOPEN) {
@@ -144,9 +148,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
 
     private void onClickBtnLeave(View view) {
-        if (mqttService==null)
-            toSend=true;
-        else{
+        if (mqttService == null)
+            toSend = true;
+        else {
             mqttService.sendExitFromRoom(new MySelf(this), classRoomItem.getRoomTag());
         }
         finish();
@@ -188,7 +192,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
-            if(toSend)
+            if (toSend)
                 mqttService.sendExitFromRoom(new MySelf(Activity_14_RoomParticipantDetail.this), classRoomItem.getRoomTag());
             toSend = false;
         }
