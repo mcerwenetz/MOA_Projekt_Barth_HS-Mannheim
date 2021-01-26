@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
 import android.os.Environment;
 import android.util.Log;
@@ -124,13 +125,25 @@ public class PdfClass {
         final float x_enterTime = A4_WIDTH - margin - 2 * widthTime;
         final float x_kontaktDaten = (A4_WIDTH - 2 * margin - 2 * widthTime) / 2 + margin;
 
+        paint.setColor(Color.BLACK);
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        canvas.drawText("Name", margin, currentY, paint);
+        canvas.drawText("Kontaktdaten", x_kontaktDaten, currentY, paint);
+        canvas.drawText("Entertime", x_enterTime, currentY, paint);
+        canvas.drawText("Exittime", x_exitTime, currentY, paint);
+        canvas.drawLine(margin, (float) (currentY + 0.25 * zeilenAbstand), A4_WIDTH - margin, (float) (currentY + 0.25 * zeilenAbstand), paint);
+        currentY += 2 * zeilenAbstand;
+
+        paint.setColor(Color.GRAY);
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+
         for (ParticipantItem ele : list) {
             canvas.drawText(ele.name, margin, currentY, paint);
             canvas.drawText(ele.extra, margin, (currentY + zeilenAbstand), paint);
             canvas.drawText(ele.eMail, x_kontaktDaten, currentY, paint);
             canvas.drawText(ele.phone, x_kontaktDaten, (currentY + zeilenAbstand), paint);
             canvas.drawText(df.format(ele.enterTime), x_enterTime, currentY, paint);
-            if(ele.exitTime == 0)
+            if(ele.exitTime > 0 )
                 canvas.drawText(df.format(ele.exitTime), x_exitTime, currentY, paint);
             else
                 canvas.drawText("", x_exitTime, currentY, paint);
