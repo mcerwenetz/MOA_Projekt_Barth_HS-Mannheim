@@ -15,17 +15,20 @@ public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
     private final AtomicBoolean keepRefreshing = new AtomicBoolean();
-    private AtomicLong endTime,statTime;
+    private AtomicLong endTime, startTime;
     private Thread refreshThread;
 
     public TimeoutRefresherThread(Activity activity, TextView tv, AtomicLong endTime, AtomicLong startTime) {
         this.endTime = endTime;
-        this.statTime = startTime;
+        this.startTime = startTime;
         this.tvtimeout = tv;
         this.activity = activity;
         refreshThread = new Thread(() -> {
             while (keepRefreshing.get()) {
-                if (startTime.get() > System.currentTimeMillis())
+                if (this.startTime.get() == 0)
+                    TimeoutRefresherThread.this.activity.runOnUiThread(() ->
+                            TimeoutRefresherThread.this.tvtimeout.setText(""));
+                else if (startTime.get() > System.currentTimeMillis())
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
                             TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToOpen(startTime.get())));
                 else
@@ -75,7 +78,7 @@ public class TimeoutRefresherThread {
     private String formatTimeoutToOpen(long startTime) {
         DateTime now = new DateTime();
         DateTime startTimeDateTime = new DateTime(startTime);
-        Period period = new Period(now,startTimeDateTime);
+        Period period = new Period(now, startTimeDateTime);
         PeriodFormatter formatter = new PeriodFormatterBuilder()
                 .appendDays().appendSuffix("d ")
                 .appendHours().appendSuffix("h ")
