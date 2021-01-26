@@ -27,6 +27,10 @@ public class Repository {
         }).start();
     }
 
+    public long addParticipantEntryNow(ParticipantItem item) {
+        return participantDao.insert(item);
+    }
+
 
     public static interface AfterInsert {
         public void inserted(RoomItem item);

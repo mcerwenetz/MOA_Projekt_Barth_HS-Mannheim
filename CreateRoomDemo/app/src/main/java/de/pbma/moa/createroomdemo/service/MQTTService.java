@@ -173,7 +173,7 @@ public class MQTTService extends Service {
             }
 
 //             Empfangen von Raum infos
-            new Thread(() -> {
+            //new Thread(() -> {
                 if (msg.has(AdapterJsonMqtt.RAUM)) {
                     RoomItem roomItem = null;
                     try {
@@ -196,7 +196,7 @@ public class MQTTService extends Service {
                         return;
                     }
                     item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
-                    repository.addParticipantEntry(item);
+                    repository.addParticipantEntryNow(item);
                     //send infos to participants
                     RoomItem roomItem = repository.getRoomItemByIdNow(item.roomId);
                     sendRoom(roomItem, false);
@@ -231,7 +231,7 @@ public class MQTTService extends Service {
                         repository.addParticipantEntry(item);
                     }
                 }
-            }).start();
+          //  }).start();
 
             doOnRecieve(topic, stringMsg);
         }
