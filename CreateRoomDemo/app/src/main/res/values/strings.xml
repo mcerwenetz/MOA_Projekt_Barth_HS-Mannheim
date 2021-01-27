@@ -38,6 +38,7 @@
     <string name="beigetreten_verlassen">Beigetreten/Verlassen</string>
     <string name="einstellungen">Einstellungen</string>
     <string name="raum_erstellen">Raum erstellen</string>
+    <string name="back">zurück</string>
 
 
 </resources>
