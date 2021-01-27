@@ -45,6 +45,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
+        this.setTitle("Erstellung eines Events");
         repo = new Repository(this);
 
         calendar = Calendar.getInstance();

@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -50,10 +51,12 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
+        //Aendern des Activity Titels
+        this.setTitle("Treten Sie dem Event per Qr oder NFC bei");
 
         setContentView(R.layout.page_11_qr_nfc);
-        ImageButton btnNfc = findViewById(R.id.btn_11_nfc);
-        ImageButton btnQr = findViewById(R.id.btn_11_qr);
+        Button btnNfc = findViewById(R.id.btn_11_nfc);
+        Button btnQr = findViewById(R.id.btn_11_qr);
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);

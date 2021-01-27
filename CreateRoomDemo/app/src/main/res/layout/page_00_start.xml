@@ -4,16 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <Button
         android:id="@+id/btn_00_start_host"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+        android:gravity="center_horizontal"
+        android:drawableRight="@drawable/ic_baseline_home_work_24"
         android:text="@string/host" />
+
 
     <Button
         android:id="@+id/btn_00_start_participant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
+
+        android:drawableRight="@drawable/ic_baseline_group_add_24"
+        android:gravity="center_horizontal"
         android:text="@string/participant" />
+
 
 </LinearLayout>

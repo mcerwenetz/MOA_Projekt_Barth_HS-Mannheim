@@ -3,34 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <LinearLayout
+
+    <Button
+        android:id="@+id/btn_11_qr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_weight="0.5"
+        android:backgroundTint="@color/white"
+        android:drawableBottom="@drawable/ic_baseline_qr_code_2_24"
+        android:gravity="center"
+        android:text="@string/qr_code"
+        android:textStyle="bold"
+        android:textSize="24sp" />
 
-        <ImageButton
-            android:id="@+id/btn_11_qr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_qr_code_scanner_24"
-            android:layout_weight="0.5"
-            android:background="@color/white"
-            />
-    </LinearLayout>
-    <LinearLayout
+    <Button
+        android:id="@+id/btn_11_nfc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_weight="0.5"
+        android:backgroundTint="@color/white"
+        android:drawableBottom="@drawable/ic_baseline_nfc_24"
+        android:gravity="center"
+        android:text="@string/nfc"
+        android:textStyle="bold"
+        android:textSize="24sp" />
 
-        <ImageButton
-            android:id="@+id/btn_11_nfc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_nfc_24"
-            android:layout_weight="0.5"
-            android:background="@color/white"
-            />
-    </LinearLayout>
 </LinearLayout>

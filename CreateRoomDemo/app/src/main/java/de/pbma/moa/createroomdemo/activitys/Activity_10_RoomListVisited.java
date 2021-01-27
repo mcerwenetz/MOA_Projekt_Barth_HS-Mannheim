@@ -46,6 +46,7 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreated RoomVisitedListActivity");
+        this.setTitle("Übersicht der beigetretenen Events");
         setContentView(R.layout.page_10_visited_roomlist);
         roomList = new ArrayList<>();
         adapter = new ListAdapter_20_HostRoom(this, roomList);

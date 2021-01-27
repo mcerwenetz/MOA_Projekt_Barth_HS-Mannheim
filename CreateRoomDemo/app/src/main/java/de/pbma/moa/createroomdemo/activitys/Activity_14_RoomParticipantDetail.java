@@ -63,6 +63,7 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         Log.v(TAG, "OnCreated RoomParticipantDetailActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_14_room_participant_detail_activity);
+        this.setTitle("Event Details");
         bindUI();
 
         //Holt die Daten aus der Bank

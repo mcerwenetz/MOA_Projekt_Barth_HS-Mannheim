@@ -43,6 +43,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
+        this.setTitle("Übersicht der beigetretenen  Teilnehmer");
         setContentView(R.layout.page_23_participants_list_host_view);
 
         participantItemArrayList = new ArrayList<>();

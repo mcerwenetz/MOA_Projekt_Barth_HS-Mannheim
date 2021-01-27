@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,7 @@ public class Activity_00_Start extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "OnCreate");
         super.onCreate(savedInstanceState);
+        this.setTitle("Willkommen bei der Kontaktverwaltung");
         setContentView(R.layout.page_00_start);
 
         btnHost = findViewById(R.id.btn_00_start_host);
@@ -39,6 +41,7 @@ public class Activity_00_Start extends AppCompatActivity {
 
         btnHost.setOnClickListener(Activity_00_Start.this::iAmHost);
         btnParticipant.setOnClickListener(Activity_00_Start.this::iAmParticipant);
+
 
 //        TestKlassen um beim debuggen funktionalitäten testen zu können
 //        TestClass test = new TestClass(this);

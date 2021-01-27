@@ -16,6 +16,7 @@ public class Activity_000_NetworkError extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "displaying network error message");
         super.onCreate(savedInstanceState);
+        this.setTitle("Störung");
         setContentView(R.layout.page_000_network_disconnected);
         TextView tv = findViewById(R.id.tv_000_error_msg);
         tv.setText("Bitte stellen Sie eine Internetverbindung her und starten Sie die App neu");
