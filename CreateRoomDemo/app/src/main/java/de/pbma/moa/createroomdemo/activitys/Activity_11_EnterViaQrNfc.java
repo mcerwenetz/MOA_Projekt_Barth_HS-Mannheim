@@ -52,7 +52,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
         //Aendern des Activity Titels
-        this.setTitle("Treten Sie dem Event per Qr oder NFC bei");
+        this.setTitle("Treten Sie per QR oder NFC bei");
 
         setContentView(R.layout.page_11_qr_nfc);
         Button btnNfc = findViewById(R.id.btn_11_nfc);
