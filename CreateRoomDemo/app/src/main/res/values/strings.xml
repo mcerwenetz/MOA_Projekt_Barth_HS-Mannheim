@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CreateRoomDemo</string>
+    <string name="app_name">Kontaktverwaltung</string>
     <string name="key_pref_vorname">pref_key_vorname</string>
     <string name="key_pref_name">pref_key_name</string>
     <string name="key_pref_extra">pref_key_extra</string>
@@ -25,6 +25,7 @@
     
     <string name="teilen">Teilen</string>
     <string name="qr_code">QR-CODE</string>
+    <string name="nfc_tag">NFC-Tag</string>
     <string name="room_tag">Room Tag</string>
     <string name="verbindungsproblem">Verbindungsproblem!</string>
     <string name="host">Host</string>

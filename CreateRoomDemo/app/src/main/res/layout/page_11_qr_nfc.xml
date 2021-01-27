@@ -3,16 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <Button
-        android:id="@+id/btn_11_qr"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/qr_code" />
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_11_nfc"
+        <ImageButton
+            android:id="@+id/btn_11_qr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_qr_code_scanner_24"
+            android:layout_weight="0.5"
+            android:background="@color/white"
+            />
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/nfc" />
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/btn_11_nfc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_nfc_24"
+            android:layout_weight="0.5"
+            android:background="@color/white"
+            />
+    </LinearLayout>
 </LinearLayout>

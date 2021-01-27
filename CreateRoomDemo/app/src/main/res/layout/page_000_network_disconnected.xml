@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:background="@color/white"
-            android:src="@mipmap/connection" />
+            android:src="@drawable/ic_baseline_wifi_off_24" />
 
         <TextView
             android:id="@+id/tv_000_error_msg"

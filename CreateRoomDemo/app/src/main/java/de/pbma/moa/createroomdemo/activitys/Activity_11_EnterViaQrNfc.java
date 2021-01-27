@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,8 +52,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
 
         setContentView(R.layout.page_11_qr_nfc);
-        Button btnNfc = findViewById(R.id.btn_11_nfc);
-        Button btnQr = findViewById(R.id.btn_11_qr);
+        ImageButton btnNfc = findViewById(R.id.btn_11_nfc);
+        ImageButton btnQr = findViewById(R.id.btn_11_qr);
 
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
