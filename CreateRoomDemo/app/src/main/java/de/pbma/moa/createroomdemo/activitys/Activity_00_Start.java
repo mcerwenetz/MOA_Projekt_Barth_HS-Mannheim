@@ -33,7 +33,7 @@ public class Activity_00_Start extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "OnCreate");
         super.onCreate(savedInstanceState);
-        this.setTitle("Willkommen bei der Kontaktverwaltung");
+        this.setTitle("Kontaktverwaltung");
         setContentView(R.layout.page_00_start);
 
         btnHost = findViewById(R.id.btn_00_start_host);

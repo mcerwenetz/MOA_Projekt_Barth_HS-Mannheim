@@ -20,6 +20,7 @@ public class PreferenceActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG,"onCreate");
         super.onCreate(savedInstanceState);
+        this.setTitle("Eingabe der Benutzerdaten");
         getFragmentManager().beginTransaction().replace(android.R.id.content,new SettingsFragment()).commit();
     }
 
