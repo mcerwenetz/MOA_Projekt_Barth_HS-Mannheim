@@ -178,7 +178,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void btnNfcClicked(View v) {
         armNFCAdapter();
-        displayAlertDialog();
     }
 
     private void displayAlertDialog() {
@@ -206,6 +205,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             Toast.makeText(this, R.string.fehlerhafter_NFC_adapter, Toast.LENGTH_LONG).show();
             return;
         }
+        displayAlertDialog();
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0,
                         new Intent(this,
