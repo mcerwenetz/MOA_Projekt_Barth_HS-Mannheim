@@ -23,8 +23,8 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 public class RoomLivecycleService extends Service {
 
     private static final String TAG = "HostRoomCloserService";
-    private final List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<RoomItem>());
-    private final List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<RoomItem>());
+    private final List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<>());
+    private final List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<>());
     private final NetworkStoppedStateReceiver networkStoppedStateReceiver = new NetworkStoppedStateReceiver();
     private Repository repository;
     private AtomicBoolean keepRunning;
@@ -64,9 +64,6 @@ public class RoomLivecycleService extends Service {
     private void unbindMQTTService() {
         Log.v(TAG, "unbindMQTTService");
         if (mqttServiceBound) {
-            if (mqttService != null) {
-                // deregister listeners, if there are any
-            }
             mqttServiceBound = false;
             unbindService(serviceConnection);
         }
@@ -178,9 +175,7 @@ public class RoomLivecycleService extends Service {
                 notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 toSubscribe.addAll(notClosedNotOwnRooms);
 
-                handler.post(() -> {
-                    RoomLivecycleService.this.postPendingRooms();
-                });
+                handler.post(RoomLivecycleService.this::postPendingRooms);
 
                 try {
                     Thread.sleep(1000);
