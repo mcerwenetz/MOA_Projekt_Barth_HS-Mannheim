@@ -75,6 +75,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreated_Teilnehmer_Uebersicht");
+        this.setTitle("Details des erstellten Events");
         setContentView(R.layout.page_22_room_host_detail_activity);
         endtimeAtomic = new AtomicLong(0);
         startTimeAtomic = new AtomicLong(0);

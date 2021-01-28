@@ -3,17 +3,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:text="Willkommen bei der Kontaktverwaltung"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/kontakt"
+        android:layout_weight="2"
+        />
+
 
     <Button
         android:id="@+id/btn_00_start_host"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:background="@color/dark_blue"
+        android:backgroundTint="@color/dark_blue"
+        android:drawableRight="@drawable/ic_baseline_home_work_24"
+        android:gravity="center"
         android:text="@string/host" />
 
     <Button
         android:id="@+id/btn_00_start_participant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/participant" />
+        android:drawableRight="@drawable/ic_baseline_group_add_24"
+        android:backgroundTint="@color/dark_blue"
+        android:background="@color/dark_blue"
+        android:gravity="center"
+        android:layout_weight="0.5"
+        android:text="@string/participant"
+        />
+
 
 </LinearLayout>

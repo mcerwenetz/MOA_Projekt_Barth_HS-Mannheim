@@ -39,6 +39,7 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setTitle("Übersicht der anderen Teilnehmer");
         Log.v(TAG, "OnCreate ParticipantParticipantActivity");
         setContentView(R.layout.page_15_participants_list_participants_view);
 

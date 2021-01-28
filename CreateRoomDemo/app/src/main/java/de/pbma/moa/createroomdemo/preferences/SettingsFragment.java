@@ -1,5 +1,6 @@
 package de.pbma.moa.createroomdemo.preferences;
 
+import android.app.ActionBar;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         findPreference(keyExtra).setSummary(preferences.getString(keyExtra, ""));
         findPreference(keyEmail).setSummary(preferences.getString(keyEmail, ""));
         findPreference(keyPhone).setSummary(preferences.getString(keyPhone, ""));
+
     }
 
     @Override

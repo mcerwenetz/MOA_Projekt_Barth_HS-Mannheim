@@ -51,6 +51,7 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "OnCreate");
+        this.setTitle("Übersicht der erstellten Events");
         roomList = new ArrayList<>();
         setContentView(R.layout.page_20_roomlist);
         adapter = new ListAdapter_20_HostRoom(this, roomList);

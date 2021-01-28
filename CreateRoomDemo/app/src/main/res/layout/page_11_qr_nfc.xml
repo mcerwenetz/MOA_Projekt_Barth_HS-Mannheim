@@ -8,11 +8,27 @@
         android:id="@+id/btn_11_qr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/qr_code" />
+        android:layout_weight="0.5"
+        android:backgroundTint="@color/white"
+        android:drawableTint="@color/black"
+        android:drawableBottom="@drawable/ic_baseline_qr_code_2_256"
+        android:gravity="center"
+        android:text="@string/qr_code"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:textColor="@color/black"/>
 
     <Button
         android:id="@+id/btn_11_nfc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/nfc" />
+        android:layout_weight="0.5"
+        android:backgroundTint="@color/white"
+        android:drawableTint="@color/black"
+        android:drawableBottom="@drawable/ic_baseline_nfc_256"
+        android:gravity="center"
+        android:text="@string/nfc"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:textColor="@color/black"/>
 </LinearLayout>
