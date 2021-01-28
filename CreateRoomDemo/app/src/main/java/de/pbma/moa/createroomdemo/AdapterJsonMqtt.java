@@ -51,7 +51,8 @@ public class AdapterJsonMqtt {
     private static JSONObject getJSONMySelf(MySelf teilnehmer) {
         JSONObject ret = new JSONObject();
         try {
-            ret.put(JSONItemTypes.NAME.label, teilnehmer.getFirstName() + " " + teilnehmer.getName());
+            ret.put(JSONItemTypes.NAME.label, teilnehmer.getFirstName() + " " +
+                    teilnehmer.getName());
             ret.put(JSONItemTypes.EXTRA.label, teilnehmer.getExtra());
             ret.put(JSONItemTypes.EMAIL.label, teilnehmer.getEmail());
             ret.put(JSONItemTypes.PHONE.label, teilnehmer.getPhone());
@@ -142,7 +143,8 @@ public class AdapterJsonMqtt {
             long startTime = (long) jsonObject.get(JSONItemTypes.ROOMSTARTTIME.label);
             long endTime = (long) jsonObject.get(JSONItemTypes.ROOMENDTIME.label);
 
-            roomItem = RoomItem.createRoom(roomName, host, eMail, phone, place, address, extra, startTime, endTime);
+            roomItem = RoomItem.createRoom(roomName, host, eMail, phone, place, address,
+                    extra, startTime, endTime);
             roomItem.fremdId = jsonObject.getLong(JSONItemTypes.ID.label);
             roomItem.status = status;
         } catch (JSONException e) {
@@ -161,7 +163,8 @@ public class AdapterJsonMqtt {
 
 //            long enterTime = (long) jsonObject.get("enterTime");
 //            long exitTime = (long) jsonObject.get("exitTime");
-            participantItem = participantItem.createParticipant(name, extra, eMail, phone, 0, 0);
+            participantItem = participantItem.createParticipant(name, extra, eMail, phone,
+                    0, 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }

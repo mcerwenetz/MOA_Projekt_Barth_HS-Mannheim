@@ -19,8 +19,13 @@ import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 
+/**
+ * In dieser Activity können die besuchten Räume angezeigt werden.
+ */
 public class Activity_10_RoomListVisited extends AppCompatActivity {
     final static String TAG = Activity_10_RoomListVisited.class.getCanonicalName();
+    private ArrayList<RoomItem> roomList;
+    private ListAdapter_20_HostRoom adapter;
     private final AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -31,8 +36,13 @@ public class Activity_10_RoomListVisited extends AppCompatActivity {
             startActivity(intent);
         }
     };
-    private ArrayList<RoomItem> roomList;
-    private ListAdapter_20_HostRoom adapter;
+    /**
+     * Dieser Observer wird verwendet um die bereitgestellten LiveData von
+     * {@link Repository#getAllRoomsWithoutMeAsHost()} zu überwachen.<br>
+     * Sollten sich die Daten ändern
+     * wird die komplette Liste geleert, alle nochmal neu eingefügt und
+     * {@link ListAdapter_20_HostRoom#notifyDataSetChanged()} aufgerufen
+     */
     Observer<List<RoomItem>> observer = new Observer<List<RoomItem>>() {
         @Override
         public void onChanged(List<RoomItem> changedTodos) {

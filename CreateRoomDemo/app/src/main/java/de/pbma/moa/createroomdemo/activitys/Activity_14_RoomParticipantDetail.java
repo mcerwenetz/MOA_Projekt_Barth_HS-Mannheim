@@ -27,17 +27,20 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
+/**
+ * Die HauptActivity als Teilnehmer. Hier ist man im
+ */
 public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
     public final static String ID = "RoomID";
     final static String TAG = Activity_14_RoomParticipantDetail.class.getCanonicalName();
     long roomId;
     private Button btnLeave;
-    private TextView tvRoom, tvStatus, tvTimeout, tvHost, tvHosteMail, tvHostPhone, tvEndTime, tvStartTime, tvPlace, tvAddress;
+    private TextView tvRoom, tvStatus, tvTimeout, tvHost, tvHosteMail, tvHostPhone, tvEndTime,
+            tvStartTime, tvPlace, tvAddress;
     private RoomItem classRoomItem;
     private Boolean toSend = false;
     private TimeoutRefresherThread timeoutRefresherThread;
     private AtomicLong endtimeAtomic, startTimeAtomic;
-    //MQTT gedönz
     private boolean mqttServiceBound;
     private MQTTService mqttService;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -45,8 +48,10 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
+            //Wurde geleaved bevor der Service gebunden war wird nun geleaved.
             if (toSend)
-                mqttService.sendExitFromRoom(new MySelf(Activity_14_RoomParticipantDetail.this), classRoomItem.getRoomTag());
+                mqttService.sendExitFromRoom(new MySelf(Activity_14_RoomParticipantDetail.this),
+                        classRoomItem.getRoomTag());
             toSend = false;
         }
 
@@ -58,6 +63,10 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         }
     };
 
+    /**
+     * Ruft {@link #bindUI()} auf, holt die RaumId aus dem Intent
+     * und hängt den observer inklusive {@link TimeoutRefresherThread} auf die LiveData.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.v(TAG, "OnCreated RoomParticipantDetailActivity");
@@ -81,17 +90,19 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
                     startTimeAtomic.set(classRoomItem.startTime);
                     if (roomItem.status == RoomItem.ROOMISOPEN) {
                         timeoutRefresherThread.initialStart();
+                        //erst wenn der Raum geöffnet ist, kann er auch wieder verlassen werden
                         btnLeave.setEnabled(true);
                     } else if (roomItem.status == RoomItem.ROOMWILLOPEN) {
+                        //wenn der Raum noch zu ist soll man ihn auch nicht verlassen können
                         btnLeave.setEnabled(false);
 //                      btnLeave.setAlpha(.5f); //transparent
                     } else {
-                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
+                        //Wenn der Raum nicht offen ist geschlossen. Dann soll der Thread gestoppt
                         //werden. Aber nur wenn er läuft.
                         if (timeoutRefresherThread.isAlive()) {
                             timeoutRefresherThread.stop();
                         }
-                        //Tasten für Raum schließen disable
+                        //Geschlossene Räume sollen auch nicht mehr verlassen werden können.
                         btnLeave.setEnabled(false);
                     }
                 }
@@ -101,14 +112,22 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         }
     }
 
+    /**
+     * {@link TimeoutRefresherThread} wird wieder gestartet. Mqtt wird wieder gebindet.
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout, endtimeAtomic, startTimeAtomic);
+        timeoutRefresherThread = new TimeoutRefresherThread(this, tvTimeout,
+                endtimeAtomic, startTimeAtomic);
         timeoutRefresherThread.initialStart();
         bindMQTTService();
     }
 
+    /**
+     * MQTT Service wird unbindet wenn die Activity verlassen wird. {@link TimeoutRefresherThread}
+     * wird beendet.
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -116,6 +135,11 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         timeoutRefresherThread.stop();
     }
 
+    /**
+     * Wird vom Observer gerufen falls sich die Daten des Raumes geändert haben. Aktualisiert
+     * die UI Elemente dieser Activity.
+     * @param item Das aktualisiert UI Element.
+     */
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvRoom.setText(item.roomName);
@@ -142,6 +166,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         }
     }
 
+    /**
+     * Bindet die UI-Elemente und deren OICLs.
+     */
     private void bindUI() {
         Button btnPartic;
         //Button und Textview zuweisen
@@ -167,6 +194,11 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
 
     }
 
+    /**
+     * Wird gerufen wenn der Teilnehmer den Raum verlassen will.
+     * Ruft {@link MQTTService#sendEnterRoom(MySelf, String)} auf um den Anderen Teilnehmern und dem
+     * Host mitzuteilen dass der Teilnehmer den Raum verlassen hat.
+     */
     private void onClickBtnLeave(View view) {
         if (mqttService == null)
             toSend = true;
@@ -176,12 +208,19 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Startet die {@link Activity_15_ParticipantViewParticipant}
+     */
     private void onClickBtnPartic(View view) {
-        Intent intent = new Intent(Activity_14_RoomParticipantDetail.this, Activity_15_ParticipantViewParticipant.class);
+        Intent intent = new Intent(Activity_14_RoomParticipantDetail.this,
+                Activity_15_ParticipantViewParticipant.class);
         intent.putExtra(Activity_15_ParticipantViewParticipant.INTENT_ROOM_ID, this.roomId);
         startActivity(intent);
     }
 
+    /**
+     * binding auf den mqtt service. wenn er nicht gebunden werden kann wird eine warning geloggt.
+     */
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
         Intent intent = new Intent(this, MQTTService.class);
@@ -192,6 +231,9 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         }
     }
 
+    /**
+     * lösen des mqtt service wenn er gebunden war.
+     */
     private void unbindMQTTService() {
         Log.v(TAG, "unbindMQTTService");
         if (mqttServiceBound) {

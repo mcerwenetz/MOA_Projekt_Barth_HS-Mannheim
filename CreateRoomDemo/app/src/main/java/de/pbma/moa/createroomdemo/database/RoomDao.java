@@ -15,12 +15,19 @@ public abstract class RoomDao {
     @Insert
     abstract long insert(RoomItem item);
 
+    /**
+     * Aktualisiert das Item in der Datenbank.
+     */
     @Update
     abstract void update(RoomItem item);
 
     @Delete
     abstract void delete(RoomItem item);
 
+    /**
+     * @param roomid id des raumes der gesucht werden soll
+     * @return Roomitem mit der id roomid
+     */
     @Query("SELECT * FROM  dbRoom WHERE id=:roomid")
     abstract LiveData<RoomItem> getById(long roomid);
 
@@ -42,7 +49,9 @@ public abstract class RoomDao {
     @Query("SELECT * FROM  dbRoom")
     abstract LiveData<List<RoomItem>> getAll();
 
-    //Dise Funktion liefert alle eigenen Räume entsprechend des RoomStatus
+    //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
+    //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
+    //eigenen LivecycleService schließen können.
     @Query("SELECT * FROM  dbRoom WHERE status =:roomStatus  AND fremdId IS NULL")
     public abstract List<RoomItem> getAllOwnRoomsWithRoomStatus(int roomStatus);
 
@@ -50,6 +59,9 @@ public abstract class RoomDao {
     @Query("SELECT * FROM dbRoom WHERE fremdId IS NOT NULL AND status =:roomStatus")
     public abstract List<RoomItem> getAllNotOwnRoomsWithRoomStatus(int roomStatus);
 
+    /**
+     * @return Liste aller Räume die keine FremdID haben, also nicht von Participants sind.
+     */
     @Query("SELECT * FROM  dbRoom WHERE fremdId IS NULL")
     abstract LiveData<List<RoomItem>> getAllFromMeAsHost();
 

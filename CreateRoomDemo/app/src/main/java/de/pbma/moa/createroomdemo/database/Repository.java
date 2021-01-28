@@ -7,7 +7,8 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 
-//Alle Funktionen die NOW enthlten geben kein live data zurück und dürfen nur in einem extra thread verwendet werden
+//Alle Funktionen die NOW enthlten geben kein live data zurück und dürfen nur in einem extra
+// thread verwendet werden
 //Alle Funktionen die Own enthalten geben Selbsterstellte Räume, also Räume des hostes, zurück.
 public class Repository {
     private final RoomDao roomDao; //final hinzugefuegt
@@ -18,7 +19,9 @@ public class Repository {
         return participantDao.getCountOfExistingParticipantsInRoom(roomId);
     }
 
-
+    /**
+     * Ruft {@link ParticipantDao#setParticipantExitTime(long, long)}
+     */
     public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
         new Thread(() -> participantDao.setParticipantExitTime(room.id, currentTimeMillis)).start();
     }
@@ -43,7 +46,8 @@ public class Repository {
         new Thread(() -> {
             long currentTime = System.currentTimeMillis();
             final long timeSpanOfTwoWeeks = 1209600000;
-            List<RoomItem> roomItems = roomDao.getAllOlderTwoWeeks(System.currentTimeMillis(), timeSpanOfTwoWeeks);
+            List<RoomItem> roomItems = roomDao.getAllOlderTwoWeeks(System.currentTimeMillis(),
+                    timeSpanOfTwoWeeks);
             for (RoomItem item : roomItems) {
                 participantDao.deleteParticipantsOfRoom(item.id);
             }
@@ -51,7 +55,12 @@ public class Repository {
         }).start();
     }
 
-
+    /**
+     *
+     * @param item Das RoomItem das hinzugefügt werden soll.
+     * @param afterInsert Callback die ausgeführt wenn das Item eingefügt werden soll. Muss von
+     * außen mitgeben und implementiert werden.
+     */
     public void addRoomEntry(RoomItem item, AfterInsert afterInsert) {
         new Thread(() -> {
             long id = roomDao.insert(item);
@@ -63,7 +72,9 @@ public class Repository {
     }
 
 
-
+    /**
+     * Ruft {@link RoomDao#update(RoomItem)}
+     */
     public void updateRoomItem(RoomItem item) {
         new Thread(() -> roomDao.update(item)).start();
     }
@@ -78,6 +89,9 @@ public class Repository {
         return roomDao.getIdOfRoomByRoomTagNow(elements[0], elements[1], Id);
     }
 
+    /**
+     * Ruft {@link RoomDao#getById(long)}
+     */
     public LiveData<RoomItem> getRoomByID(long searchid) {
         return roomDao.getById(searchid);
     }
@@ -90,10 +104,9 @@ public class Repository {
         return roomDao.getItemByIdNow(searchid);
     }
 
-
-    //Diese Funktion wird im LivecycleService aufgerufen, damit ein Host alle Räume die er selbst
-    //erstellt hat erhält. Es wird sichergestellt dass Teilnehmer diese Räume nicht durch ihren
-    //eigenen LivecycleService schließen können.
+    /**
+     * Ruft {@link RoomDao#getAllOwnRoomsWithRoomStatus(int)}
+     */
     public List<RoomItem> getAllOwnRoomsWithRoomStatus(int status) {
         return roomDao.getAllOwnRoomsWithRoomStatus(status);
     }
@@ -102,7 +115,9 @@ public class Repository {
         return roomDao.getAllNotOwnRoomsWithRoomStatus(status);
     }
 
-
+    /**
+     * Ruft {@link RoomDao#getAllFromExceptMeAsHost()}
+     */
     public LiveData<List<RoomItem>> getAllRoomsWithMeAsHost() {
         return roomDao.getAllFromMeAsHost();
     }
@@ -111,7 +126,11 @@ public class Repository {
         return roomDao.getAllFromExceptMeAsHost();
     }
 
-
+    /**
+     * Ruft {@link ParticipantDao#getParticipantsOfRoom(long)}
+     * @param roomId Id eines Raumes.
+     * @return Liste der Teilnehmer des Raumes mit roomId.
+     */
     public LiveData<List<ParticipantItem>> getParticipantsOfRoom(long roomId) {
         return participantDao.getParticipantsOfRoom(roomId);
     }

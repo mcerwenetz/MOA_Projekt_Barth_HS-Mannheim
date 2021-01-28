@@ -5,6 +5,9 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 
+/**
+ * Datenbank Klasse der App. Die Tables sind die roomTable und participantTable.
+ */
 @Database(entities = {RoomItem.class, ParticipantItem.class}, version = 5, exportSchema = false)
 public abstract class AppDatabase extends androidx.room.RoomDatabase {
     private static AppDatabase INSTANCE = null;

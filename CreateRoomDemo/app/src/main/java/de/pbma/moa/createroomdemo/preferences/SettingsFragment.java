@@ -16,8 +16,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     final static String TAG = SettingsFragment.class.getCanonicalName();
     private String keyName, keyExtra, keyEmail, keyPhone, keyFirstName;
 
-    //TODO vielleicht ein back button um zur vorherigen seite zurück zu kehren
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate:");

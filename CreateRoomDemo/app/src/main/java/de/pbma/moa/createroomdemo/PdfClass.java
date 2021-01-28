@@ -38,7 +38,8 @@ public class PdfClass {
 
         Log.v(TAG, "createPdfRoomInfos()");
         PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, 1).create();
+        PdfDocument.PageInfo pageInfo =
+                new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, 1).create();
         PdfDocument.Page page = document.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
         Paint paint = new Paint();
@@ -88,7 +89,8 @@ public class PdfClass {
 
         Log.v(TAG, "createPdfParticipantInfos()");
         PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, pageNumber++).create();
+        PdfDocument.PageInfo pageInfo =
+                new PdfDocument.PageInfo.Builder(A4_WIDTH, A4_HEIGHT, pageNumber++).create();
         PdfDocument.Page page = document.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
         Paint paint = new Paint();
@@ -131,7 +133,8 @@ public class PdfClass {
         canvas.drawText("Kontaktdaten", x_kontaktDaten, currentY, paint);
         canvas.drawText("Entertime", x_enterTime, currentY, paint);
         canvas.drawText("Exittime", x_exitTime, currentY, paint);
-        canvas.drawLine(margin, (float) (currentY + 0.25 * zeilenAbstand), A4_WIDTH - margin, (float) (currentY + 0.25 * zeilenAbstand), paint);
+        canvas.drawLine(margin, (float) (currentY + 0.25 * zeilenAbstand), A4_WIDTH - margin,
+                (float) (currentY + 0.25 * zeilenAbstand), paint);
         currentY += 2 * zeilenAbstand;
 
         paint.setColor(Color.GRAY);
@@ -148,7 +151,8 @@ public class PdfClass {
             else
                 canvas.drawText("", x_exitTime, currentY, paint);
 
-            canvas.drawLine(margin, (float) (currentY + 1.25 * zeilenAbstand), A4_WIDTH - margin, (float) (currentY + 1.5 * zeilenAbstand), paint);
+            canvas.drawLine(margin, (float) (currentY + 1.25 * zeilenAbstand),
+                    A4_WIDTH - margin, (float) (currentY + 1.5 * zeilenAbstand), paint);
             currentY += 2 * zeilenAbstand;
             if (currentY >= A4_HEIGHT - margin - zeilenAbstand) {
                 document.finishPage(page);

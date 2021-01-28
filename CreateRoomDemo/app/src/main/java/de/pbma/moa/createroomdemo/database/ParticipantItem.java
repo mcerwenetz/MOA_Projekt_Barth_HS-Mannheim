@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
-// Participants können mehrmals aber mit unterschiedelicher ruamid in der tabelle stehen
+// Participants können mehrmals aber mit unterschiedelicher raumId in der tabelle stehen
 
 @Entity(tableName = "dbParticipant")
 public class ParticipantItem {
@@ -36,7 +36,8 @@ public class ParticipantItem {
     @ColumnInfo(name = "exitTime")
     public long exitTime;
 
-    public static ParticipantItem createParticipant(String name, String extra, String email, String phone, long roomId, long enterTime) {
+    public static ParticipantItem createParticipant(String name, String extra, String email,
+                                                    String phone, long roomId, long enterTime) {
         ParticipantItem participant = new ParticipantItem();
         participant.name = name;
         participant.extra = extra;

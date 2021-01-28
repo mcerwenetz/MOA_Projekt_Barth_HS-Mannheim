@@ -25,7 +25,8 @@ public class RoomLivecycleService extends Service {
     private static final String TAG = "HostRoomCloserService";
     private final List<RoomItem> toSubscribe = Collections.synchronizedList(new ArrayList<>());
     private final List<RoomItem> toSend = Collections.synchronizedList(new ArrayList<>());
-    private final NetworkStoppedStateReceiver networkStoppedStateReceiver = new NetworkStoppedStateReceiver();
+    private final NetworkStoppedStateReceiver networkStoppedStateReceiver =
+            new NetworkStoppedStateReceiver();
     private Repository repository;
     private AtomicBoolean keepRunning;
     private List<RoomItem> futureRooms;
@@ -171,8 +172,10 @@ public class RoomLivecycleService extends Service {
                 toSubscribe.addAll(notClosedOwnRooms);
 
                 //hinzufügen aller fremd Raume auf welche gehört werden soll
-                notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
-                notClosedNotOwnRooms.addAll(repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
+                notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.
+                        ROOMWILLOPEN);
+                notClosedNotOwnRooms.addAll(repository.
+                        getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 toSubscribe.addAll(notClosedNotOwnRooms);
 
                 handler.post(RoomLivecycleService.this::postPendingRooms);

@@ -33,7 +33,8 @@ public class MQTTService extends Service {
     //    final public static String PROTOCOL_TCP = "tcp";
     final public static String URL = "pma.inftech.hs-mannheim.de";
     final public static int PORT = 8883;
-    final public static String CONNECTION_URL = String.format(Locale.GERMAN,"%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
+    final public static String CONNECTION_URL = String.format(Locale.GERMAN,
+            "%s://%s:%d", PROTOCOL_SECURE, URL, PORT);
     final public static String USER = "20moagm";
     final public static String PASSWORT = "1a748f9e";
 
@@ -58,7 +59,8 @@ public class MQTTService extends Service {
         }
     };
 
-    final private MqttMessaging.ConnectionListener connectionListener = new MqttMessaging.ConnectionListener() {
+    final private MqttMessaging.ConnectionListener connectionListener = new MqttMessaging.
+            ConnectionListener() {
         @Override
         public void onConnect() {
             Log.v(TAG,"connected");
@@ -177,7 +179,8 @@ public class MQTTService extends Service {
                 Log.v(TAG,"Entertime");
                 ParticipantItem item;
                 try {
-                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.
+                            TEILNEHMER));
                     item.enterTime = msg.getLong(AdapterJsonMqtt.ENTERTIME);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -195,7 +198,8 @@ public class MQTTService extends Service {
                 Log.v(TAG,"Exittime");
                 ParticipantItem item;
                 try {
-                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt.TEILNEHMER));
+                    item = AdapterJsonMqtt.createParticipantItem(msg.getJSONObject(AdapterJsonMqtt
+                            .TEILNEHMER));
                     item.roomId = repository.getIdOfRoomByRoomTagNow(getRoomTagFromTopic(topic));
                     item = repository.getPaticipantItemNow(item.roomId, item.eMail);
                     item.exitTime = Long.parseLong(msg.getString(AdapterJsonMqtt.EXITTIME));
@@ -210,7 +214,8 @@ public class MQTTService extends Service {
                 Log.v(TAG,"Teilnehmerliste");
                 ArrayList<ParticipantItem> list = null;
                 try {
-                    list = AdapterJsonMqtt.createParticipantItemList(msg.getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
+                    list = AdapterJsonMqtt.createParticipantItemList(msg
+                            .getJSONArray(AdapterJsonMqtt.TEILNEHMERLIST));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

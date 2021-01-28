@@ -11,6 +11,10 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Ändert sekündlich das Timeout in der UI. Ändert sich das Timeout muss er nicht
+ * neu gestartet werden, da er mit Atomics arbeitet. Sein Lebenszyklus wird von außen verwaltet.
+ */
 public class TimeoutRefresherThread {
     private final Activity activity;
     private final TextView tvtimeout;
@@ -48,6 +52,9 @@ public class TimeoutRefresherThread {
         });
     }
 
+    /**
+     * Stoppt den Thread
+     */
     public void stop() {
         keepRefreshing.set(false);
         try {
@@ -57,6 +64,9 @@ public class TimeoutRefresherThread {
         }
     }
 
+    /**
+     * Startet den Thread wenn er noch nicht läuft.
+     */
     public void initialStart() {
         if (!refreshThread.isAlive()) {
             keepRefreshing.set(true);
@@ -64,6 +74,11 @@ public class TimeoutRefresherThread {
         }
     }
 
+    /**
+     * Formatiert die Unix Epoch zu einem schönen String
+     * @param endTime Epoch Zeit die formatiert werden soll
+     * @return einen schönen String
+     */
     private String formatTimeoutToClose(long endTime) {
         DateTime now = new DateTime();
         DateTime endTimeDateTime = new DateTime(endTime);
@@ -78,6 +93,7 @@ public class TimeoutRefresherThread {
         return formatter.print(period);
     }
 
+    //Todo: Rausschmeißen. Doppelt, oder?
     private String formatTimeoutToOpen(long startTime) {
         DateTime now = new DateTime();
         DateTime startTimeDateTime = new DateTime(startTime);

@@ -21,7 +21,8 @@ public class PreferenceActivity extends AppCompatActivity {
         Log.v(TAG,"onCreate");
         super.onCreate(savedInstanceState);
         this.setTitle("Eingabe der Benutzerdaten");
-        getFragmentManager().beginTransaction().replace(android.R.id.content,new SettingsFragment()).commit();
+        getFragmentManager().beginTransaction().replace(android.R.id.content,
+                new SettingsFragment()).commit();
     }
 
 
