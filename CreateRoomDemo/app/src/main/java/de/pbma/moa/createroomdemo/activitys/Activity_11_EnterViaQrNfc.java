@@ -3,10 +3,15 @@ package de.pbma.moa.createroomdemo.activitys;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -99,9 +104,28 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         qrCodeManger.callScanner();
     }
 
-    //TODO @marius dein Spielplatz
     private void btnNfcClicked(View v) {
-
+        Intent intent = getIntent();
+        if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())){
+        Log.v(TAG, "New NFC Tag discovered");
+            Parcelable[] rawMessages=
+                    intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if(rawMessages!=null){
+                NdefMessage[] messages = new NdefMessage[rawMessages.length];
+                for (int i = 0; i < rawMessages.length; i++){
+                    messages[i] = (NdefMessage) rawMessages[i];
+                }
+                NdefRecord[] recs = messages[0].getRecords();
+                String tag = new String(recs[0].getPayload());
+                tag = tag.substring(3);
+                bindMQTTService();
+                if (mqttService == null)
+                    toSend = tag;
+                else {
+                    enterRoom(tag);
+                }
+            }
+        }
     }
 
     private void enterRoom(String uri) {
