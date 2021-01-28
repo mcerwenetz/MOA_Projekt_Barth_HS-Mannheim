@@ -36,13 +36,7 @@
         <activity android:name=".activitys.Activity_20_RoomListHost" />
         <activity android:name=".activitys.Activity_23_HostViewParticipant" />
         <activity android:name=".activitys.Activity_22_RoomHostDetail" />
-        <activity android:name=".activitys.Activity_11_EnterViaQrNfc">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activitys.Activity_11_EnterViaQrNfc"/>
         <activity android:name=".activitys.Activity_14_RoomParticipantDetail"/>
         <activity android:name=".activitys.Activity_15_ParticipantViewParticipant"/>
         <activity android:name=".activitys.Activity_10_RoomListVisited"/>
