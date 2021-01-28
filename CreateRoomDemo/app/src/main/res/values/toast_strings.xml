@@ -6,4 +6,6 @@
     <string name="fehlerhafte_adresse">Adresse fehlt</string>
     <string name="fehlerhafte_startzeit">Startzeitpunkt liegt in der Vergangenheit</string>
     <string name="fehlerhafte_endzeit">Endzeitpunkt liegt vor Startzeitpunkt</string>
+    <string name="fehlerhafter_RoomTag">Der gescannte QR-Code/NFC-Tag hat das falsche Format</string>
+    <string name="fehlerhafter_NFC_adapter">Das Gerät kann nicht auf NFC zugreifen oder besitzt keinen NFC-Adapter</string>
 </resources>

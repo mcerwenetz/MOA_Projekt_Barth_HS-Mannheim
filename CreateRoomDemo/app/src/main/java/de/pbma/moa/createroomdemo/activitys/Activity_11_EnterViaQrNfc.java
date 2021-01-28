@@ -130,6 +130,10 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void enterRoomIfMqttAvailable(String roomtag) {
         bindMQTTService();
+        if(!checkTag(roomtag)){
+            Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show();
+            return;
+        }
         if (mqttService == null)
             toSend = roomtag;
         else {
@@ -269,6 +273,20 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
                 finish();
             });
         });
+    }
+    private boolean checkTag(String msg) {
+        String[] msgSplit = msg.split("/");
+        if (msgSplit.length != 3)
+            return false;
+        if (!msgSplit[1].contains("@"))
+            return false;
+        try {
+            long x = Long.parseLong(msgSplit[2]);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

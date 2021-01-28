@@ -20,23 +20,24 @@
         android:layout_weight="2"
         />
 
+
     <Button
         android:id="@+id/btn_00_start_host"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableRight="@drawable/ic_baseline_home_work_24"
-        android:background="@color/dark_blue"
-        android:gravity="center"
-        android:text="@string/host"
         android:layout_weight="0.5"
-        />
-
+        android:background="@color/dark_blue"
+        android:backgroundTint="@color/dark_blue"
+        android:drawableRight="@drawable/ic_baseline_home_work_24"
+        android:gravity="center"
+        android:text="@string/host" />
 
     <Button
         android:id="@+id/btn_00_start_participant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableRight="@drawable/ic_baseline_group_add_24"
+        android:backgroundTint="@color/dark_blue"
         android:background="@color/dark_blue"
         android:gravity="center"
         android:layout_weight="0.5"
