@@ -1,5 +1,6 @@
 package de.pbma.moa.createroomdemo.activitys;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,8 +15,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,11 +34,12 @@ import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
 public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
-    final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
     public static final String NFC_INTENT_ACTION = "NEW_ROOM_TAG_DISCOVERED";
+    final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
     private String toSend;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -101,8 +105,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         super.onResume();
         Intent intent = getIntent();
         String action = intent.getAction();
-        if(action != null){
-            if(intent.getAction().equals(NFC_INTENT_ACTION)) {
+        if (action != null) {
+            if (intent.getAction().equals(NFC_INTENT_ACTION)) {
                 enterRoomViaNFC(intent);
             }
         }
@@ -121,6 +125,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     /**
      * Diese Methode ruft enter room auf und fängt ab dass der mqtt service noch nicht gebunden
      * ist
+     *
      * @param roomtag Das ist der roomtag über den der Raum betreten wird
      */
     private void enterRoomIfMqttAvailable(String roomtag) {
@@ -160,6 +165,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         }
 //        enterRoom();
     }
+
     /**
      * Wird gerufen, falls der NFC Button gedrückt wurde.<br>
      * Ruft armNFCAdapter() auf und schaltet dadurch den NFC Adapter scharf. Erkennt dieser ein
@@ -168,25 +174,38 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void btnNfcClicked(View v) {
         armNFCAdapter();
-//        displayAlertDialog();
+        displayAlertDialog();
+    }
+
+    private void displayAlertDialog() {
+        LayoutInflater nfcDialogInflater = LayoutInflater.from(this);
+        View view = nfcDialogInflater.inflate(R.layout.pop_up_22_nfc, null);
+
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
+        alertDialog.show();
     }
 
     /**
      * Wird gerufen, falls der NFC Button gedrückt wurde.<br><br>
-     *
+     * <p>
      * Schaltet den NFC Adapter scharf auf NFC Tags für die Record-Mime-Types: "text/plain".
      * Dadurch ist das Betreten eines Raumes über NFC nicht von jeder App aus möglich, da der
      * Intent-Filter nicht im Manifest statisch drinstehen muss.<br><br>
-     *
+     * <p>
      * Wird ein NFC-Tag erkannt, wird die aktuelle Activity mit einem Intent neugestartet
      * in dem als Action "NEW_ROOM_TAG_DISCOVERED" steht. In onResume() wird das abgefangen und
      * die erkannten Records werden aus dem Intent ausgelesen.
      */
     private void armNFCAdapter() {
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
+        if (adapter==null){
+            Toast.makeText(this, R.string.fehlerhafter_NFC_adapter, Toast.LENGTH_LONG).show();
+            return;
+        }
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0,
-                        new Intent(this, this.getClass()).setAction(NFC_INTENT_ACTION), 0);
+                        new Intent(this,
+                                this.getClass()).setAction(NFC_INTENT_ACTION), 0);
 
         IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
@@ -202,7 +221,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
                         NfcF.class.getName()
                 }
         };
-
         adapter.enableForegroundDispatch(this, pendingIntent, intentFilters, tech);
     }
 
@@ -212,6 +230,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      * Dann wurde ein NFC Tag discovered auf dem ein Raumtag steht. In diesem Intent sind alle
      * Records die auf dem NFC Tag waren zu finden.
      * Der erste dieser Records wird benutzt um den Raum zu betreten.
+     *
      * @param intent - Der Intent in dem die Records stehen.
      */
     private void enterRoomViaNFC(Intent intent) {
@@ -231,6 +250,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
     /**
      * Startet die Raumteilnahme des Participants.
+     *
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
      */
     private void enterRoom(String roomtag) {
