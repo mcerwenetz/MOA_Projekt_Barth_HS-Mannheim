@@ -5,14 +5,15 @@
     android:orientation="vertical"
     >
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_baseline_nfc_24"
+        android:layout_width="150sp"
+        android:layout_height="150sp"
+        android:src="@mipmap/nfc_pop_up_schwarz"
+        android:layout_gravity="center"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bitte halten Sie ihr Smartphone an das NFC-TAG"
+        android:text="@string/dialog_nfc_tag"
         android:gravity="center"
         android:textSize="20sp"
     />
