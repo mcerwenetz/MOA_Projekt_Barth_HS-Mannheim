@@ -14,8 +14,10 @@ public class ParticipantItem {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
-
-    @ColumnInfo(name = "Name") // Vorname+Nachname
+    /**
+     * Name ist Vor + Nachname zusammen
+     */
+    @ColumnInfo(name = "Name")
     public String name;
 
     @ColumnInfo(name = "extra")
@@ -36,6 +38,9 @@ public class ParticipantItem {
     @ColumnInfo(name = "exitTime")
     public long exitTime;
 
+    /**
+     * Statischer ParticipantItem Konstruktor.Factory-Methode.
+     */
     public static ParticipantItem createParticipant(String name, String extra, String email,
                                                     String phone, long roomId, long enterTime) {
         ParticipantItem participant = new ParticipantItem();

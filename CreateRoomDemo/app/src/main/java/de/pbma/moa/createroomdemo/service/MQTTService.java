@@ -21,7 +21,10 @@ import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 
-
+/**
+ * Die Hauptklasse für jegliche Kommunikation zwischen Teilnehmern und Hosts. Verwendet die
+ * {@link MqttMessaging} Klasse.
+ */
 public class MQTTService extends Service {
     final static String TAG = MQTTService.class.getCanonicalName();
     // for LocalService getInstance
@@ -42,7 +45,8 @@ public class MQTTService extends Service {
     private final ArrayList<String> topicList = new ArrayList<>();
 
 
-    final private MqttMessaging.FailureListener failureListener = new MqttMessaging.FailureListener() {
+    final private MqttMessaging.FailureListener failureListener =
+            new MqttMessaging.FailureListener() {
         @Override
         public void onConnectionError(Throwable throwable) {
             Log.e(TAG,"ConnectionError: " + throwable.getMessage());
@@ -94,6 +98,7 @@ public class MQTTService extends Service {
         if (intent != null) {
             action = intent.getAction();
         } else {
+            //initial starten
             Log.w(TAG, "upps, restart");
             action = ACTION_START;
         }

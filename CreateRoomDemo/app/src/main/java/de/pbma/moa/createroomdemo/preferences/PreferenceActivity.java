@@ -13,6 +13,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import de.pbma.moa.createroomdemo.R;
 
+/**
+ * Nutzer (Hosts und Participants) können hier ihre Profildaten eingeben.
+ */
 public class PreferenceActivity extends AppCompatActivity {
     final static String TAG = PreferenceActivity.class.getCanonicalName();
 
@@ -25,13 +28,15 @@ public class PreferenceActivity extends AppCompatActivity {
                 new SettingsFragment()).commit();
     }
 
-
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_01_preferences, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Zurückbutton oben rechts.
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         finish();

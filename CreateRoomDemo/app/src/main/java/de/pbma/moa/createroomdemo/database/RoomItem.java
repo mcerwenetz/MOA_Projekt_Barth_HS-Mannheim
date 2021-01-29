@@ -52,7 +52,9 @@ public class RoomItem {
     @ColumnInfo(name = "endTime") // in ms since default
     public long endTime;
 
-
+    /**
+     * Statischer RoomItem Konstruktor. Factorymethode.
+     */
     public static RoomItem createRoom(String roomName, String host, String eMail,
                                       String phone, String place, String address, String extra,
                                       long startTime, long endTime) {

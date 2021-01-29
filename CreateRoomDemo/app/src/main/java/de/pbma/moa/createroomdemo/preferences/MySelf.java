@@ -8,6 +8,9 @@ import android.util.Log;
 
 import de.pbma.moa.createroomdemo.R;
 
+/**
+ * Profil eines Participants oder eines Hosts.
+ */
 public class MySelf {
     final static String TAG = MySelf.class.getCanonicalName();
     private Resources resources;
@@ -49,6 +52,11 @@ public class MySelf {
         return preferences.getString(keyPhone, "");
     }
 
+    /**
+     * Checkt ob die mandatory Felder <i>Vorname, Nachname, Email und Telefonnummer</i> ausgefüllt wurden.
+     * Wird verwendet um ein Anmelden an einen Raum zu verhindern wenn wichtige Infos fehlen.
+     * @return false wenn Daten fehlen, true wenn alles vorhanden ist.
+     */
     public boolean isValide() {
         Log.v(TAG,"Check myself");
         if (preferences.getString(keyFirstName, "").equals(""))

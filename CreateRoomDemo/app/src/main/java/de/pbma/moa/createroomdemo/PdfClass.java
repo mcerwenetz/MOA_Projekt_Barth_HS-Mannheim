@@ -172,6 +172,7 @@ public class PdfClass {
         return file.delete();
     }
 
+
     private File savePDF(PdfDocument document, String filename) {
         Log.v(TAG, "savePDF(" + filename + ")");
         String state = Environment.getExternalStorageState();

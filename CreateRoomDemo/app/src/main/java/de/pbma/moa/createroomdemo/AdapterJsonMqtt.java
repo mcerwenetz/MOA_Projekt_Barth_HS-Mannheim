@@ -11,6 +11,24 @@ import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 
+/**
+ * Enthält Methoden um JSONS in Strings und Strings in JSONs umzuwandeln.
+ * <br>
+ * Ablauf: Ein User eröffnet einen Raum<br>
+ *     <ol>
+ *         <li>Ein Nutzer betritt den Raum. Er sendet eine <i>AnmeldungJson</i>.</li>
+ *         <li>Noch ein Nutzer betritt den Raum auch er sendet eine AnmeldungJSON.<li>
+ *             Gleichzeitig sendet der Raum auch noch eine <i>TeilnehmerJSON</i>
+ *             um den anderen Teilnehmern
+ *             Die Teilnehmer bekannt zu machen.</li>
+ *         <li>Der Host verändert das TimeOut. Er sendet den Teilnehmern jetzt eine
+ *         <i>RauminfoJSON</i> damit Sie die Änderungen lokal bei sich übernehmen können</li>
+ *         <li>Ein Nutzer meldet sich ab und sendet eine <i>AbmeldungJSON</i> an den Host mit seiner
+ *         Endtime, damit der Host bescheid weiß.</li>
+ *     </ul>
+ *     Für weitere Informationen siehe die Doku aufm Git.
+ *
+ */
 public class AdapterJsonMqtt {
 
     public static final String TEILNEHMER = "teilnehmer";
@@ -20,6 +38,50 @@ public class AdapterJsonMqtt {
     public static final String TEILNEHMERLIST = "teilnehmerlist";
     public static final String RAUM = "raum";
 
+    /**
+     * Liste aller möglichen JSON Message-Types die es gibt.
+     */
+    private enum JSONTypes {
+        LOGIN("login"),
+        LOGOUT("logout"),
+        TEILNEHMER("teilnehmer"),
+        RAUMINFO("rauminfo");
+        public final String label;
+
+        JSONTypes(String label) {
+            this.label = label;
+        }
+    }
+
+    /**
+     * Mögliche Felder Schlüssel im JSON File.
+     */
+    private enum JSONItemTypes {
+        ID("ID"),
+        NAME("NAME"),
+        ROOMNAME("ROOMNAME"),
+        STATUS("STATUS"),
+        HOST("HOST"),
+        EMAIL("EMAIL"),
+        PHONE("PHONE"),
+        PLACE("PLACE"),
+        ADDRESS("ADDRESS"),
+        EXTRA("EXTRA"),
+        ROOMSTARTTIME("ROOMSTARTTIME"),
+        ROOMENDTIME("ROOMENDTIME"),
+        ENTERTIME("ENTERTIME"),
+        EXITTIME("EXITTIME");
+        public final String label;
+
+        JSONItemTypes(String label) {
+            this.label = label;
+        }
+    }
+
+    /**
+     * @return  eine Anmeldung JSON. Diese wird dann vom Teilnehmer über MQTT versandt um sich
+     * an einem Raum anzumelden.
+     */
     public static JSONObject getAnmeldungJSON(MySelf teilnehmer, Long entertime) {
         JSONObject ret = new JSONObject();
         JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
@@ -33,6 +95,9 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
+    /**
+     * Gegenstück zu {@link AdapterJsonMqtt#getAnmeldungJSON(MySelf, Long)}
+     */
     public static JSONObject getAbmeldungJSON(MySelf teilnehmer, Long exittime) {
         JSONObject ret = new JSONObject();
         JSONObject teilnehmerAsJSON = getJSONMySelf(teilnehmer);
@@ -47,7 +112,10 @@ public class AdapterJsonMqtt {
 
     }
 
-    //Funktion holt sich die Inhalte eines Teilnehmers aus den Myself Angaben
+    /**
+     * Erstellt eine MySelfJSON die dann in der An und abmeldung mitgegeben wird.
+     * @return
+     */
     private static JSONObject getJSONMySelf(MySelf teilnehmer) {
         JSONObject ret = new JSONObject();
         try {
@@ -62,6 +130,10 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
+    /**
+     * Erstellt eine TeilnehmerListJSON aus einer Liste von Teilnehmer Objekten. In dem JSON objekt
+     * ist dann eine Liste aller Teilnehmer als Array drin.
+     */
     public static JSONObject getTeilnehmerListJSON(List<ParticipantItem> participants) {
         JSONArray teilnehmerliste = getTeilnehmerliste(participants);
         JSONObject ret = new JSONObject();
@@ -74,6 +146,10 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
+    /**
+     * Erstellt das Teilnehmerlisten JSON Array für die
+     * {@link AdapterJsonMqtt#getTeilnehmerListJSON(List)}
+     */
     public static JSONArray getTeilnehmerliste(List<ParticipantItem> participants) {
         JSONArray teilnehmerliste = new JSONArray();
         for (ParticipantItem participant : participants) {
@@ -82,6 +158,12 @@ public class AdapterJsonMqtt {
         return teilnehmerliste;
     }
 
+    /**
+     * Erstellt ein JSONObjekt eines Teilnehmers, dass in der
+     * {@link AdapterJsonMqtt#getTeilnehmerliste(List)} die wiederrum in dier
+     * {@link AdapterJsonMqtt#getTeilnehmerListJSON(List)} aufgerufen wird.
+     * @param participantItem
+     */
     private static JSONObject getJSONParticipant(ParticipantItem participantItem) {
         JSONObject ret = new JSONObject();
         try {
@@ -97,6 +179,7 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
+
     public static JSONObject getRauminfoJSON(RoomItem roomItem) {
         JSONObject rauminfoJSON = new JSONObject();
         try {
@@ -108,6 +191,10 @@ public class AdapterJsonMqtt {
         return rauminfoJSON;
     }
 
+    /**
+     * Wird von {@link AdapterJsonMqtt#getRauminfoJSON(RoomItem)} gerufen. Erstellt ein RaumJSON
+     * Objekt
+     */
     private static JSONObject getRoomJSON(RoomItem roomItem) {
         JSONObject ret = new JSONObject();
         try {
@@ -128,6 +215,9 @@ public class AdapterJsonMqtt {
         return ret;
     }
 
+    /**
+     * Erstellt aus einem RauninfoJSON wieder einen Room.
+     */
     public static RoomItem createRoomItem(JSONObject jsonObject) {
         RoomItem roomItem = new RoomItem();
 
@@ -153,6 +243,9 @@ public class AdapterJsonMqtt {
         return roomItem;
     }
 
+    /**
+     * Erstellt aus einem ParticipantInfo wieder ein Participant Item.
+     */
     public static ParticipantItem createParticipantItem(JSONObject jsonObject) {
         ParticipantItem participantItem = new ParticipantItem();
         try {
@@ -194,41 +287,7 @@ public class AdapterJsonMqtt {
         return participantList;
     }
 
-    //JasonTYpes koennen diese vier Types annehmen
-    private enum JSONTypes {
-        LOGIN("login"),
-        LOGOUT("logout"),
-        TEILNEHMER("teilnehmer"),
-        RAUMINFO("rauminfo");
-        public final String label;
 
-        JSONTypes(String label) {
-            this.label = label;
-        }
-    }
-
-    //JasonTYpes koennen diese vier Types annehmen
-    private enum JSONItemTypes {
-        ID("ID"),
-        NAME("NAME"),
-        ROOMNAME("ROOMNAME"),
-        STATUS("STATUS"),
-        HOST("HOST"),
-        EMAIL("EMAIL"),
-        PHONE("PHONE"),
-        PLACE("PLACE"),
-        ADDRESS("ADDRESS"),
-        EXTRA("EXTRA"),
-        ROOMSTARTTIME("ROOMSTARTTIME"),
-        ROOMENDTIME("ROOMENDTIME"),
-        ENTERTIME("ENTERTIME"),
-        EXITTIME("EXITTIME");
-        public final String label;
-
-        JSONItemTypes(String label) {
-            this.label = label;
-        }
-    }
 }
 
 

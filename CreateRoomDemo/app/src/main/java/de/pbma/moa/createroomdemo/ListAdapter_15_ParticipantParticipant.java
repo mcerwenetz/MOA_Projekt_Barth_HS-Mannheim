@@ -14,6 +14,7 @@ import java.util.List;
 
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 
+
 public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<ParticipantItem> {
     private final Context context;
     private final List<ParticipantItem> values;

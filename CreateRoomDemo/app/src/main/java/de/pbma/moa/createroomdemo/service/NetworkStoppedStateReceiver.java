@@ -21,8 +21,6 @@ import de.pbma.moa.createroomdemo.activitys.Activity_000_NetworkError;
  *     <li>Register StateStartReceiver in der NetworkError Activity.<br>
  * </ol>
  */
-
-
 public class NetworkStoppedStateReceiver extends BroadcastReceiver {
     private final String TAG = NetworkStoppedStateReceiver.class.getCanonicalName();
 

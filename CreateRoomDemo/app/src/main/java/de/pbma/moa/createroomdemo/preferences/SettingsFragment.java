@@ -50,6 +50,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onPause();
     }
 
+    /**
+     * Hier wird gecheckt ob die Telefonnummer und Email Adresse aussehen wie eine Telefonnummer
+     * und eine Email Adresse aussehen sollen.
+     */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(keyPhone)) {

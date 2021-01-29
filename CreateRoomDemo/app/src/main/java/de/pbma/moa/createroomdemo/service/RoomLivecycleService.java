@@ -20,6 +20,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 
+/**
+ * Verwaltet ob Räume die geöffnet sind geschlossen werden sollen oder ob zu öffnende Räume jetzt
+ * geöffnet werden sollen.<br>
+ * Das soll auch passieren falls das Smartphone gelockt auf dem Tisch liegt, damit der Akku nicht
+ * die ganze Zeit gedrained wird.
+ */
 public class RoomLivecycleService extends Service {
 
     private static final String TAG = "HostRoomCloserService";
@@ -35,6 +41,7 @@ public class RoomLivecycleService extends Service {
     private List<RoomItem> notClosedOwnRooms;
     private Boolean mqttServiceBound;
     private MQTTService mqttService;
+    private Handler handler;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -50,7 +57,6 @@ public class RoomLivecycleService extends Service {
             unbindMQTTService(); // cleanup
         }
     };
-    private Handler handler;
 
     private void bindMQTTService() {
         Log.v(TAG, "bindMQTTService");
@@ -82,10 +88,13 @@ public class RoomLivecycleService extends Service {
         handler = new Handler();
         repository = new Repository(this);
         keepRunning = new AtomicBoolean(false);
-
         Log.v(TAG, "Service created");
     }
 
+    /**
+     * Falls der Service gestartet wird soll der der Überprüferthread gestartet, der mqqt gebunden
+     * und der NetzwerkAusfallStateReceiver anlaufen.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "Started Service");
@@ -110,20 +119,24 @@ public class RoomLivecycleService extends Service {
         unbindMQTTService();
     }
 
-
+    /**
+     * Startet den Überprüfungsthread
+     */
     void startThread() {
         // falls nachrichten nicht empfangen wurde wird der Raumstatus lokal aktualisiert
         // check rooms periodisch
         //raum öffnen
         //raum schließen
         //hinzufügen aller eigenen Raume auf welche gehört werden soll
-        //                    mqttService.addRoomToListen(room, false);
+        //mqttService.addRoomToListen(room, false);
         //hinzufügen aller fremd Raume auf welche gehört werden soll
         Thread checkingThread = new Thread(() -> {
             // falls nachrichten nicht empfangen wurde wird der Raumstatus lokal aktualisiert
             long now = System.currentTimeMillis();
             openrooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN);
             futureRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
+            //alle hosträume die sich öffnen sollen oder geschlossen werden solle überprüfen ob
+            //sie jetzt die vss erfüllen. Dieser check wird nur initial ausgeführt.
             for (RoomItem room : futureRooms) {
                 if (room.startTime <= now && room.endTime >= now) {
                     room.status = RoomItem.ROOMISOPEN;
@@ -169,9 +182,11 @@ public class RoomLivecycleService extends Service {
                 notClosedOwnRooms = repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMWILLOPEN);
                 notClosedOwnRooms.addAll(repository.getAllOwnRoomsWithRoomStatus(RoomItem.ROOMISOPEN));
                 //                    mqttService.addRoomToListen(room, false);
+                //nur auf offene räume hören
                 toSubscribe.addAll(notClosedOwnRooms);
 
-                //hinzufügen aller fremd Raume auf welche gehört werden soll
+                //hinzufügen aller fremd Raume auf welche gehört werden soll. nur für als
+                //Teilnehmer
                 notClosedNotOwnRooms = repository.getAllNotOwnRoomsWithRoomStatus(RoomItem.
                         ROOMWILLOPEN);
                 notClosedNotOwnRooms.addAll(repository.
@@ -190,7 +205,9 @@ public class RoomLivecycleService extends Service {
         checkingThread.start();
     }
 
-
+    /**
+     * Alle Räume asynchron rausschicken.
+     */
     private void postPendingRooms() {
         if (mqttService == null) {
             return;
