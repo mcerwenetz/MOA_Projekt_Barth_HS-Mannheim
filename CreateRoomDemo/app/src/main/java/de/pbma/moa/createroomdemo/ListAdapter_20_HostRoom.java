@@ -34,8 +34,10 @@ public class ListAdapter_20_HostRoom extends ArrayAdapter<RoomItem> {
         if (entityView != null)
             view1 = entityView.findViewById(R.id.tv_20_listview_roomname);
         if (entityView == null || view1 == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            entityView = layoutInflater.inflate(R.layout.list_20_item_room, parent, false);
+            LayoutInflater layoutInflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            entityView = layoutInflater.inflate(R.layout.list_20_item_room, parent,
+                    false);
             view1 = entityView.findViewById(R.id.tv_20_listview_roomname);
         }
         TextView view2 = entityView.findViewById(R.id.tv_20_listview_roomhost);

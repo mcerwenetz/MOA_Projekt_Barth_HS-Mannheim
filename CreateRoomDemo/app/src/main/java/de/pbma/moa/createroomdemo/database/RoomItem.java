@@ -7,6 +7,9 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+/**
+ * Datenbank-Eintrag eines Raums.
+ */
 @Entity(tableName = "dbRoom")
 public class RoomItem {
     public static final int ROOMWILLOPEN = 1;
@@ -49,7 +52,9 @@ public class RoomItem {
     @ColumnInfo(name = "endTime") // in ms since default
     public long endTime;
 
-
+    /**
+     * Statischer RoomItem Konstruktor. Factorymethode.
+     */
     public static RoomItem createRoom(String roomName, String host, String eMail,
                                       String phone, String place, String address, String extra,
                                       long startTime, long endTime) {
@@ -67,6 +72,10 @@ public class RoomItem {
         return room;
     }
 
+    /**
+     * @return Einen String mit den Feldern Raumname, email des host und der id des raums in der
+     * Datenbak. Die Felder sind getrennt durch einen Forward-Slash.
+     */
     public String getRoomTag() {
         if (this.fremdId == null)
             return this.roomName + "/" + this.eMail + "/" + this.id;

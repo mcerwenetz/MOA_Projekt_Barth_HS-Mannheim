@@ -24,6 +24,9 @@ import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 
+/**
+ * Diese Klasse zeigt für Hosts alle Räume an die offen sind oder mal offen waren.
+ */
 public class Activity_20_RoomListHost extends AppCompatActivity {
     final static String TAG = Activity_20_RoomListHost.class.getCanonicalName();
     private ArrayList<RoomItem> roomList;
@@ -62,7 +65,7 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
         lv.setOnItemClickListener(oicl); //Erweiterung um einen onClickedListener
     }
 
-    //Menu
+    //Menü
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -70,6 +73,9 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Wird gerufen wenn neuer Raum erstellt werden soll.
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();

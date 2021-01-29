@@ -33,6 +33,9 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.service.MQTTService;
 
+/**
+ * Der Teilnehmer entscheidet hier wie er dem Raum beitreten kann.
+ */
 public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     public static final String NFC_INTENT_ACTION = "NEW_ROOM_TAG_DISCOVERED";
     final static String TAG = Activity_11_EnterViaQrNfc.class.getCanonicalName();
@@ -40,6 +43,10 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     private boolean mqttServiceBound;
     private MQTTService mqttService;
 
+    /**
+     * Falls der mqtt Service noch nicht gebunden war als schon in den Raum eingetreten wurde
+     * wird an dieser Stelle in den Raum eingetreten.
+     */
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -254,7 +261,10 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
     /**
      * Startet die Raumteilnahme des Participants.
-     *
+     * Die RaumId wird als
+     * Extra in den Intent gelegt der {@link Activity_14_RoomParticipantDetail} startet. Außerdem
+     * wird {@link Repository#addRoomEntry(RoomItem, Repository.AfterInsert)} mit einem leeren
+     * Raum aufgerufen, in dem die Id steht die aus dem RoomTag gewonnen wurde.
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
      */
     private void enterRoom(String roomtag) {
@@ -263,17 +273,27 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         //add room to repo and enter details page
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
         String[] lis = roomtag.split("/");
-        RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null, null, null, null, 0, 0);
+        //Leeren Raum erstellen mit der aus dem QR Code oder dem NFC Tag geholten ID.
+        RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null,
+                null, null, null, 0, 0);
         roomItem.fremdId = Long.parseLong(lis[2]);
         repository.addRoomEntry(roomItem, (newItem) -> {
+            //runOnUiThread weil sonst wär's illegal.
             Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
-                Intent intent = new Intent(Activity_11_EnterViaQrNfc.this, Activity_14_RoomParticipantDetail.class);
+                Intent intent = new Intent(Activity_11_EnterViaQrNfc.this,
+                        Activity_14_RoomParticipantDetail.class);
                 intent.putExtra(Activity_14_RoomParticipantDetail.ID, newItem.id);
                 startActivity(intent);
                 finish();
             });
         });
     }
+
+    /**
+     * Checkt ob der empfangene String die Voraussetzungen für den RoomTag erfüllen.
+     * @param msg Erhaltener RoomTag
+     * @return false wenn er die Voraussetzungen nicht erfüllt, true wenn er Sie erfüllt.
+     */
     private boolean checkTag(String msg) {
         String[] msgSplit = msg.split("/");
         if (msgSplit.length != 3)

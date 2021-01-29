@@ -17,9 +17,10 @@ import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 
-//Activity dient zur Ansicht der Teilnehmerliste aus der Ansicht eines Teinehmers hierfür wird nur der Name
-//und die Matrikelnummer eines Teilnehmers angezeigt.
-
+/**
+ * Activity dient zur Ansicht der Teilnehmerliste aus der Ansicht eines Teinehmers.
+ * Hierfür wird nur der Name und die Matrikelnummer eines Teilnehmers angezeigt.
+ */
 public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_15_ParticipantViewParticipant.class.getCanonicalName();
     final static String INTENT_ROOM_ID = "roomId";
@@ -48,15 +49,21 @@ public class Activity_15_ParticipantViewParticipant extends AppCompatActivity {
         ListView lv = findViewById(R.id.lv_15_participants);
         lv.setAdapter(adapter);
 
-        //Holen der ID aus der Datenbank
+        //Id des Raums aus der DB holen. Wird per Intent mitgeliefert.
         long roomId = 0;
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
         Repository repository = new Repository(Activity_15_ParticipantViewParticipant.this);
-        repository.getParticipantsOfRoom(roomId).observe(Activity_15_ParticipantViewParticipant.this, observer);
-        repository.getRoomByID(roomId).observe(Activity_15_ParticipantViewParticipant.this, new Observer<RoomItem>() {
+        //observer auf die Participant Liste
+        repository.getParticipantsOfRoom(roomId)
+                .observe(Activity_15_ParticipantViewParticipant.this, observer);
+        //observer auf den Raum hängen. Falls er sich ändert soll er sich auch in dieser
+        //activity ändern
+        repository.getRoomByID(roomId)
+                .observe(Activity_15_ParticipantViewParticipant.this,
+                        new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
                 Activity_15_ParticipantViewParticipant.this.roomItem = roomItem;

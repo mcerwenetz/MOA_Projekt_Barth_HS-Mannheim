@@ -19,6 +19,9 @@ public class QrCodeManger {
         this.context = context;
     }
 
+    /**
+     * Ruft den Scanner auf. Früher mit Torch und TimeOut in der App. War aber unnötig.
+     */
     public void callScanner() {
         Log.v(TAG, "callScanner()");
         try {

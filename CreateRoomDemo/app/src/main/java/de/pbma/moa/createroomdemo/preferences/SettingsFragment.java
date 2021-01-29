@@ -16,8 +16,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     final static String TAG = SettingsFragment.class.getCanonicalName();
     private String keyName, keyExtra, keyEmail, keyPhone, keyFirstName;
 
-    //TODO vielleicht ein back button um zur vorherigen seite zurück zu kehren
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate:");
@@ -52,6 +50,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onPause();
     }
 
+    /**
+     * Hier wird gecheckt ob die Telefonnummer und Email Adresse aussehen wie eine Telefonnummer
+     * und eine Email Adresse aussehen sollen.
+     */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(keyPhone)) {

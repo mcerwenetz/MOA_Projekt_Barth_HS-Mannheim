@@ -21,7 +21,8 @@ public class ListAdapter_23_HostParticipant extends ArrayAdapter<ParticipantItem
     private final Context context;
     private final List<ParticipantItem> values;
 
-    public ListAdapter_23_HostParticipant(@NonNull Context context, @NonNull List<ParticipantItem> objects) {
+    public ListAdapter_23_HostParticipant(@NonNull Context context,
+                                          @NonNull List<ParticipantItem> objects) {
         super(context, -1, objects);
         this.context = context;
         this.values = objects;
@@ -35,8 +36,10 @@ public class ListAdapter_23_HostParticipant extends ArrayAdapter<ParticipantItem
         if (entityView != null)
             view1 = entityView.findViewById(R.id.tv_23_listview_participantname);
         if (entityView == null || view1 == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            entityView = layoutInflater.inflate(R.layout.list_23_item_participant, parent, false);
+            LayoutInflater layoutInflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            entityView = layoutInflater.inflate(R.layout.list_23_item_participant, parent,
+                    false);
             view1 = entityView.findViewById(R.id.tv_23_listview_participantname);
         }
         TextView view2 = entityView.findViewById(R.id.tv_23_listview_participantextra);

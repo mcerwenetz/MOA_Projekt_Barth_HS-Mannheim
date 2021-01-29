@@ -30,6 +30,9 @@ import de.pbma.moa.createroomdemo.database.ParticipantItem;
 import de.pbma.moa.createroomdemo.database.Repository;
 import de.pbma.moa.createroomdemo.database.RoomItem;
 
+/**
+ * Hier kann der Host alle Teilnehmer im Raum sehen und eine Liste dieser Teilnehmer teilen.
+ */
 public class Activity_23_HostViewParticipant extends AppCompatActivity {
     final static String TAG = Activity_23_HostViewParticipant.class.getCanonicalName();
     final static String INTENT_ROOM_ID = "roomId";
@@ -59,6 +62,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
             roomId = bundle.getLong(Activity_23_HostViewParticipant.INTENT_ROOM_ID);
         }
 
+        //observer auf participants setzen
         repository.getParticipantsOfRoom(roomId).observe(this, new Observer<List<ParticipantItem>>() {
             @Override
             public void onChanged(List<ParticipantItem> participantItems) {
@@ -67,6 +71,7 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         });
+        //observer setzen auf roomitem
         repository.getRoomByID(roomId).observe(Activity_23_HostViewParticipant.this, new Observer<RoomItem>() {
             @Override
             public void onChanged(RoomItem roomItem) {
@@ -83,6 +88,11 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Ruft {@link #shareParticipants()}
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
@@ -92,8 +102,11 @@ public class Activity_23_HostViewParticipant extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Erstellt ein PDF und speichert es unter "data" im Ordner der App und startet einen ShareCompat
+     * Dialog damit man das PDF an andere Apps übergeben kann.
+     */
     private void shareParticipants() {
-
         //generate PDF with qrCode an room infos -> saved in external file system
         PdfClass pdf = new PdfClass(Activity_23_HostViewParticipant.this);
         if (roomItem == null)

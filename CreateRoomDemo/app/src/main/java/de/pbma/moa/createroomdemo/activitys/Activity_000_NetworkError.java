@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import de.pbma.moa.createroomdemo.R;
 
+/**
+ * Fungiert als ErrorScreen falls die Netzwerkverbindung ausfällt.
+ */
 public class Activity_000_NetworkError extends AppCompatActivity {
     final static String TAG = Activity_000_NetworkError.class.getCanonicalName();
 

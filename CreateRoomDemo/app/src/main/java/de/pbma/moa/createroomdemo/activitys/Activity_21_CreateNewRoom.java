@@ -24,6 +24,10 @@ import de.pbma.moa.createroomdemo.database.RoomItem;
 import de.pbma.moa.createroomdemo.preferences.MySelf;
 import de.pbma.moa.createroomdemo.preferences.PreferenceActivity;
 
+/**
+ * Der Host stellt hier alle möglichen Raumparameter ein und
+ * läuft dann in die {@link Activity_22_RoomHostDetail}
+ */
 public class Activity_21_CreateNewRoom extends AppCompatActivity {
     final static String TAG = Activity_21_CreateNewRoom.class.getCanonicalName();
     final static String BTNSD = "btnStartDate";
@@ -47,7 +51,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
         this.setTitle("Erstellung eines Events");
         repo = new Repository(this);
-
+        //Calender basteln für Start und Endzeit
         calendar = Calendar.getInstance();
         year_end = calendar.get(Calendar.YEAR);
         year_start = calendar.get(Calendar.YEAR);
@@ -62,24 +66,29 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         setContentView(R.layout.page_21_create_room);
-
+        //Binde buttons
         btnCreate = findViewById(R.id.btn_21_create);
         btnEndDate = findViewById(R.id.btn_21_enddate);
         btnEndTime = findViewById(R.id.btn_21_endtime);
         btnStartDate = findViewById(R.id.btn_21_startdate);
         btnStartTime = findViewById(R.id.btn_21_starttime);
 
-        btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_end, (month_end + 1), year_end));
-        btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_start, (month_start + 1), year_start));
+        //Setze Start und Endzeit Buttons unten auf Calendar Werte
+        btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_end,
+                (month_end + 1), year_end));
+        btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_start,
+                (month_start + 1), year_start));
         btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_end, minute_end));
-        btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_start, minute_start));
+        btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_start,
+                minute_start));
 
-
+        //binde edittexts
         etAdresse = findViewById(R.id.et_21_raumaddress);
         etExtra = findViewById(R.id.et_21_raumextra);
         etOrt = findViewById(R.id.et_21_raumort);
         etTitel = findViewById(R.id.et_21_raumtitel);
 
+        //Setze ocls für die Buttons
         btnStartTime.setOnClickListener(this::setBtnStartTimeClicked);
         btnStartDate.setOnClickListener(this::setBtnStartDateClicked);
         btnEndTime.setOnClickListener(this::setBtnEndTimeClicked);
@@ -87,6 +96,9 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         btnCreate.setOnClickListener(this::setBtnCreateClicked);
     }
 
+    /**
+     * Speichert Datumsangaben falls das Smartphone gedreht wird.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -97,6 +109,9 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         Log.v(TAG, "onSaveInstanceState");
     }
 
+    /**
+     * Restored die gespeicherten Daten nach dem Drehen des Smartphones.
+     */
     @Override
     protected void onRestoreInstanceState(Bundle saveInstanceState) {
         super.onRestoreInstanceState(saveInstanceState);
@@ -108,6 +123,9 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
     }
 
+    /**
+     * Startet einen Timepickerdialog um die Startzeit zu setzen.
+     */
     private void setBtnStartTimeClicked(View view) {
         Log.v(TAG, "setBtnStartTimeClicked");
 
@@ -123,14 +141,17 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         timePickerDialog.show();
     }
 
-
+    /**
+     * Startet einen Timepickerdialog um die Endzeit zu setzen.
+     */
     private void setBtnEndTimeClicked(View view) {
         Log.v(TAG, "setBtnEndTimeClicked");
         timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Log.v(TAG, "setBtnEndTimeClicked " + hourOfDay + " " + minute);
-                btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hourOfDay, minute));
+                btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d",
+                        hourOfDay, minute));
                 hour_end = hourOfDay;
                 minute_end = minute;
             }
@@ -138,13 +159,18 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    /**
+     * Startet einen DatePickerDialog um das StartDatum zu setzen.
+     */
     public void setBtnStartDateClicked(View v) {
         Log.v(TAG, "setBtnStartDateClicked");
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Log.v(TAG, "setBtnStartDateClicked " + dayOfMonth + " " + monthOfYear + " " + year);
-                btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
+                Log.v(TAG, "setBtnStartDateClicked " + dayOfMonth + " " + monthOfYear + " " +
+                        year);
+                btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", dayOfMonth,
+                        (monthOfYear + 1), year));
                 year_start = year;
                 day_start = dayOfMonth;
                 month_start = monthOfYear;
@@ -154,13 +180,18 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
     }
 
+    /**
+     * Startet einen DatePickerDialog um das EndDatum zu setzen.
+     */
     private void setBtnEndDateClicked(View v) {
         Log.v(TAG, "setBtnEndDateClicked");
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Log.v(TAG, "setBtnEndDateClicked " + dayOfMonth + " " + monthOfYear + " " + year);
-                btnEndDate.setText(String.format(Locale.GERMAN,"%02d.%02d.%02d", dayOfMonth, (monthOfYear + 1), year));
+                Log.v(TAG, "setBtnEndDateClicked " + dayOfMonth + " " + monthOfYear + " " +
+                        year);
+                btnEndDate.setText(String.format(Locale.GERMAN,"%02d.%02d.%02d", dayOfMonth,
+                        (monthOfYear + 1), year));
                 year_end = year;
                 day_end = dayOfMonth;
                 month_end = monthOfYear;
@@ -170,18 +201,26 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
     }
 
+    /**
+     * Checkt ob mandatory einträge eingetragen wurden, ob die Datumsangaben logisch sind,
+     * ob das Hostprofil valid ist und startet dann den Intent auf
+     * {@link Activity_22_RoomHostDetail}
+     */
     private void setBtnCreateClicked(View view) {
         Log.v(TAG, "setBtnCreateClicked");
+        //check raumname leer
         if (etTitel.getText().toString().equals("")) {
             Log.v(TAG, "Titel empty");
             Toast.makeText(this, R.string.fehlerhafter_titel, Toast.LENGTH_LONG).show();
             return;
         }
+        //check ob ort leer
         if (etOrt.getText().toString().equals("")) {
             Log.v(TAG, "Ort empty");
             Toast.makeText(this, R.string.fehlerhafter_ort, Toast.LENGTH_LONG).show();
             return;
         }
+        //check ob adresse leer
         if (etAdresse.getText().toString().equals("")) {
             Log.v(TAG, "Address empty");
             Toast.makeText(this, R.string.fehlerhafte_adresse, Toast.LENGTH_LONG).show();
@@ -195,27 +234,34 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         calendar.set(year_end, month_end, day_end, hour_end, minute_end, 0);
         long end = calendar.getTime().getTime();
 
+        //startzeit zu früh
         if (now > start) {
             Log.v(TAG, "start time is in the past");
-            Toast.makeText(this, R.string.fehlerhafte_startzeit, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_startzeit,
+                    Toast.LENGTH_LONG).show();
             return;
         }
+        //öffnungszeit negativ oder 0
         if (start >= end) {
             Log.v(TAG, "endtime is earlier then starttime");
-            Toast.makeText(this, R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_endzeit,
+                    Toast.LENGTH_LONG).show();
             return;
         }
-
         MySelf me = new MySelf(Activity_21_CreateNewRoom.this);
+        //check ob die Profildaten stimmen.
         if (!me.isValide()) {
-            Toast.makeText(this, R.string.fehlerhafte_settings, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.fehlerhafte_settings,
+                    Toast.LENGTH_LONG).show();
             Log.v(TAG, "prefs not valide");
-            Intent intent = new Intent(Activity_21_CreateNewRoom.this, PreferenceActivity.class);
+            Intent intent = new Intent(Activity_21_CreateNewRoom.this,
+                    PreferenceActivity.class);
             startActivity(intent);
             return;
         }
         Log.v(TAG, "createRoomItem");
 
+        //Alles ok. Raum erstellen, Raum eintragen und Intent starten.
         RoomItem item = RoomItem.createRoom(
                 etTitel.getText().toString(),
                 me.getFirstName() + " " + me.getName(),
@@ -229,7 +275,8 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
         repo.addRoomEntry(item, (newItem) -> {
             Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
-                Intent intent = new Intent(Activity_21_CreateNewRoom.this, Activity_22_RoomHostDetail.class);
+                Intent intent = new Intent(Activity_21_CreateNewRoom.this,
+                        Activity_22_RoomHostDetail.class);
                 intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
                 startActivity(intent);
                 finish();

@@ -14,11 +14,13 @@ import java.util.List;
 
 import de.pbma.moa.createroomdemo.database.ParticipantItem;
 
+
 public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<ParticipantItem> {
     private final Context context;
     private final List<ParticipantItem> values;
 
-    public ListAdapter_15_ParticipantParticipant(@NonNull Context context, @NonNull List<ParticipantItem> objects) {
+    public ListAdapter_15_ParticipantParticipant(@NonNull Context context,
+                                                 @NonNull List<ParticipantItem> objects) {
         super(context, -1, objects);
         this.context = context;
         this.values = objects;
@@ -32,8 +34,10 @@ public class ListAdapter_15_ParticipantParticipant extends ArrayAdapter<Particip
         if (entityView != null)
             view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         if (entityView == null || view1 == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            entityView = layoutInflater.inflate(R.layout.list_15_item_participant_view_participant, parent, false);
+            LayoutInflater layoutInflater = (LayoutInflater) context.
+                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            entityView = layoutInflater.inflate(R.layout.list_15_item_participant_view_participant,
+                    parent, false);
             view1 = entityView.findViewById(R.id.tv_15_listview_participantname);
         }
         TextView view2 = entityView.findViewById(R.id.tv_15_listview_participantextra);
