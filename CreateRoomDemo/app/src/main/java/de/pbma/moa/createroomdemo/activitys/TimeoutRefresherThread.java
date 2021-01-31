@@ -99,6 +99,9 @@ public class TimeoutRefresherThread {
         DateTime startTimeDateTime = new DateTime(startTime);
         Period period = new Period(now, startTimeDateTime);
         PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendYears().appendSuffix("Y ")
+                .appendMonths().appendSuffix("M ")
+                .appendWeeks().appendSuffix("W ")
                 .appendDays().appendSuffix("d ")
                 .appendHours().appendSuffix("h ")
                 .appendMinutes().appendSuffix("m ")
