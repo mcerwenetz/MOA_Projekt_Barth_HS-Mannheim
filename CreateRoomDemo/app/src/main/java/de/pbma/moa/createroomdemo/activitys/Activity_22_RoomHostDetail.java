@@ -7,11 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
+
 
 import com.google.zxing.WriterException;
 
@@ -89,34 +92,31 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         if (roomid != -1) {
             LiveData<RoomItem> liveData = repo.getRoomByID(roomid);
             //observer auf raum hängen
-            liveData.observe(this, new Observer<RoomItem>() {
-                @Override
-                public void onChanged(RoomItem roomItem) {
-                    Activity_22_RoomHostDetail.this.item = roomItem;
-                    updateRoom(roomItem);
-                    //Speichern für Nebenläufigkeit
-                    //So profitieren alle von Livedata
-                    endtimeAtomic.set(roomItem.endTime);
-                    startTimeAtomic.set(roomItem.startTime);
-                    //der Timeoutrefresherthread wird nur gestartet wenn
-                    //Der Raum offen ist oder wenn er geröffnet werden soll.
-                    if (item.status == RoomItem.ROOMISOPEN) {
-                        timeoutRefresherThread.initialStart();
-                        btntimeout.setEnabled(true);
-                        btnopen.setEnabled(true);
-                    } else if (item.status == RoomItem.ROOMWILLOPEN) {
-                        timeoutRefresherThread.initialStart();
-                        btntimeout.setEnabled(true);
-                        btnopen.setEnabled(false);
-                    } else {
-                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
-                        //werden. Aber nur wenn er läuft.
-                        timeoutRefresherThread.stop();
+            liveData.observe(this, roomItem -> {
+                Activity_22_RoomHostDetail.this.item = roomItem;
+                updateRoom(roomItem);
+                //Speichern für Nebenläufigkeit
+                //So profitieren alle von Livedata
+                endtimeAtomic.set(roomItem.endTime);
+                startTimeAtomic.set(roomItem.startTime);
+                //der Timeoutrefresherthread wird nur gestartet wenn
+                //Der Raum offen ist oder wenn er geröffnet werden soll.
+                if (item.status == RoomItem.ROOMISOPEN) {
+                    timeoutRefresherThread.initialStart();
+                    btntimeout.setEnabled(true);
+                    btnopen.setEnabled(true);
+                } else if (item.status == RoomItem.ROOMWILLOPEN) {
+                    timeoutRefresherThread.initialStart();
+                    btntimeout.setEnabled(true);
+                    btnopen.setEnabled(false);
+                } else {
+                    //Wenn der Raum nicht offen ist soll der Thread gestoppt
+                    //werden. Aber nur wenn er läuft.
+                    timeoutRefresherThread.stop();
 
-                        //Tasten für Raum schließen disable
-                        btnopen.setEnabled(false);
-                        btntimeout.setEnabled(false);
-                    }
+                    //Tasten für Raum schließen disable
+                    btnopen.setEnabled(false);
+                    btntimeout.setEnabled(false);
                 }
             });
         }
@@ -219,25 +219,22 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                DateTime now = new DateTime();
-                DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
-                        now.dayOfMonth().get(), i, i1, 0);
-                //Wenn die Endzeit vor der Startzeit liegt soll das nicht möglich sein.
-                if (timeout.getMillis() <= item.startTime) {
-                    Toast.makeText(Activity_22_RoomHostDetail.this,
-                            R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                item.endTime = timeout.getMillis();
-                repo.updateRoomItem(item);
-                if (mqttService == null)
-                    toSend.add(item);
-                else
-                    mqttService.sendRoom(item, true);
+        TimePickerDialog.OnTimeSetListener otsl = (timePicker, i, i1) -> {
+            DateTime now = new DateTime();
+            DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
+                    now.dayOfMonth().get(), i, i1, 0);
+            //Wenn die Endzeit vor der Startzeit liegt soll das nicht möglich sein.
+            if (timeout.getMillis() <= item.startTime) {
+                Toast.makeText(Activity_22_RoomHostDetail.this,
+                        R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
+                return;
             }
+            item.endTime = timeout.getMillis();
+            repo.updateRoomItem(item);
+            if (mqttService == null)
+                toSend.add(item);
+            else
+                mqttService.sendRoom(item, true);
         };
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
                 minute, true);
@@ -279,8 +276,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             shareRoom(this.item);
             return true;
         } else if (menuitemId == R.id.menu_partic_qr) {
-            Display display = getWindowManager().getDefaultDisplay();
-            int breite = display.getWidth();
+            int breite = GetDisplaySize().x;
             Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(),
                     (breite / 2), (breite / 2)));
             callAlertDialog_QR(draw);
@@ -293,8 +289,16 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         }
     }
 
+    private Point GetDisplaySize() {
+        Display display = this.getDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size;
+    }
+
     /**
      * Erstellt einen QR Code mit dem Inhalt msg
+     *
      * @param msg String der in den QR Code geschrieben wird.
      */
     private Bitmap getQR(String msg, int hight, int width) {
