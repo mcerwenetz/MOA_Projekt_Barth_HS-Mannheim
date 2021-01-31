@@ -39,15 +39,12 @@ public class Activity_20_RoomListHost extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     };
-    private AdapterView.OnItemClickListener oicl = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Long roomid = (Long) view.getTag();
-            Intent intent = new Intent(Activity_20_RoomListHost.this,
-                    Activity_22_RoomHostDetail.class);
-            intent.putExtra(Activity_22_RoomHostDetail.ID, roomid);
-            startActivity(intent);
-        }
+    private AdapterView.OnItemClickListener oicl = (parent, view, position, id) -> {
+        Long roomid = (Long) view.getTag();
+        Intent intent = new Intent(Activity_20_RoomListHost.this,
+                Activity_22_RoomHostDetail.class);
+        intent.putExtra(Activity_22_RoomHostDetail.ID, roomid);
+        startActivity(intent);
     };
 
     @Override

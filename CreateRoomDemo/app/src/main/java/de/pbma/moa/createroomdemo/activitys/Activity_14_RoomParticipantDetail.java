@@ -81,30 +81,27 @@ public class Activity_14_RoomParticipantDetail extends AppCompatActivity {
         if (roomId != -1) {
             Repository repo = new Repository(this);
             LiveData<RoomItem> liveDataRoomItem = repo.getRoomByID(roomId);
-            liveDataRoomItem.observe(this, new Observer<RoomItem>() {
-                @Override
-                public void onChanged(RoomItem roomItem) {
-                    updateRoom(roomItem);
-                    classRoomItem = roomItem;
-                    endtimeAtomic.set(classRoomItem.endTime);
-                    startTimeAtomic.set(classRoomItem.startTime);
-                    if (roomItem.status == RoomItem.ROOMISOPEN) {
-                        timeoutRefresherThread.initialStart();
-                        //erst wenn der Raum geöffnet ist, kann er auch wieder verlassen werden
-                        btnLeave.setEnabled(true);
-                    } else if (roomItem.status == RoomItem.ROOMWILLOPEN) {
-                        //wenn der Raum noch zu ist soll man ihn auch nicht verlassen können
-                        btnLeave.setEnabled(false);
+            liveDataRoomItem.observe(this, roomItem -> {
+                updateRoom(roomItem);
+                classRoomItem = roomItem;
+                endtimeAtomic.set(classRoomItem.endTime);
+                startTimeAtomic.set(classRoomItem.startTime);
+                if (roomItem.status == RoomItem.ROOMISOPEN) {
+                    timeoutRefresherThread.initialStart();
+                    //erst wenn der Raum geöffnet ist, kann er auch wieder verlassen werden
+                    btnLeave.setEnabled(true);
+                } else if (roomItem.status == RoomItem.ROOMWILLOPEN) {
+                    //wenn der Raum noch zu ist soll man ihn auch nicht verlassen können
+                    btnLeave.setEnabled(false);
 //                      btnLeave.setAlpha(.5f); //transparent
-                    } else {
-                        //Wenn der Raum nicht offen ist geschlossen. Dann soll der Thread gestoppt
-                        //werden. Aber nur wenn er läuft.
-                        if (timeoutRefresherThread.isAlive()) {
-                            timeoutRefresherThread.stop();
-                        }
-                        //Geschlossene Räume sollen auch nicht mehr verlassen werden können.
-                        btnLeave.setEnabled(false);
+                } else {
+                    //Wenn der Raum nicht offen ist geschlossen. Dann soll der Thread gestoppt
+                    //werden. Aber nur wenn er läuft.
+                    if (timeoutRefresherThread.isAlive()) {
+                        timeoutRefresherThread.stop();
                     }
+                    //Geschlossene Räume sollen auch nicht mehr verlassen werden können.
+                    btnLeave.setEnabled(false);
                 }
             });
         } else {
