@@ -20,7 +20,7 @@
 
     <string name="host_room_close">Raum schließen</string>
     <string name="participant_room_leave">Raum verlassen</string>
-    <string name="host_timeout_change">Timeout ändern</string>
+    <string name="host_timeout_change">Endzeitpunkt ändern</string>
     <string name="participant">Teilnehmer</string>
     
     <string name="teilen">Teilen</string>
