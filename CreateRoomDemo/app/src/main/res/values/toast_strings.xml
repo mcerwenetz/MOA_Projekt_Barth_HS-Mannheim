@@ -8,4 +8,6 @@
     <string name="fehlerhafte_endzeit">Endzeitpunkt liegt vor Startzeitpunkt</string>
     <string name="fehlerhafter_RoomTag">Der gescannte QR-Code/NFC-Tag hat das falsche Format</string>
     <string name="fehlerhafter_NFC_adapter">Das Gerät kann nicht auf NFC zugreifen oder besitzt keinen NFC-Adapter</string>
+    <string name="fehlerhafte_zutrittsBerechtigung_Host">Sie können nicht Beitreten das Sie der Gastgeber sind</string>
+    <string name="fehlerhafte_zutrittsBerechtigung_Participant">Sie können nicht Beitreten das Sie schon Teilnehmer sind</string>
 </resources>

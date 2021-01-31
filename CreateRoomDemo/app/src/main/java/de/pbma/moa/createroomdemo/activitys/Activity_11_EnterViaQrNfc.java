@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.ArrayList;
+
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.Repository;
@@ -42,6 +44,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     private String toSend;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
+    private ArrayList<RoomItem> ownRooms, otherRooms;
 
     /**
      * Falls der mqtt Service noch nicht gebunden war als schon in den Raum eingetreten wurde
@@ -105,6 +108,17 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
         mqttServiceBound = false;
+        ownRooms = otherRooms = new ArrayList<>();
+
+        Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
+        repository.getAllRoomsWithMeAsHost().observe(this, roomItems -> {
+            this.ownRooms.clear();
+            this.ownRooms.addAll(roomItems);
+        });
+        repository.getAllRoomsWithoutMeAsHost().observe(this, roomItems -> {
+            this.otherRooms.clear();
+            this.otherRooms.addAll(roomItems);
+        });
     }
 
     @Override
@@ -137,13 +151,13 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void enterRoomIfMqttAvailable(String roomtag) {
         bindMQTTService();
-        if(!checkTag(roomtag)){
+        if (!checkTag(roomtag)) {
             Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show();
             return;
         }
         if (mqttService == null)
             toSend = roomtag;
-        else {
+        else if(!checkEnterPermission(roomtag)) {
             enterRoom(roomtag);
         }
     }
@@ -208,7 +222,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void armNFCAdapter() {
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
-        if (adapter==null){
+        if (adapter == null) {
             Toast.makeText(this, R.string.fehlerhafter_NFC_adapter, Toast.LENGTH_LONG).show();
             return;
         }
@@ -265,13 +279,15 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      * Extra in den Intent gelegt der {@link Activity_14_RoomParticipantDetail} startet. Außerdem
      * wird {@link Repository#addRoomEntry(RoomItem, Repository.AfterInsert)} mit einem leeren
      * Raum aufgerufen, in dem die Id steht die aus dem RoomTag gewonnen wurde.
+     *
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
      */
     private void enterRoom(String roomtag) {
-        //enter room via mqtt
-        mqttService.sendEnterRoom(new MySelf(this), roomtag);
         //add room to repo and enter details page
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
+        repository.getIdOfRoomByRoomTagNow(roomtag);
+        //enter room via mqtt
+        mqttService.sendEnterRoom(new MySelf(this), roomtag);
         String[] lis = roomtag.split("/");
         //Leeren Raum erstellen mit der aus dem QR Code oder dem NFC Tag geholten ID.
         RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null,
@@ -291,6 +307,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
 
     /**
      * Checkt ob der empfangene String die Voraussetzungen für den RoomTag erfüllen.
+     *
      * @param msg Erhaltener RoomTag
      * @return false wenn er die Voraussetzungen nicht erfüllt, true wenn er Sie erfüllt.
      */
@@ -305,6 +322,22 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return false;
+        }
+        return true;
+    }
+
+    private boolean checkEnterPermission(String roomTag) {
+        for (RoomItem roomItem : this.ownRooms) {
+            if (roomItem.getRoomTag() == roomTag) {
+                Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Host, Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+        for (RoomItem roomItem : this.otherRooms) {
+            if (roomItem.getRoomTag() == roomTag) {
+                Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show();
+                return false;
+            }
         }
         return true;
     }
