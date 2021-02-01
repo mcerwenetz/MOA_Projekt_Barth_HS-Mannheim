@@ -26,7 +26,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.pbma.moa.createroomdemo.QrCodeManger;
@@ -56,7 +55,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
             if (toSend != null)
-                enterRoom(toSend,true);
+                enterRoom(toSend, true);
         }
 
         @Override
@@ -133,7 +132,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     }
 
 
-
     /**
      * Wird gerufen, falls der QR Button gedrückt wurde.<br>
      * Der QR-Code-Scanner wird gestartet. Erkennt er einen Code wird onActivityResult() ausgeführt
@@ -155,7 +153,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanningResult != null) {
             String scanResult = scanningResult.getContents();
-            enterRoom(scanResult,false);
+            enterRoom(scanResult, false);
             Log.v(TAG, "Scan successfully " + scanResult);
         } else {
             Log.v(TAG, "Scan failed");
@@ -241,7 +239,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             NdefRecord[] recs = messages[0].getRecords();
             String roomtag = new String(recs[0].getPayload());
             roomtag = roomtag.substring(3);
-            enterRoom(roomtag,false);
+            enterRoom(roomtag, false);
         }
     }
 
@@ -254,15 +252,13 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      *
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
      */
-    private void enterRoom(String roomtag,boolean fromMqtt) {
-        Thread t = new Thread(() -> {
-            if(!fromMqtt) {
-                if (!checkTag(roomtag)) {
+    private void enterRoom(String roomtag, boolean fromMqtt) {
+        new Thread(() -> {
+            if (!fromMqtt) {
+                if (!checkTag(roomtag))
                     return;
-                }
                 if (!checkEnterPermission(roomtag))
                     return;
-
                 if (!CheckMqttAvailable(roomtag))
                     return;
             }
@@ -285,7 +281,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
                     finish();
                 });
             });
-        });
+        }).start();
     }
 
     /**
@@ -302,16 +298,13 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         if (!msgSplit[1].contains("@"))
             ret = false;
         try {
-            long x = Long.parseLong(msgSplit[2]);
+            Long.parseLong(msgSplit[2]);
         } catch (NumberFormatException e) {
             e.printStackTrace();
             ret = false;
         }
-        if(!ret)
-            Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
-                Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show();
-
-            });
+        if (!ret)
+            Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show());
         return ret;
     }
 
@@ -323,23 +316,21 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private boolean checkEnterPermission(String roomTag) {
         Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
-        List<RoomItem> roomItems =  repository.getAllRoomsWithMeAsHost().getValue();
+        List<RoomItem> roomItems = repository.getAllRoomsNow();
         for (RoomItem roomItem : roomItems) {
-            if (roomItem.getRoomTag() == roomTag) {
-                Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
-                    Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Host, Toast.LENGTH_LONG).show();
+            if (roomItem.getRoomTag().equals(roomTag)) {
 
-                });
-                return false;
-            }
-        }
-        roomItems =  repository.getAllRoomsWithoutMeAsHost().getValue();
-        for (RoomItem roomItem : roomItems) {
-            if (roomItem.getRoomTag() == roomTag) {
-                Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
-                    Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show();
-                });
-                return false;
+                if (roomItem.fremdId == null) {
+                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
+                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Host, Toast.LENGTH_LONG).show());
+                    return false;
+                }
+//                 else {
+//                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
+//                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show());
+//                    return false;
+//                }
+
             }
         }
         return true;
@@ -354,7 +345,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private boolean CheckMqttAvailable(String roomtag) {
         bindMQTTService();
-        if (mqttService == null){
+        if (mqttService == null) {
             toSend = roomtag;
             return false;
         }

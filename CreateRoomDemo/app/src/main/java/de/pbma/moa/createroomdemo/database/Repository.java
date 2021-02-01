@@ -1,6 +1,7 @@
 package de.pbma.moa.createroomdemo.database;
 
 import android.content.Context;
+import android.widget.ListView;
 
 import androidx.lifecycle.LiveData;
 
@@ -113,6 +114,10 @@ public class Repository {
                 afterInsert.inserted(newItem);
             }
         }).start();
+    }
+
+    public List<RoomItem> getAllRoomsNow(){
+        return roomDao.getAllNow();
     }
 
     /**
