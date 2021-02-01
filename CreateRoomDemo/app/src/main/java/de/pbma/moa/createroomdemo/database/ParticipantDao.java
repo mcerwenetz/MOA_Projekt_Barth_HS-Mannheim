@@ -62,6 +62,6 @@ public abstract class ParticipantDao {
     /**
      * Schreibt die aktuelle Uhrzeit für die Endzeit der Teilnehmer in die Datenbank.
      */
-    @Query("UPDATE dbParticipant SET exitTime=:currentTimeMillis WHERE id=:roomId AND exitTime =0")
+    @Query("UPDATE dbParticipant SET exitTime=:currentTimeMillis WHERE id=:roomId AND exitTime = 0")
     public abstract void setParticipantExitTime(long roomId, long currentTimeMillis);
 }

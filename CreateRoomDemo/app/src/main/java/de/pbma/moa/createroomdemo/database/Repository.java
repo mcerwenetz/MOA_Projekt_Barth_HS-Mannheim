@@ -1,7 +1,6 @@
 package de.pbma.moa.createroomdemo.database;
 
 import android.content.Context;
-import android.widget.ListView;
 
 import androidx.lifecycle.LiveData;
 
@@ -35,7 +34,14 @@ public class Repository {
      * Ruft {@link ParticipantDao#setParticipantExitTime(long, long)}
      */
     public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
-        new Thread(() -> participantDao.setParticipantExitTime(room.id, currentTimeMillis)).start();
+        new Thread(() -> {
+            for (ParticipantItem participantItem : participantDao.getParticipantsOfRoomNow(room.id)) {
+                if (participantItem.exitTime == 0) {
+                    participantItem.exitTime = currentTimeMillis;
+                    participantDao.update(participantItem);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -116,7 +122,7 @@ public class Repository {
         }).start();
     }
 
-    public List<RoomItem> getAllRoomsNow(){
+    public List<RoomItem> getAllRoomsNow() {
         return roomDao.getAllNow();
     }
 
