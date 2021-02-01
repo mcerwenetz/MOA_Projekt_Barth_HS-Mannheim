@@ -254,6 +254,10 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         long now = Calendar.getInstance().getTime().getTime();
+        calendarStart.set(Calendar.SECOND,0);
+        calendarStart.set(Calendar.MILLISECOND,0);
+        calendarEnd.set(Calendar.SECOND,0);
+        calendarEnd.set(Calendar.MILLISECOND,0);
         long start = calendarStart.getTimeInMillis();
         long end = calendarEnd.getTimeInMillis();
 
@@ -296,15 +300,14 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                 start,
                 end);
 
-        repo.addRoomEntry(item, (newItem) -> {
-            Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
-                Intent intent = new Intent(Activity_21_CreateNewRoom.this,
-                        Activity_22_RoomHostDetail.class);
-                intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
-                startActivity(intent);
-                finish();
-            });
-        });
+        repo.addRoomEntry(item, (newItem) ->
+                Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
+                    Intent intent = new Intent(Activity_21_CreateNewRoom.this,
+                            Activity_22_RoomHostDetail.class);
+                    intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
+                    startActivity(intent);
+                    finish();
+                }));
     }
 
 
