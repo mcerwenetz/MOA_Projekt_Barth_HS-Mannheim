@@ -7,14 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -262,7 +259,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     /**
      * Wird gerufen wenn ein Menüitem ausgewählt wurde. Wird "teilen" ausgewählt wird
      * {@link #shareRoom(RoomItem)} gestartet, wird "QR-Code" gewählt wird
-     * {@link #callAlertDialog_QR(Drawable)} ausgeführt, wird "RoomTag auswählt wird
+     * {@link #callAlertDialog_QR()} ausgeführt, wird "RoomTag auswählt wird
      * {@link #callAlertDialog_URI()} aufgerufen.
      */
     @Override
@@ -272,10 +269,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             shareRoom(this.item);
             return true;
         } else if (menuitemId == R.id.menu_partic_qr) {
-            int size = (int) (GetDisplaySize().x * 1.5);
-            Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(),
-                   size , size));
-            callAlertDialog_QR(draw);
+            callAlertDialog_QR();
             return true;
         } else if (menuitemId == R.id.menu_partic_uri) {
             callAlertDialog_URI();
@@ -285,11 +279,10 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         }
     }
 
-    private Point GetDisplaySize() {
-        Display display = this.getDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size;
+    private DisplayMetrics GetDisplaySize() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics;
     }
 
     /**
@@ -347,17 +340,19 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     /**
      * Öffnet einen AlertDialog auf dem der QR Code zum Einscannen steht.
      */
-    public void callAlertDialog_QR(Drawable draw) {
+    public void callAlertDialog_QR() {
         LayoutInflater qrDialogInflater = LayoutInflater.from(this);
         View view = qrDialogInflater.inflate(R.layout.pop_up_22_qr, null);
-
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
-        ivQr.setImageDrawable(draw);
-        tvQrUri.setText(item.getRoomTag());
+        new Thread(() -> {
+            int size = (int) (GetDisplaySize().widthPixels * 0.5);
+            ivQr.setImageBitmap(getQR(this.item.getRoomTag(), size, size));
+            tvQrUri.setText(item.getRoomTag());
+            Activity_22_RoomHostDetail.this.runOnUiThread(() -> new AlertDialog.Builder(this).setView(view).create().show());
+        }).start();
 
-        AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
-        alertDialogQR.show();
+
     }
 
     /**
