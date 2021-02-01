@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -21,11 +20,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
-
 
 import com.google.zxing.WriterException;
 
@@ -276,9 +272,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             shareRoom(this.item);
             return true;
         } else if (menuitemId == R.id.menu_partic_qr) {
-            int breite = GetDisplaySize().x;
+            int size = (int) (GetDisplaySize().x * 1.5);
             Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(),
-                    (breite / 2), (breite / 2)));
+                   size , size));
             callAlertDialog_QR(draw);
             return true;
         } else if (menuitemId == R.id.menu_partic_uri) {
