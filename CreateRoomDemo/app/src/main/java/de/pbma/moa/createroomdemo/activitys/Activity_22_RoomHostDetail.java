@@ -1,6 +1,8 @@
 package de.pbma.moa.createroomdemo.activitys;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,6 +32,7 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
 
 import com.google.zxing.WriterException;
+import com.google.zxing.client.android.BuildConfig;
 
 import org.joda.time.DateTime;
 
@@ -42,7 +45,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
-import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
@@ -160,6 +162,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
      * Wird vom Observer gerufen wenn sich die Daten zum Raum geändert haben (z.B. Timeout).
      * Dann aktualisiert diese Funktion die UI Elemente.
      */
+    @SuppressLint("SetTextI18n")
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(item.roomName);
@@ -202,41 +205,49 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     }
 
     /**
-     * Wird gerufen wenn das Timeout geändert wird. Die Auswahl wird durch einen TimePickerDialog
+     * Wird gerufen wenn das Timeout geändert wird. Die Auswahl wird durch einen DatePickerDialog und TimePickerDialog
      * durchgeführt.
      */
+    DatePickerDialog datePickerDialog;
+    TimePickerDialog timePickerDialog;
+
     private void onChangeTimeout(View view) {
-//        if(item.open ==true){
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(item.endTime);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog.OnTimeSetListener otsl = (timePicker, i, i1) -> {
-            DateTime now = new DateTime();
-            DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
-                    now.dayOfMonth().get(), i, i1, 0);
-            //Wenn die Endzeit vor der Startzeit liegt soll das nicht möglich sein.
-            if (timeout.getMillis() <= item.startTime) {
-                Toast.makeText(Activity_22_RoomHostDetail.this,
-                        R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
-                return;
+        timePickerDialog = new TimePickerDialog(this, (view1, hourOfDay, minute) -> {
+            Log.v(TAG, "ChangeEndTimeDateClicked " + hourOfDay + " " + minute);
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            if (calendar.getTimeInMillis() <= item.startTime) {
+                Toast.makeText(Activity_22_RoomHostDetail.this, R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
+            } else {
+                item.endTime = calendar.getTimeInMillis();
+                repo.updateRoomItem(item);
+                if (mqttService == null)
+                    toSend.add(item);
+                else
+                    mqttService.sendRoom(item, true);
             }
-            item.endTime = timeout.getMillis();
-            repo.updateRoomItem(item);
-            if (mqttService == null)
-                toSend.add(item);
-            else
-                mqttService.sendRoom(item, true);
-        };
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
-                minute, true);
-        timePickerDialog.show();
-//        }
-//        else{
-//            Toast.makeText(this, "Timeout kann bei einem geschlossenen Raum nicht veraendert werden.", Toast.LENGTH_LONG).show();
-//        }
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+
+        datePickerDialog = new DatePickerDialog(this, (view12, year, monthOfYear, dayOfMonth) -> {
+            Log.v(TAG, "ChangeEndTimeDateClicked " + dayOfMonth + " " + monthOfYear + " " +
+                    year);
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            //Call timepickerdialog
+            timePickerDialog.show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+
+        //call datepickerdialog
+        datePickerDialog.show();
+
     }
+
 
     /**
      * Startet die {@link Activity_23_HostViewParticipant} um die Teilnehmer eines Raumes zu sehen.
