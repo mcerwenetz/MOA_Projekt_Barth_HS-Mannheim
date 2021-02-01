@@ -319,17 +319,16 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         List<RoomItem> roomItems = repository.getAllRoomsNow();
         for (RoomItem roomItem : roomItems) {
             if (roomItem.getRoomTag().equals(roomTag)) {
-
                 if (roomItem.fremdId == null) {
                     Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
                             Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Host, Toast.LENGTH_LONG).show());
                     return false;
                 }
-//                 else {
-//                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
-//                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show());
-//                    return false;
-//                }
+                 else {
+                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
+                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show());
+                    return false;
+                }
 
             }
         }
