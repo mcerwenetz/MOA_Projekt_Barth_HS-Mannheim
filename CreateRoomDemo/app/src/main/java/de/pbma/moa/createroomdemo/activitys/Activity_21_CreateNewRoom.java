@@ -219,7 +219,7 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                 calendarEnd.set(Calendar.YEAR, year);
                 calendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 calendarEnd.set(Calendar.MONTH, monthOfYear);
-                setEndCalender();
+                updateBtnText();
             }
         }, calendarEnd.get(Calendar.YEAR), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
@@ -254,8 +254,8 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         long now = Calendar.getInstance().getTime().getTime();
-        long start = calendarStart.getTime().getTime();
-        long end = calendarEnd.getTime().getTime();
+        long start = calendarStart.getTimeInMillis();
+        long end = calendarEnd.getTimeInMillis();
 
         //startzeit zu früh
         if (now > start) {
