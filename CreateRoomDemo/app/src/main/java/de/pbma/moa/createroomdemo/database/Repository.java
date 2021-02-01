@@ -31,7 +31,9 @@ public class Repository {
     }
 
     /**
-     * Ruft {@link ParticipantDao#setParticipantExitTime(long, long)}
+     * Ruft {@link ParticipantDao#getParticipantsOfRoomNow(long)} e(long, long)}
+     * Ruft {@link ParticipantDao#update(ParticipantItem)}
+     * Raus werfen von Participants mittels einer schleife
      */
     public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
         new Thread(() -> {
