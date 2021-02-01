@@ -50,6 +50,7 @@
         android:id="@+id/lv_10_rooms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="10.0sp"/>
+        android:dividerHeight="10.0sp"
+        android:divider="@android:color/transparent"/>
 
 </LinearLayout>
