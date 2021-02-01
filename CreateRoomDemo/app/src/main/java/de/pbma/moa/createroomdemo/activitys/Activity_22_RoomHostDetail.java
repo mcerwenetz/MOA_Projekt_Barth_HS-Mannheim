@@ -185,11 +185,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
      */
     private void onCloseRoom(View view) {
         //Taste macht nichts mehr wenn der Raum geschlossen wurde
-//        if(item.open == true){
-        long now = DateTime.now().getMillis();
         timeoutRefresherThread.stop();
         //Trage aktuelle Zeit für die Endzeit ein
-        item.endTime = now;
+        item.endTime = System.currentTimeMillis();
         item.status = RoomItem.ROOMISCLOSE;
         repo.updateRoomItem(item);
         repo.kickOutParticipants(item, System.currentTimeMillis());
@@ -197,11 +195,6 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             toSend.add(item);
         else
             mqttService.sendRoom(item, true);
-//        }
-//        else {
-//            //Beendet die Uebersicht
-//            Toast.makeText(this, "Raum ist geschlossen", Toast.LENGTH_LONG).show();
-//        }
     }
 
     /**
