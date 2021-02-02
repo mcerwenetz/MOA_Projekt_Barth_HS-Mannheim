@@ -162,7 +162,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         } else {
             Log.v(TAG, "Scan failed");
         }
-//        enterRoom();
     }
 
     /**
