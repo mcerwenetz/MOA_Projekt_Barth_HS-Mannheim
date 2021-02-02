@@ -37,10 +37,10 @@ public class TimeoutRefresherThread {
                             TimeoutRefresherThread.this.tvtimeout.setText(""));
                 else if (startTime.get() > System.currentTimeMillis())
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
-                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToOpen(startTime.get())));
+                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(startTime.get())));
                 else
                     TimeoutRefresherThread.this.activity.runOnUiThread(() ->
-                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeoutToClose(endTime.get())));
+                            TimeoutRefresherThread.this.tvtimeout.setText(formatTimeout(endTime.get())));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -76,14 +76,17 @@ public class TimeoutRefresherThread {
 
     /**
      * Formatiert die Unix Epoch zu einem schönen String
-     * @param endTime Epoch Zeit die formatiert werden soll
+     * @param time Epoch Zeit die formatiert werden soll
      * @return einen schönen String
      */
-    private String formatTimeoutToClose(long endTime) {
+    private String formatTimeout(long time) {
         DateTime now = new DateTime();
-        DateTime endTimeDateTime = new DateTime(endTime);
+        DateTime endTimeDateTime = new DateTime(time);
         Period period = new Period(now, endTimeDateTime);
         PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendYears().appendSuffix("Y ")
+                .appendMonths().appendSuffix("M ")
+                .appendWeeks().appendSuffix("W ")
                 .appendDays().appendSuffix("d ")
                 .appendHours().appendSuffix("h ")
                 .appendMinutes().appendSuffix("m ")
@@ -93,20 +96,7 @@ public class TimeoutRefresherThread {
         return formatter.print(period);
     }
 
-    //Todo: Rausschmeißen. Doppelt, oder?
-    private String formatTimeoutToOpen(long startTime) {
-        DateTime now = new DateTime();
-        DateTime startTimeDateTime = new DateTime(startTime);
-        Period period = new Period(now, startTimeDateTime);
-        PeriodFormatter formatter = new PeriodFormatterBuilder()
-                .appendDays().appendSuffix("d ")
-                .appendHours().appendSuffix("h ")
-                .appendMinutes().appendSuffix("m ")
-                .appendSeconds().appendSuffix("s ")
-                .printZeroNever()
-                .toFormatter();
-        return formatter.print(period);
-    }
+
 
     public boolean isAlive() {
         return this.refreshThread.isAlive();

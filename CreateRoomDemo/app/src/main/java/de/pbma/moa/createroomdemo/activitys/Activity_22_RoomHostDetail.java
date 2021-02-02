@@ -1,19 +1,19 @@
 package de.pbma.moa.createroomdemo.activitys;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,9 +30,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import com.google.zxing.WriterException;
+import com.google.zxing.client.android.BuildConfig;
 
 import org.joda.time.DateTime;
 
@@ -46,7 +45,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
-import de.pbma.moa.createroomdemo.BuildConfig;
 import de.pbma.moa.createroomdemo.PdfClass;
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
@@ -89,34 +87,31 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         if (roomid != -1) {
             LiveData<RoomItem> liveData = repo.getRoomByID(roomid);
             //observer auf raum hängen
-            liveData.observe(this, new Observer<RoomItem>() {
-                @Override
-                public void onChanged(RoomItem roomItem) {
-                    Activity_22_RoomHostDetail.this.item = roomItem;
-                    updateRoom(roomItem);
-                    //Speichern für Nebenläufigkeit
-                    //So profitieren alle von Livedata
-                    endtimeAtomic.set(roomItem.endTime);
-                    startTimeAtomic.set(roomItem.startTime);
-                    //der Timeoutrefresherthread wird nur gestartet wenn
-                    //Der Raum offen ist oder wenn er geröffnet werden soll.
-                    if (item.status == RoomItem.ROOMISOPEN) {
-                        timeoutRefresherThread.initialStart();
-                        btntimeout.setEnabled(true);
-                        btnopen.setEnabled(true);
-                    } else if (item.status == RoomItem.ROOMWILLOPEN) {
-                        timeoutRefresherThread.initialStart();
-                        btntimeout.setEnabled(true);
-                        btnopen.setEnabled(false);
-                    } else {
-                        //Wenn der Raum nicht offen ist soll der Thread gestoppt
-                        //werden. Aber nur wenn er läuft.
-                        timeoutRefresherThread.stop();
+            liveData.observe(this, roomItem -> {
+                Activity_22_RoomHostDetail.this.item = roomItem;
+                updateRoom(roomItem);
+                //Speichern für Nebenläufigkeit
+                //So profitieren alle von Livedata
+                endtimeAtomic.set(roomItem.endTime);
+                startTimeAtomic.set(roomItem.startTime);
+                //der Timeoutrefresherthread wird nur gestartet wenn
+                //Der Raum offen ist oder wenn er geröffnet werden soll.
+                if (item.status == RoomItem.ROOMISOPEN) {
+                    timeoutRefresherThread.initialStart();
+                    btntimeout.setEnabled(true);
+                    btnopen.setEnabled(true);
+                } else if (item.status == RoomItem.ROOMWILLOPEN) {
+                    timeoutRefresherThread.initialStart();
+                    btntimeout.setEnabled(true);
+                    btnopen.setEnabled(false);
+                } else {
+                    //Wenn der Raum nicht offen ist soll der Thread gestoppt
+                    //werden. Aber nur wenn er läuft.
+                    timeoutRefresherThread.stop();
 
-                        //Tasten für Raum schließen disable
-                        btnopen.setEnabled(false);
-                        btntimeout.setEnabled(false);
-                    }
+                    //Tasten für Raum schließen disable
+                    btnopen.setEnabled(false);
+                    btntimeout.setEnabled(false);
                 }
             });
         }
@@ -167,6 +162,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
      * Wird vom Observer gerufen wenn sich die Daten zum Raum geändert haben (z.B. Timeout).
      * Dann aktualisiert diese Funktion die UI Elemente.
      */
+    @SuppressLint("SetTextI18n")
     private void updateRoom(RoomItem item) {
         if (item != null) {
             tvroomname.setText(item.roomName);
@@ -189,11 +185,9 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
      */
     private void onCloseRoom(View view) {
         //Taste macht nichts mehr wenn der Raum geschlossen wurde
-//        if(item.open == true){
-        long now = DateTime.now().getMillis();
         timeoutRefresherThread.stop();
         //Trage aktuelle Zeit für die Endzeit ein
-        item.endTime = now;
+        item.endTime = System.currentTimeMillis();
         item.status = RoomItem.ROOMISCLOSE;
         repo.updateRoomItem(item);
         repo.kickOutParticipants(item, System.currentTimeMillis());
@@ -201,52 +195,52 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             toSend.add(item);
         else
             mqttService.sendRoom(item, true);
-//        }
-//        else {
-//            //Beendet die Uebersicht
-//            Toast.makeText(this, "Raum ist geschlossen", Toast.LENGTH_LONG).show();
-//        }
     }
 
     /**
-     * Wird gerufen wenn das Timeout geändert wird. Die Auswahl wird durch einen TimePickerDialog
+     * Wird gerufen wenn das Timeout geändert wird. Die Auswahl wird durch einen DatePickerDialog und TimePickerDialog
      * durchgeführt.
      */
+    DatePickerDialog datePickerDialog;
+    TimePickerDialog timePickerDialog;
+
     private void onChangeTimeout(View view) {
-//        if(item.open ==true){
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(item.endTime);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog.OnTimeSetListener otsl = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                DateTime now = new DateTime();
-                DateTime timeout = new DateTime(now.year().get(), now.monthOfYear().get(),
-                        now.dayOfMonth().get(), i, i1, 0);
-                //Wenn die Endzeit vor der Startzeit liegt soll das nicht möglich sein.
-                if (timeout.getMillis() <= item.startTime) {
-                    Toast.makeText(Activity_22_RoomHostDetail.this,
-                            R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                item.endTime = timeout.getMillis();
+        timePickerDialog = new TimePickerDialog(this, (view1, hourOfDay, minute) -> {
+            Log.v(TAG, "ChangeEndTimeDateClicked " + hourOfDay + " " + minute);
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            if (calendar.getTimeInMillis() <= item.startTime) {
+                Toast.makeText(Activity_22_RoomHostDetail.this, R.string.fehlerhafte_endzeit, Toast.LENGTH_LONG).show();
+            } else {
+                item.endTime = calendar.getTimeInMillis();
                 repo.updateRoomItem(item);
                 if (mqttService == null)
                     toSend.add(item);
                 else
                     mqttService.sendRoom(item, true);
             }
-        };
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, otsl, hour,
-                minute, true);
-        timePickerDialog.show();
-//        }
-//        else{
-//            Toast.makeText(this, "Timeout kann bei einem geschlossenen Raum nicht veraendert werden.", Toast.LENGTH_LONG).show();
-//        }
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+
+        datePickerDialog = new DatePickerDialog(this, (view12, year, monthOfYear, dayOfMonth) -> {
+            Log.v(TAG, "ChangeEndTimeDateClicked " + dayOfMonth + " " + monthOfYear + " " +
+                    year);
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            //Call timepickerdialog
+            timePickerDialog.show();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+
+
+        //call datepickerdialog
+        datePickerDialog.show();
+
     }
+
 
     /**
      * Startet die {@link Activity_23_HostViewParticipant} um die Teilnehmer eines Raumes zu sehen.
@@ -269,7 +263,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     /**
      * Wird gerufen wenn ein Menüitem ausgewählt wurde. Wird "teilen" ausgewählt wird
      * {@link #shareRoom(RoomItem)} gestartet, wird "QR-Code" gewählt wird
-     * {@link #callAlertDialog_QR(Drawable)} ausgeführt, wird "RoomTag auswählt wird
+     * {@link #callAlertDialog_QR()} ausgeführt, wird "RoomTag auswählt wird
      * {@link #callAlertDialog_URI()} aufgerufen.
      */
     @Override
@@ -279,11 +273,7 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
             shareRoom(this.item);
             return true;
         } else if (menuitemId == R.id.menu_partic_qr) {
-            Display display = getWindowManager().getDefaultDisplay();
-            int breite = display.getWidth();
-            Drawable draw = new BitmapDrawable(getQR(this.item.getRoomTag(),
-                    (breite / 2), (breite / 2)));
-            callAlertDialog_QR(draw);
+            callAlertDialog_QR();
             return true;
         } else if (menuitemId == R.id.menu_partic_uri) {
             callAlertDialog_URI();
@@ -293,8 +283,15 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
         }
     }
 
+    private DisplayMetrics GetDisplaySize() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics;
+    }
+
     /**
      * Erstellt einen QR Code mit dem Inhalt msg
+     *
      * @param msg String der in den QR Code geschrieben wird.
      */
     private Bitmap getQR(String msg, int hight, int width) {
@@ -347,17 +344,19 @@ public class Activity_22_RoomHostDetail extends AppCompatActivity {
     /**
      * Öffnet einen AlertDialog auf dem der QR Code zum Einscannen steht.
      */
-    public void callAlertDialog_QR(Drawable draw) {
+    public void callAlertDialog_QR() {
         LayoutInflater qrDialogInflater = LayoutInflater.from(this);
         View view = qrDialogInflater.inflate(R.layout.pop_up_22_qr, null);
-
         TextView tvQrUri = view.findViewById(R.id.tv_qr_show_uri);
         ImageView ivQr = view.findViewById(R.id.qr_code_show);
-        ivQr.setImageDrawable(draw);
-        tvQrUri.setText(item.getRoomTag());
+        new Thread(() -> {
+            int size = (int) (GetDisplaySize().widthPixels * 0.5);
+            ivQr.setImageBitmap(getQR(this.item.getRoomTag(), size, size));
+            tvQrUri.setText(item.getRoomTag());
+            Activity_22_RoomHostDetail.this.runOnUiThread(() -> new AlertDialog.Builder(this).setView(view).create().show());
+        }).start();
 
-        AlertDialog alertDialogQR = new AlertDialog.Builder(this).setView(view).create();
-        alertDialogQR.show();
+
     }
 
     /**

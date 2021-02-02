@@ -39,9 +39,8 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
     EditText etTitel, etExtra, etOrt, etAdresse;
     DatePickerDialog datePickerDialog;
     TimePickerDialog timePickerDialog;
-    Calendar calendar;
-    int minute_start, hour_start, day_start, month_start, year_start;
-    int minute_end, hour_end, day_end, month_end, year_end;
+    Calendar calendarStart, calendarEnd;
+
     Repository repo;
 
 
@@ -51,18 +50,13 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         Log.v(TAG, "OnCreate");
         this.setTitle("Erstellung eines Events");
         repo = new Repository(this);
+
         //Calender basteln für Start und Endzeit
-        calendar = Calendar.getInstance();
-        year_end = calendar.get(Calendar.YEAR);
-        year_start = calendar.get(Calendar.YEAR);
-        month_end = calendar.get(Calendar.MONTH);
-        month_start = calendar.get(Calendar.MONTH);
-        day_end = calendar.get(Calendar.DAY_OF_MONTH);
-        day_start = calendar.get(Calendar.DAY_OF_MONTH);
-        hour_end = calendar.get(Calendar.HOUR_OF_DAY) + 1;
-        hour_start = calendar.get(Calendar.HOUR_OF_DAY);
-        minute_end = calendar.get(Calendar.MINUTE) + 5;
-        minute_start = calendar.get(Calendar.MINUTE) + 5;
+        calendarStart = Calendar.getInstance();
+        calendarEnd = Calendar.getInstance();
+
+        setStartCalender();
+        setEndCalender();
 
 
         setContentView(R.layout.page_21_create_room);
@@ -73,14 +67,8 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         btnStartDate = findViewById(R.id.btn_21_startdate);
         btnStartTime = findViewById(R.id.btn_21_starttime);
 
-        //Setze Start und Endzeit Buttons unten auf Calendar Werte
-        btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_end,
-                (month_end + 1), year_end));
-        btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_start,
-                (month_start + 1), year_start));
-        btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_end, minute_end));
-        btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_start,
-                minute_start));
+        updateBtnText();
+
 
         //binde edittexts
         etAdresse = findViewById(R.id.et_21_raumaddress);
@@ -94,6 +82,40 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
         btnEndTime.setOnClickListener(this::setBtnEndTimeClicked);
         btnEndDate.setOnClickListener(this::setBtnEndDateClicked);
         btnCreate.setOnClickListener(this::setBtnCreateClicked);
+    }
+
+    private void setEndCalender() {
+        calendarEnd.setTimeInMillis(calendarStart.getTimeInMillis());
+        calendarEnd.add(Calendar.HOUR_OF_DAY, 1);
+    }
+
+    private void setStartCalender() {
+        calendarStart.add(Calendar.MINUTE, 5);
+    }
+
+    private void updateBtnText() {
+        int minute_start, hour_start, day_start, month_start, year_start;
+        year_start = calendarStart.get(Calendar.YEAR);
+        month_start = calendarStart.get(Calendar.MONTH);
+        day_start = calendarStart.get(Calendar.DAY_OF_MONTH);
+        hour_start = calendarStart.get(Calendar.HOUR_OF_DAY);
+        minute_start = calendarStart.get(Calendar.MINUTE);
+
+        int minute_end, hour_end, day_end, month_end, year_end;
+        year_end = calendarEnd.get(Calendar.YEAR);
+        month_end = calendarEnd.get(Calendar.MONTH);
+        day_end = calendarEnd.get(Calendar.DAY_OF_MONTH);
+        hour_end = calendarEnd.get(Calendar.HOUR_OF_DAY);
+        minute_end = calendarEnd.get(Calendar.MINUTE);
+
+        //Setze Start und Endzeit Buttons unten auf Calendar Werte
+        btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_end,
+                (month_end + 1), year_end));
+        btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", day_start,
+                (month_start + 1), year_start));
+        btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_end, minute_end));
+        btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hour_start,
+                minute_start));
     }
 
     /**
@@ -133,11 +155,12 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Log.v(TAG, "setBtnEndTimeClicked " + hourOfDay + " " + minute);
-                btnStartTime.setText(String.format(Locale.GERMAN, "%02d:%02d", hourOfDay, minute));
-                hour_start = hourOfDay;
-                minute_start = minute;
+                calendarStart.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendarStart.set(Calendar.MINUTE, minute);
+                setEndCalender();
+                updateBtnText();
             }
-        }, hour_start, minute_start, true);
+        }, calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE), true);
         timePickerDialog.show();
     }
 
@@ -150,12 +173,11 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Log.v(TAG, "setBtnEndTimeClicked " + hourOfDay + " " + minute);
-                btnEndTime.setText(String.format(Locale.GERMAN, "%02d:%02d",
-                        hourOfDay, minute));
-                hour_end = hourOfDay;
-                minute_end = minute;
+                calendarEnd.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendarEnd.set(Calendar.MINUTE, minute);
+                updateBtnText();
             }
-        }, hour_end, minute_end, true);
+        }, calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE), true);
         timePickerDialog.show();
     }
 
@@ -171,11 +193,13 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                         year);
                 btnStartDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", dayOfMonth,
                         (monthOfYear + 1), year));
-                year_start = year;
-                day_start = dayOfMonth;
-                month_start = monthOfYear;
+                calendarStart.set(Calendar.YEAR, year);
+                calendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                calendarStart.set(Calendar.MONTH, monthOfYear);
+                setEndCalender();
+                updateBtnText();
             }
-        }, year_start, month_start, day_start);
+        }, calendarStart.get(Calendar.YEAR), calendarStart.get(Calendar.MONTH), calendarStart.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
 
     }
@@ -190,13 +214,14 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Log.v(TAG, "setBtnEndDateClicked " + dayOfMonth + " " + monthOfYear + " " +
                         year);
-                btnEndDate.setText(String.format(Locale.GERMAN,"%02d.%02d.%02d", dayOfMonth,
+                btnEndDate.setText(String.format(Locale.GERMAN, "%02d.%02d.%02d", dayOfMonth,
                         (monthOfYear + 1), year));
-                year_end = year;
-                day_end = dayOfMonth;
-                month_end = monthOfYear;
+                calendarEnd.set(Calendar.YEAR, year);
+                calendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                calendarEnd.set(Calendar.MONTH, monthOfYear);
+                updateBtnText();
             }
-        }, year_end, month_end, day_end);
+        }, calendarEnd.get(Calendar.YEAR), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
 
     }
@@ -229,10 +254,12 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
 
 
         long now = Calendar.getInstance().getTime().getTime();
-        calendar.set(year_start, month_start, day_start, hour_start, minute_start, 0);
-        long start = calendar.getTime().getTime();
-        calendar.set(year_end, month_end, day_end, hour_end, minute_end, 0);
-        long end = calendar.getTime().getTime();
+        calendarStart.set(Calendar.SECOND,0);
+        calendarStart.set(Calendar.MILLISECOND,0);
+        calendarEnd.set(Calendar.SECOND,0);
+        calendarEnd.set(Calendar.MILLISECOND,0);
+        long start = calendarStart.getTimeInMillis();
+        long end = calendarEnd.getTimeInMillis();
 
         //startzeit zu früh
         if (now > start) {
@@ -273,15 +300,14 @@ public class Activity_21_CreateNewRoom extends AppCompatActivity {
                 start,
                 end);
 
-        repo.addRoomEntry(item, (newItem) -> {
-            Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
-                Intent intent = new Intent(Activity_21_CreateNewRoom.this,
-                        Activity_22_RoomHostDetail.class);
-                intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
-                startActivity(intent);
-                finish();
-            });
-        });
+        repo.addRoomEntry(item, (newItem) ->
+                Activity_21_CreateNewRoom.this.runOnUiThread(() -> {
+                    Intent intent = new Intent(Activity_21_CreateNewRoom.this,
+                            Activity_22_RoomHostDetail.class);
+                    intent.putExtra(Activity_22_RoomHostDetail.ID, newItem.id);
+                    startActivity(intent);
+                    finish();
+                }));
     }
 
 

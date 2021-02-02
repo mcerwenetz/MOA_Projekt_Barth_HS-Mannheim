@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.util.List;
+
 import de.pbma.moa.createroomdemo.QrCodeManger;
 import de.pbma.moa.createroomdemo.R;
 import de.pbma.moa.createroomdemo.database.Repository;
@@ -42,6 +44,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     private String toSend;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
+    private AlertDialog alertDialog;
+
 
     /**
      * Falls der mqtt Service noch nicht gebunden war als schon in den Raum eingetreten wurde
@@ -53,7 +57,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             Log.v(TAG, "onServiceConnected");
             mqttService = ((MQTTService.LocalBinder) service).getMQTTService();
             if (toSend != null)
-                enterRoom(toSend);
+                enterRoom(toSend, true);
         }
 
         @Override
@@ -105,11 +109,13 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
         mqttServiceBound = false;
+        createAlertDialog();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        alertDialog.dismiss();
         Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null) {
@@ -129,24 +135,6 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         super.onPause();
     }
 
-    /**
-     * Diese Methode ruft enter room auf und fängt ab dass der mqtt service noch nicht gebunden
-     * ist
-     *
-     * @param roomtag Das ist der roomtag über den der Raum betreten wird
-     */
-    private void enterRoomIfMqttAvailable(String roomtag) {
-        bindMQTTService();
-        if(!checkTag(roomtag)){
-            Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (mqttService == null)
-            toSend = roomtag;
-        else {
-            enterRoom(roomtag);
-        }
-    }
 
     /**
      * Wird gerufen, falls der QR Button gedrückt wurde.<br>
@@ -169,12 +157,11 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanningResult != null) {
             String scanResult = scanningResult.getContents();
-            enterRoomIfMqttAvailable(scanResult);
+            enterRoom(scanResult, false);
             Log.v(TAG, "Scan successfully " + scanResult);
         } else {
             Log.v(TAG, "Scan failed");
         }
-//        enterRoom();
     }
 
     /**
@@ -188,11 +175,14 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     }
 
     private void displayAlertDialog() {
+        alertDialog.show();
+    }
+
+    private void createAlertDialog() {
         LayoutInflater nfcDialogInflater = LayoutInflater.from(this);
         View view = nfcDialogInflater.inflate(R.layout.pop_up_22_nfc, null);
 
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
-        alertDialog.show();
+        alertDialog = new AlertDialog.Builder(this).setView(view).create();
     }
 
     /**
@@ -208,7 +198,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      */
     private void armNFCAdapter() {
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
-        if (adapter==null){
+        if (adapter == null) {
             Toast.makeText(this, R.string.fehlerhafter_NFC_adapter, Toast.LENGTH_LONG).show();
             return;
         }
@@ -255,7 +245,7 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
             NdefRecord[] recs = messages[0].getRecords();
             String roomtag = new String(recs[0].getPayload());
             roomtag = roomtag.substring(3);
-            enterRoomIfMqttAvailable(roomtag);
+            enterRoom(roomtag, false);
         }
     }
 
@@ -265,48 +255,106 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      * Extra in den Intent gelegt der {@link Activity_14_RoomParticipantDetail} startet. Außerdem
      * wird {@link Repository#addRoomEntry(RoomItem, Repository.AfterInsert)} mit einem leeren
      * Raum aufgerufen, in dem die Id steht die aus dem RoomTag gewonnen wurde.
+     *
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
+     * @param fromMqtt
      */
-    private void enterRoom(String roomtag) {
-        //enter room via mqtt
-        mqttService.sendEnterRoom(new MySelf(this), roomtag);
-        //add room to repo and enter details page
-        Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
-        String[] lis = roomtag.split("/");
-        //Leeren Raum erstellen mit der aus dem QR Code oder dem NFC Tag geholten ID.
-        RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null,
-                null, null, null, 0, 0);
-        roomItem.fremdId = Long.parseLong(lis[2]);
-        repository.addRoomEntry(roomItem, (newItem) -> {
-            //runOnUiThread weil sonst wär's illegal.
-            Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
-                Intent intent = new Intent(Activity_11_EnterViaQrNfc.this,
-                        Activity_14_RoomParticipantDetail.class);
-                intent.putExtra(Activity_14_RoomParticipantDetail.ID, newItem.id);
-                startActivity(intent);
-                finish();
+    private void enterRoom(String roomtag, boolean fromMqtt) {
+        new Thread(() -> {
+            if (!fromMqtt) {
+                if (!checkTag(roomtag) || !checkEnterPermission(roomtag) || !CheckMqttAvailable(roomtag)) {
+                    alertDialog.dismiss();
+                    return;
+                }
+            }
+            //add room to repo and enter details page
+            Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
+            //enter room via mqtt
+            mqttService.sendEnterRoom(new MySelf(this), roomtag);
+            String[] lis = roomtag.split("/");
+            //Leeren Raum erstellen mit der aus dem QR Code oder dem NFC Tag geholten ID.
+            RoomItem roomItem = RoomItem.createRoom(lis[0], null, lis[1], null,
+                    null, null, null, 0, 0);
+            roomItem.fremdId = Long.parseLong(lis[2]);
+            repository.addRoomEntry(roomItem, (newItem) -> {
+                //runOnUiThread weil sonst wär's illegal.
+                Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> {
+                    Intent intent = new Intent(Activity_11_EnterViaQrNfc.this,
+                            Activity_14_RoomParticipantDetail.class);
+                    intent.putExtra(Activity_14_RoomParticipantDetail.ID, newItem.id);
+                    startActivity(intent);
+                    alertDialog.dismiss();
+                    Activity_11_EnterViaQrNfc.this.finish();
+                    return;
+                });
             });
-        });
+        }).start();
     }
 
     /**
      * Checkt ob der empfangene String die Voraussetzungen für den RoomTag erfüllen.
+     *
      * @param msg Erhaltener RoomTag
      * @return false wenn er die Voraussetzungen nicht erfüllt, true wenn er Sie erfüllt.
      */
     private boolean checkTag(String msg) {
         String[] msgSplit = msg.split("/");
+        boolean ret = true;
         if (msgSplit.length != 3)
-            return false;
+            ret = false;
         if (!msgSplit[1].contains("@"))
-            return false;
+            ret = false;
         try {
-            long x = Long.parseLong(msgSplit[2]);
+            Long.parseLong(msgSplit[2]);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            return false;
+            ret = false;
+        }
+        if (!ret)
+            Activity_11_EnterViaQrNfc.this.runOnUiThread(() -> Toast.makeText(this, R.string.fehlerhafter_RoomTag, Toast.LENGTH_LONG).show());
+        return ret;
+    }
+
+    /**
+     * Checkt ob der RoomTag zu einem Raum gehört den man selbst erstellt hat oder den man schon betreten ht.
+     *
+     * @param roomTag Erhaltener RoomTag
+     * @return false wenn er die Bedingung erfüllt, true wenn er Sie nicht erfüllt.
+     */
+    private boolean checkEnterPermission(String roomTag) {
+        Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
+        List<RoomItem> roomItems = repository.getAllRoomsNow();
+        for (RoomItem roomItem : roomItems) {
+            if (roomItem.getRoomTag().equals(roomTag)) {
+                if (roomItem.fremdId == null) {
+                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
+                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Host, Toast.LENGTH_LONG).show());
+                    return false;
+                }
+                 else {
+                    Activity_11_EnterViaQrNfc.this.runOnUiThread(() ->
+                            Toast.makeText(this, R.string.fehlerhafte_zutrittsBerechtigung_Participant, Toast.LENGTH_LONG).show());
+                    return false;
+                }
+
+            }
         }
         return true;
     }
 
+    /**
+     * Diese Methode fängt ab dass der mqtt service noch nicht gebunden
+     * ist
+     *
+     * @param roomtag Das ist der roomtag über den der Raum betreten wird
+     * @return true wenn mqtt verfügbar ist ansonsten false
+     */
+    private boolean CheckMqttAvailable(String roomtag) {
+        bindMQTTService();
+        if (mqttService == null) {
+            toSend = roomtag;
+            return false;
+        }
+        return true;
+    }
 }

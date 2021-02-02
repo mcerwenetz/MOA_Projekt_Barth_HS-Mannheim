@@ -21,10 +21,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.319"
-                android:gravity="center"
+                android:gravity="fill_vertical"
                 android:text="@string/raum"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"
+                />
 
             <TextView
                 android:id="@+id/tv_14_roomname_value"
@@ -46,10 +48,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.291"
-                android:gravity="center"
+                android:gravity="fill_vertical"
                 android:text="@string/datum"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -86,10 +89,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.301"
-                android:gravity="center"
+                android:gravity="fill_vertical"
                 android:text="@string/status"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -126,11 +130,13 @@
                 android:id="@+id/tv_14_kontakt_host"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="0.35"
-                android:gravity="center"
+                android:layout_weight="0.6"
+                android:gravity="fill_vertical"
                 android:text="@string/host"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"
+                />
 
             <TextView
                 android:id="@+id/tv_14_kontakt_host_value"
@@ -152,10 +158,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.1"
-                android:gravity="center"
+                android:gravity="fill_vertical"
                 android:text="@string/kontaktdaten"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"
+                />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -169,7 +177,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    />
 
                 <TextView
                     android:id="@+id/tv_14_kontakt_hosttelefon"
@@ -192,10 +201,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
-                android:gravity="center"
+                android:gravity="fill_vertical"
                 android:text="@string/ort"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"

@@ -4,19 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/besuchte_raume"
-            android:textSize="10sp" />
-    </LinearLayout>
-    <LinearLayout
+        android:layout_margin="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -49,6 +39,8 @@
     <ListView
         android:id="@+id/lv_10_rooms"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:dividerHeight="10.0sp"
+        android:divider="@android:color/transparent"/>
 
 </LinearLayout>

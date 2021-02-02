@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:layout_margin="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -18,13 +19,7 @@
             android:text="@string/name"
             android:textSize="10sp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/host"
-            android:textSize="10sp" />
+
 
         <TextView
             android:layout_width="match_parent"
@@ -40,6 +35,8 @@
     <ListView
         android:id="@+id/lv_20_room"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:dividerHeight="10.0sp"
+        android:divider="@android:color/transparent"/>
 
 </LinearLayout>

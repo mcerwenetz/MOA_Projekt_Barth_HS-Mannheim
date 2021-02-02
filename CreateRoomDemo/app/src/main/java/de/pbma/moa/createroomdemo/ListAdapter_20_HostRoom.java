@@ -40,11 +40,11 @@ public class ListAdapter_20_HostRoom extends ArrayAdapter<RoomItem> {
                     false);
             view1 = entityView.findViewById(R.id.tv_20_listview_roomname);
         }
-        TextView view2 = entityView.findViewById(R.id.tv_20_listview_roomhost);
+
         TextView view3 = entityView.findViewById(R.id.tv_20_listview_roomdate);
         RoomItem item = values.get(position);
         view1.setText(item.roomName);
-        view2.setText(item.host);
+
 
         if (item.startTime == 0) {
             view3.setText("");

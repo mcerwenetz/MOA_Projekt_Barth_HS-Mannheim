@@ -31,10 +31,19 @@ public class Repository {
     }
 
     /**
-     * Ruft {@link ParticipantDao#setParticipantExitTime(long, long)}
+     * Ruft {@link ParticipantDao#getParticipantsOfRoomNow(long)} e(long, long)}
+     * Ruft {@link ParticipantDao#update(ParticipantItem)}
+     * Raus werfen von Participants mittels einer schleife
      */
     public void kickOutParticipants(RoomItem room, long currentTimeMillis) {
-        new Thread(() -> participantDao.setParticipantExitTime(room.id, currentTimeMillis)).start();
+        new Thread(() -> {
+            for (ParticipantItem participantItem : participantDao.getParticipantsOfRoomNow(room.id)) {
+                if (participantItem.exitTime == 0) {
+                    participantItem.exitTime = currentTimeMillis;
+                    participantDao.update(participantItem);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -113,6 +122,10 @@ public class Repository {
                 afterInsert.inserted(newItem);
             }
         }).start();
+    }
+
+    public List<RoomItem> getAllRoomsNow() {
+        return roomDao.getAllNow();
     }
 
     /**
