@@ -44,6 +44,8 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     private String toSend;
     private boolean mqttServiceBound;
     private MQTTService mqttService;
+    private AlertDialog alertDialog;
+
 
     /**
      * Falls der mqtt Service noch nicht gebunden war als schon in den Raum eingetreten wurde
@@ -107,11 +109,13 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
         btnQr.setOnClickListener(this::btnQrClicked);
         btnNfc.setOnClickListener(this::btnNfcClicked);
         mqttServiceBound = false;
+        createAlertDialog();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        alertDialog.dismiss();
         Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null) {
@@ -172,11 +176,14 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
     }
 
     private void displayAlertDialog() {
+        alertDialog.show();
+    }
+
+    private void createAlertDialog() {
         LayoutInflater nfcDialogInflater = LayoutInflater.from(this);
         View view = nfcDialogInflater.inflate(R.layout.pop_up_22_nfc, null);
 
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).create();
-        alertDialog.show();
+        alertDialog = new AlertDialog.Builder(this).setView(view).create();
     }
 
     /**
@@ -251,16 +258,15 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
      * Raum aufgerufen, in dem die Id steht die aus dem RoomTag gewonnen wurde.
      *
      * @param roomtag Der Tag der als eindeutiger Identifier für den Raum dient.
+     * @param fromMqtt
      */
     private void enterRoom(String roomtag, boolean fromMqtt) {
         new Thread(() -> {
             if (!fromMqtt) {
-                if (!checkTag(roomtag))
+                if (!checkTag(roomtag) || !checkEnterPermission(roomtag) || !CheckMqttAvailable(roomtag)) {
+                    alertDialog.dismiss();
                     return;
-                if (!checkEnterPermission(roomtag))
-                    return;
-                if (!CheckMqttAvailable(roomtag))
-                    return;
+                }
             }
             //add room to repo and enter details page
             Repository repository = new Repository(Activity_11_EnterViaQrNfc.this);
@@ -278,7 +284,9 @@ public class Activity_11_EnterViaQrNfc extends AppCompatActivity {
                             Activity_14_RoomParticipantDetail.class);
                     intent.putExtra(Activity_14_RoomParticipantDetail.ID, newItem.id);
                     startActivity(intent);
-                    finish();
+                    alertDialog.dismiss();
+                    Activity_11_EnterViaQrNfc.this.finish();
+                    return;
                 });
             });
         }).start();
